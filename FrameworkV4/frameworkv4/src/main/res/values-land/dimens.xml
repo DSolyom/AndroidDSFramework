@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="actionbar_title">@dimen/text_small</dimen>
+    <dimen name="actionbar_subtitle">@dimen/text_tiny</dimen>
+    <dimen name="actionbar_subtitle_margin">-3dp</dimen>
+</resources>

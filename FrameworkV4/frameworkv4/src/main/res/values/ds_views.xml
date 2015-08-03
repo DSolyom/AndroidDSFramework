@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<declare-styleable name="DsView">
+		<attr name="textSize" format="dimension" />
+		<attr name="textColor" format="color" />
+
+		<attr name="foreground" format="color" />
+		<attr name="drawable" format="reference" />
+
+		<attr name="tabSelectedIndicatorColor" format="color"/>
+		<attr name="tabViewLayoutId" format="reference"/>
+		<attr name="tabViewTextViewId" format="reference"/>
+
+		<attr name="verticalScrollOnly" format="boolean" />
+		<attr name="horizontalScrollOnly" format="boolean" />
+		<attr name="verticalScrollEnabled" format="boolean" />
+		<attr name="horizontalScrollEnabled" format="boolean" />
+
+		<attr name="countIn" format="reference" />
+		<attr name="handleId" format="reference" />
+		<attr name="enabled" format="boolean" />
+		<attr name="sliderDrawable" format="integer" />
+		<attr name="interval_start" format="integer" />
+		<attr name="interval_end" format="integer" />
+
+		<attr name="frameSrc" format="integer" />
+		<attr name="frameSize" format="dimension" />
+		<attr name="frameSizeTop" format="dimension" />
+		<attr name="frameSizeBottom" format="dimension" />
+		<attr name="frameSizeLeft" format="dimension" />
+		<attr name="frameSizeRight" format="dimension" />
+		<attr name="roundedSize" format="dimension" />
+
+		<attr name="streetView" format="boolean" />
+		<attr name="overlay" format="reference" />
+
+		<attr name="smallHeight" format="dimension" />
+		<attr name="start_fullMode" format="boolean" />
+		<attr name="expander" format="integer" />
+		<attr name="expandText" format="integer" />
+		<attr name="tightenText" format="integer" />
+		<attr name="expand_duration" format="integer" />
+
+		<attr name="noClickAnimation" format="boolean" />
+
+		<attr name="alwaysInBg" format="boolean" />
+		<attr name="corner_radius" format="dimension" />
+		<attr name="border_width" format="dimension" />
+		<attr name="border_color" format="color" />
+		<attr name="round_background" format="boolean" />
+		<attr name="android:scaleType" />
+		<attr name="defaultScaleType" format="enum">
+			<enum name="matrix" value="0"/>
+			<enum name="fitXY" value="1"/>
+			<enum name="fitStart" value="2"/>
+			<enum name="fitCenter" value="3"/>
+			<enum name="fitEnd" value="4"/>
+			<enum name="center" value="5"/>
+			<enum name="centerCrop" value="6"/>
+			<enum name="centerInside" value="7"/>
+		</attr>
+		<attr name="loadingScaleType" format="enum">
+			<enum name="matrix" value="0"/>
+			<enum name="fitXY" value="1"/>
+			<enum name="fitStart" value="2"/>
+			<enum name="fitCenter" value="3"/>
+			<enum name="fitEnd" value="4"/>
+			<enum name="center" value="5"/>
+			<enum name="centerCrop" value="6"/>
+			<enum name="centerInside" value="7"/>
+		</attr>
+		<attr name="errorScaleType" format="enum">
+			<enum name="matrix" value="0"/>
+			<enum name="fitXY" value="1"/>
+			<enum name="fitStart" value="2"/>
+			<enum name="fitCenter" value="3"/>
+			<enum name="fitEnd" value="4"/>
+			<enum name="center" value="5"/>
+			<enum name="centerCrop" value="6"/>
+			<enum name="centerInside" value="7"/>
+		</attr>
+
+		<attr name="flip_first" format="boolean"/>
+
+		<attr name="gif_src" format="reference" />
+	</declare-styleable>
+	<declare-styleable name="CalendarView">
+		<attr name="canOnlySelectEvents" format="boolean"/>
+		<attr name="selectedDayBackgroundColor" format="color"/>
+		<attr name="focusedMonthDateColor" format="color"/>
+		<attr name="selectedDayColor" format="color"/>
+		<attr name="unfocusedMonthDateColor" format="color"/>
+		<attr name="daySeparatorLineColor" format="color"/>
+		<attr name="eventDayBackgroundColor" format="color"/>
+		<attr name="eventDayColor" format="color"/>
+		<attr name="todayColor" format="color"/>
+		<attr name="unfocusedEventDayColor" format="color"/>
+		<attr name="todayBackgroundColor" format="color"/>
+		<attr name="dateTextAppearance" format="reference"/>
+		<attr name="calendarDateTextSize" format="dimension"/>
+		<attr name="weekDayTextAppearance" format="reference"/>
+	</declare-styleable>
+</resources>

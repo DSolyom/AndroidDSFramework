@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="tag_click_id">1</integer>
+	<integer name="tag_scale_type">1</integer>
+	<integer name="tag_runnable">1</integer>
+</resources>

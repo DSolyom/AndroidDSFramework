@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	style="@style/Container"
+	android:background="@drawable/popupmenu_bg_selector"
+>
+	<TextView android:id="@+id/tv_label"
+	    android:layout_width="match_parent"
+	    android:layout_height="?android:attr/actionBarSize"
+	    android:textSize="@dimen/text_medium"
+	    android:gravity="center_vertical"
+	    android:paddingLeft="@dimen/padding_large"
+	    android:paddingRight="@dimen/padding_large"
+	/>
+</LinearLayout>

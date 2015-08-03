@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Framework V2</string>
+    
+	<string name="x_prompt_select_language">Select language</string>
+
+    <string name="x_loading">loading</string>
+    <string name="x_working">Please wait</string>
+    <string name="x_loading_please_wait">Loading, please wait...</string>
+    <string name="x_error_database">database error (no more space?)</string>
+    <string name="x_no_connection">No connection or network error has occurred!</string>
+    <string name="x_ok">Ok</string>
+    
+    <string name="x_expand_text">more</string>
+    <string name="x_tighten_text">less</string>
+    
+    <string name="x_Search">Search</string>
+    <string name="x_Share">Share</string>
+
+    <string name="x_idate_currently">just now</string>
+   	<string name="x_idate_within_an_hour">%D minutes ago</string>
+   	<string name="x_idate_within_the_day">%D hours ago</string>
+   	<string name="x_idate_yesterday">yesterday</string>
+   	<string name="x_idate_within_the_week">%D days ago</string>
+</resources>

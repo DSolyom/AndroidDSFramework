@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+<!-- base -->
+
+	<style name="FillContainer">
+		<item name="android:layout_width">fill_parent</item>
+  		<item name="android:layout_height">fill_parent</item>
+	</style>
+
+	<style name="Background" parent="FillContainer">
+	    <item name="android:background">@color/background</item>
+	</style>
+	
+	<style name="Container">
+		<item name="android:layout_width">fill_parent</item>
+  		<item name="android:layout_height">wrap_content</item>
+	</style>
+	
+	<style name="VerticalContainer">
+		<item name="android:layout_width">wrap_content</item>
+  		<item name="android:layout_height">fill_parent</item>
+	</style>
+	
+	<style name="Block">
+		<item name="android:layout_width">wrap_content</item>
+  		<item name="android:layout_height">wrap_content</item>
+	</style>
+	
+	<style name="InScrollContainer" parent="Block">
+  		<item name="android:focusable">true</item>
+  		<item name="android:focusableInTouchMode">true</item>
+	</style>
+
+	<style name="PaddedContainer" parent="Container">
+		<item name="android:padding">@dimen/padding_medium</item>
+	</style>
+	
+
+	<style name="SidePaddedContainer" parent="Container">
+		<item name="android:paddingLeft">16dip</item>
+		<item name="android:paddingRight">16dip</item>
+	</style>
+	
+	<style name="Separator">
+		<item name="android:layout_width">fill_parent</item>
+		<item name="android:layout_height">1dp</item>
+	</style>
+	
+	<style name="ShadowBottom">
+	    <item name="android:layout_width">match_parent</item>
+	    <item name="android:layout_height">@dimen/shadow_height</item>
+	    <item name="android:background">@drawable/shadow_bottom</item>
+	</style>
+	
+	<style name="ShadowTop">
+	    <item name="android:layout_width">match_parent</item>
+	    <item name="android:layout_height">@dimen/shadow_height</item>
+	    <item name="android:background">@drawable/shadow_top</item>
+	</style>
+	
+	<style name="EmptySpace">
+		<item name="android:layout_width">fill_parent</item>
+		<item name="android:layout_height">0px</item>
+		<item name="android:layout_weight">1</item>
+	</style>
+
+<!-- Text -->
+	
+	<style name="BaseText" parent="Block">
+	    <item name="android:textColor">@color/text</item>
+	</style>
+
+	<style name="TinyText" parent="BaseText">
+		<item name="android:textSize">@dimen/text_tiny</item>
+	</style>
+	
+	<style name="SmallText" parent="BaseText">
+		<item name="android:textSize">@dimen/text_small</item>
+	</style>
+	
+	<style name="Text" parent="BaseText">
+		<item name="android:textSize">@dimen/text_medium</item>
+	</style>
+	
+	<style name="LargeText" parent="BaseText">
+		<item name="android:textSize">@dimen/text_large</item>
+	</style>
+	
+	<style name="SmallSubText" parent="TinyText">
+		<item name="android:textColor">@color/subtext</item>
+	</style>
+	
+	<style name="SubText" parent="SmallText">
+	    <item name="android:textColor">@color/subtext</item>
+	</style>
+	
+	<style name="LargeSubText" parent="Text">
+		<item name="android:textColor">@color/subtext</item>
+	</style>	
+
+	<style name="TinyTitleText" parent="TinyText">
+		<item name="android:textStyle">bold</item>
+		<item name="android:textColor">@color/title</item>
+	</style>
+	
+	<style name="SmallTitleText" parent="SmallText">
+	    <item name="android:textStyle">bold</item>
+	    <item name="android:textColor">@color/title</item>
+	</style>
+	
+	<style name="TitleText" parent="Text">
+	    <item name="android:textStyle">bold</item>
+		<item name="android:textColor">@color/title</item>
+	</style>
+	
+	<style name="LargeTitleText" parent="LargeText">
+	    <item name="android:textStyle">bold</item>
+		<item name="android:textColor">@color/title</item>
+	</style>
+	
+	<style name="LargeTextOnImage" parent="LargeText">
+	    <item name="android:textColor">@color/text_on_image</item>
+	    <item name="android:shadowColor">@color/text_on_image_shadow</item>
+	    <item name="android:shadowRadius">4</item>
+	</style>
+	
+	<style name="TextOnImage" parent="Text">
+	    <item name="android:textColor">@color/text_on_image</item>
+	    <item name="android:shadowColor">@color/text_on_image_shadow</item>
+	    <item name="android:shadowRadius">4</item>
+	</style>
+	
+	<style name="SmallTextOnImage" parent="SmallText">
+	    <item name="android:textColor">@color/text_on_image</item>
+	    <item name="android:shadowColor">@color/text_on_image_shadow</item>
+	    <item name="android:shadowRadius">4</item>
+	</style>
+
+<!--  -->
+		
+	<style name="FullscreenDialog" parent="android:style/Theme.Black.NoTitleBar.Fullscreen">
+		<item name="android:windowAnimationStyle">@android:style/Animation.Dialog</item>
+	</style>
+	
+	<style name="ImageButton" parent="Block">
+	    <item name="android:background">@android:color/transparent</item>
+	</style>
+	
+	<style name="List" parent="FillContainer">
+		<item name="android:cacheColorHint">@android:color/transparent</item>
+		<item name="android:listSelector">@android:color/transparent</item>
+	</style>
+	
+	<style name="ListNoDivider" parent="List">
+	    <item name="android:divider">@android:color/transparent</item>
+	    <item name="android:dividerHeight">0px</item>
+	</style>
+	
+	<style name="ListRow" parent="Container">
+	    <item name="android:minHeight">@dimen/list_row_height</item>
+	    <item name="android:gravity">left|center_vertical</item>
+	</style>
+	
+	<style name="ListRow2" parent="ListRow">
+	    <item name="android:minHeight">60dp</item>
+	</style>
+	
+	<style name="ListHeaderRow" parent="ListRow">
+	    <item name="android:minHeight">36dp</item>
+	</style>
+	
+<!-- Themes -->
+
+    <style name="Theme.Transparent" parent="android:Theme">
+	    <item name="android:windowIsTranslucent">true</item>
+	    <item name="android:windowBackground">@android:color/transparent</item>
+	    <item name="android:windowContentOverlay">@null</item>
+	    <item name="android:windowNoTitle">true</item>
+	    <item name="android:windowIsFloating">true</item>
+	    <item name="android:backgroundDimEnabled">false</item>
+	</style>
+	
+    <style name="Theme.Base" parent="android:Theme.Holo.Light.DarkActionBar">
+    </style>
+    
+    <style name="Theme.App" parent="Theme.Base">
+        <item name="android:actionBarStyle">@style/Theme.App.ActionBar</item>
+        <item name="android:actionMenuTextColor">@color/actionbar_text</item>
+        <item name="android:actionBarWidgetTheme">@style/Theme.App.ActionBar.Widget</item>
+        <item name="android:listDivider">@drawable/default_divider</item>
+    </style>
+
+	<style name="Theme.App.Popup" parent="Theme.AppCompat.Light.NoActionBar">
+
+	</style>
+    
+    <style name="Theme.Base.ActionBar" parent="android:style/Widget.Holo.Light.ActionBar.Solid.Inverse">
+    </style>
+	
+    <style name="Theme.App.ActionBar" parent="Theme.Base.ActionBar">
+        <item name="android:background">@color/actionbar_bg</item>
+        <item name="android:titleTextStyle">@style/Theme.App.ActionBarTitle</item>
+        <item name="android:subtitleTextStyle">@style/Theme.App.ActionBarSubtitle</item>
+    </style>
+    
+    <style name="Theme.App.ActionBar.Widget" parent="Theme.Base">
+ 	    <item name="android:dropDownListViewStyle">@style/Theme.App.ActionBar.Widget.DropDown</item>
+        <item name="android:popupMenuStyle">@style/Theme.App.ActionBar.Widget.ListPopupWindow</item>
+    	<item name="android:spinnerStyle">@style/Theme.App.ActionBar.Widget.Spinner</item>
+        <item name="android:itemBackground">@drawable/popupmenu_bg_selector</item>
+        <item name="android:actionDropDownStyle">@style/Theme.App.ActionBar.Widget.DropDown</item>
+        <item name="android:textColor">@color/popupmenu_text</item>
+    </style>
+    
+    <style name="Theme.Base.ActionBarTitle" parent="android:style/TextAppearance.Holo.Widget.ActionBar.Title">
+    </style>
+    
+    <style name="Theme.App.ActionBarTitle" parent="Theme.Base.ActionBarTitle">
+        <item name="android:textColor">@color/actionbar_text</item>
+    </style>
+    
+    <style name="Theme.Base.ActionBarSubtitle" parent="android:style/TextAppearance.Holo.Widget.ActionBar.Subtitle">
+    </style>
+    
+    <style name="Theme.App.ActionBarSubtitle" parent="Theme.Base.ActionBarSubtitle">
+        <item name="android:textColor">@color/actionbar_text</item>
+    </style>
+   
+    <style name="Theme.Base.ActionBar.Widget.ListPopupWindow" parent="android:style/Widget.Holo.Light.ListPopupWindow">
+    </style>
+    
+    <style name="Theme.App.ActionBar.Widget.ListPopupWindow" parent="Theme.Base.ActionBar.Widget.ListPopupWindow">
+    	<item name="android:listSelector">@drawable/popupmenu_bg_selector</item>
+        <item name="android:divider">@color/popupmenu_divider</item>
+        <item name="android:dividerHeight">@dimen/popupmenu_divider</item>
+        <item name="android:textColor">@color/popupmenu_text</item>    
+	</style>
+    
+    <style name="Theme.Base.ActionBar.Widget.DropDown" parent="@android:style/Widget.Holo.Light.ListView.DropDown">
+    </style>
+    
+    <style name="Theme.App.ActionBar.Widget.DropDown" parent="Theme.Base.ActionBar.Widget.DropDown">
+        <item name="android:listSelector">@drawable/popupmenu_bg_selector</item>
+        <item name="android:divider">@color/popupmenu_divider</item>
+        <item name="android:dividerHeight">@dimen/popupmenu_divider</item>
+        <item name="android:textColor">@color/popupmenu_text</item>
+    </style>
+    
+    <style name="Theme.Base.ActionBar.Widget.Spinner" parent="android:style/Widget.Holo.Light.Spinner">
+    </style>
+    
+    <style name="Theme.App.ActionBar.Widget.Spinner" parent="Theme.Base.ActionBar.Widget.Spinner">
+        <item name="android:listSelector">@drawable/popupmenu_bg_selector</item>
+        <item name="android:divider">@color/popupmenu_divider</item>
+        <item name="android:dividerHeight">@dimen/popupmenu_divider</item>
+        <item name="android:textColor">@color/popupmenu_text</item>
+    </style>
+</resources>

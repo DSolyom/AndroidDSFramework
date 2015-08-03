@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_vertical"
+    android:padding="@dimen/padding_half"
+>	
+	<LinearLayout android:id="@+id/container_expanded"
+        style="@style/FillContainer"
+        android:gravity="center_vertical"
+        android:visibility="gone"
+        android:background="@color/actionbar_search_bg"
+	>
+        <ImageButton android:id="@+id/search_action_btn_reset"
+            style="@style/Block"
+            android:padding="8dp"
+            android:background="@android:color/transparent"
+            android:src="@drawable/x_ic_search_cancel"
+        />
+
+	    <EditText android:id="@+id/search_action_text"
+	        style="@style/Block"
+            android:layout_weight="1"
+	        android:textSize="@dimen/text_medium"
+	        android:layout_marginLeft="4dp"
+	        android:layout_marginTop="2dp"
+	        android:layout_marginBottom="2dp"
+	    	android:layout_marginRight="8dp"
+	    	android:textColor="@color/actionbar_search_text"
+	    	android:textColorHint="@color/actionbar_search_hint"
+	    	android:singleLine="true"
+	    	android:hint="@string/x_Search"
+	    	android:imeOptions="actionSearch"
+	    	android:background="@android:color/transparent"
+	    />
+	</LinearLayout>
+
+	<ImageView android:id="@+id/search_button"
+        style="?android:attr/actionButtonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_vertical"
+        android:src="@drawable/x_ic_action_search"
+        android:contentDescription="@string/x_Search"
+    />
+
+</LinearLayout>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	style="@style/FillContainer"
+	android:orientation="vertical"
+>
+	<TextView android:id="@+id/tv_title"
+	    style="@style/Block"
+	    android:textColor="@color/actionbar_text"
+	    android:textSize="@dimen/actionbar_title"
+	    android:gravity="center_vertical"
+	    android:singleLine="true"
+	/>
+	
+	<TextView android:id="@+id/tv_subtitle"
+	    style="@style/Block"
+	    android:layout_marginTop="@dimen/actionbar_subtitle_margin"
+	    android:textColor="@color/actionbar_text"
+	    android:textSize="@dimen/actionbar_subtitle"
+	    android:gravity="center_vertical"
+	    android:singleLine="true"
+	/>
+</LinearLayout>
