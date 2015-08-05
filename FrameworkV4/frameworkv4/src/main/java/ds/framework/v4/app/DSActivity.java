@@ -1269,10 +1269,16 @@ abstract public class DSActivity extends ActionBarActivity
 	
 	@Override
 	public void onConnectionChanged(boolean connected) {
-		if (mConnected != connected && connected) {
+		if (mConnected != connected) {
+			onConnectionChangedInner(connected);
+			mConnected = connected;
+		}
+	}
+
+	protected void onConnectionChangedInner(boolean connected) {
+		if (connected) {
 			onConnectionEstablished();		
 		}
-		mConnected = connected;
 	}
 	
 	public void onConnectionEstablished() {

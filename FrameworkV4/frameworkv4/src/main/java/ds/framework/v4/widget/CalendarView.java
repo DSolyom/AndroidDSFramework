@@ -54,6 +54,7 @@ import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import ds.framework.v4.R;
+import ds.framework.v4.common.Debug;
 import ds.framework.v4.common.IDate;
 
 /**
@@ -645,7 +646,7 @@ public class CalendarView extends FrameLayout {
      * @throws IllegalArgumentException of the provided date is before the
      *        minimal or after the maximal date.
      *
-     * @see #setDate(long, boolean, boolean)
+     * @see #setDate(long, boolean, boolean, boolean)
      * @see #setMinDate(long)
      * @see #setMaxDate(long)
      */
@@ -976,14 +977,18 @@ public class CalendarView extends FrameLayout {
      *         and the <code>mMinDate</code>.
      */
     private int getWeeksSinceMinDate(Calendar date) {
-        if (date.before(mMinDate)) {
-            throw new IllegalArgumentException("fromDate: " + mMinDate.getTime()
-                    + " does not precede toDate: " + date.getTime());
-        }
-        long endTimeMillis = date.getTimeInMillis()
-                + date.getTimeZone().getOffset(date.getTimeInMillis());
         long startTimeMillis = mMinDate.getTimeInMillis()
                 + mMinDate.getTimeZone().getOffset(mMinDate.getTimeInMillis());
+        long endTimeMillis = 0;
+        if (date.before(mMinDate)) {
+
+            Debug.logW("CalendarView", "date does not precede minDate");
+
+            endTimeMillis = startTimeMillis;
+        } else {
+            endTimeMillis = date.getTimeInMillis()
+                    + date.getTimeZone().getOffset(date.getTimeInMillis());
+        }
         long dayOffsetMillis = (mMinDate.get(Calendar.DAY_OF_WEEK) - mFirstDayOfWeek)
                 * MILLIS_IN_DAY;
         return (int) ((endTimeMillis - startTimeMillis + dayOffsetMillis) / MILLIS_IN_WEEK);
@@ -1067,9 +1072,20 @@ public class CalendarView extends FrameLayout {
          * Set up the gesture detector and selected time
          */
         private void init() {
-        	mTodayWeek = getWeeksSinceMinDate(mTodayDate);
-            mSelectedWeek = getWeeksSinceMinDate(mSelectedDate);
             mTotalWeekCount = getWeeksSinceMinDate(mMaxDate);
+            int missing = 2 * SCROLL_HYST_WEEKS + 1 - mTotalWeekCount;
+            if (missing > 0) {
+                int missingEnd = missing / 2;
+                int missingStart = missing - missingEnd;
+                mMinDate.add(Calendar.WEEK_OF_MONTH, -missingStart);
+                mMaxDate.add(Calendar.WEEK_OF_MONTH, missingEnd);
+
+                mTotalWeekCount = getWeeksSinceMinDate(mMaxDate);
+            }
+
+            mTodayWeek = getWeeksSinceMinDate(mTodayDate);
+            mSelectedWeek = getWeeksSinceMinDate(mSelectedDate);
+
             if (mMinDate.get(Calendar.DAY_OF_WEEK) != mFirstDayOfWeek
                 || mMaxDate.get(Calendar.DAY_OF_WEEK) != mFirstDayOfWeek) {
                 mTotalWeekCount++;

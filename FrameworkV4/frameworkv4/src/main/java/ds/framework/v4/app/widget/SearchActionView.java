@@ -39,6 +39,8 @@ public class SearchActionView extends LinearLayout {
     private int mAppBarContentInsetLeft;
     private int mAppBarContentInsetRight;
 
+    private boolean mToolbarHadUpButton;
+
     public SearchActionView(Context context) {
 		this(context, null);
 	}
@@ -67,7 +69,7 @@ public class SearchActionView extends LinearLayout {
 				open();
 			}
 		});
-        
+
 		findViewById(R.id.search_action_btn_reset).setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -77,7 +79,7 @@ public class SearchActionView extends LinearLayout {
 			}
 			
 		});
-		
+
 		mSearchEditText = (TextView) findViewById(R.id.search_action_text);
 		mTextChangedListener = new TextWatcher() {
 
@@ -126,6 +128,18 @@ public class SearchActionView extends LinearLayout {
 	 * 
 	 */
 	public void open() {
+        if (mIsOpen) {
+            return;
+        }
+
+        DSActivity activity = (DSActivity) Global.getCurrentActivity();
+        if (activity == null) {
+            return;
+        }
+
+        mToolbarHadUpButton = activity.isHomeVisible();
+        activity.getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+
 		mContainerExpanded.setVisibility(View.VISIBLE);
 		mSearchButton.setVisibility(View.GONE);
 		
@@ -170,6 +184,13 @@ public class SearchActionView extends LinearLayout {
 	}
 	
 	public void close(boolean removeSearchText) {
+        DSActivity activity = (DSActivity) Global.getCurrentActivity();
+        if (activity == null) {
+            return;
+        }
+
+        activity.getSupportActionBar().setDisplayHomeAsUpEnabled(mToolbarHadUpButton);
+
 		if (removeSearchText) {
 			stopSearch();
 		}

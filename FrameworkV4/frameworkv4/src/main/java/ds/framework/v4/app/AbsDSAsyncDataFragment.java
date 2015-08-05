@@ -302,6 +302,9 @@ abstract public class AbsDSAsyncDataFragment extends DSFormFragment
 		super.onRestoreInstanceState(savedInstanceState);
 		
 		mDynamicData = (ArrayList<AbsAsyncData>) savedInstanceState.getSerializable(mFragmentId + "other-data-TAG");
+        if (mDynamicData == null) {
+            mDynamicData = new ArrayList<AbsAsyncData>();
+        }
 	}
 	
 	@Override

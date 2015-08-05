@@ -41,7 +41,7 @@ public class FloatingActionButton extends ImageButton {
 
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.DsView, defStyleAttr, 0);
 
-        mNoClickAnimation = !a.getBoolean(R.styleable.DsView_noClickAnimation, false);
+        mNoClickAnimation = a.getBoolean(R.styleable.DsView_noClickAnimation, false);
 
         init(a.getColor(R.styleable.DsView_foreground, Color.WHITE));
 
@@ -102,10 +102,12 @@ public class FloatingActionButton extends ImageButton {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (event.getAction() == MotionEvent.ACTION_UP) {
-            setAlpha(1.0f);
-        } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            setAlpha(0.7f);
+        if (!mNoClickAnimation) {
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                setAlpha(1.0f);
+            } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                setAlpha(0.7f);
+            }
         }
         return super.onTouchEvent(event);
     }
