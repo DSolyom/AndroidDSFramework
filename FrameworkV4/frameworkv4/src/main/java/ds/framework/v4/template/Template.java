@@ -24,6 +24,7 @@ import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPagerModByDS;
+import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.SpannableString;
 import android.text.method.LinkMovementMethod;
@@ -63,6 +64,7 @@ import ds.framework.v4.widget.AbsTemplateAdapter;
 import ds.framework.v4.widget.BothScrollView;
 import ds.framework.v4.widget.ContinuousListAdapter;
 import ds.framework.v4.widget.HtmlTextView;
+import ds.framework.v4.widget.IRecyclerView;
 import ds.framework.v4.widget.LaizyImageFlipAnimationLayout;
 import ds.framework.v4.widget.LaizyImageView;
 import ds.framework.v4.widget.MiniListView;
@@ -105,6 +107,10 @@ public class Template {
 	public static final int LIST = 40;
 	public static final int LIST_HEADER = 41;
 	public static final int LIST_FOOTER = 42;
+
+	public static final int RECYCLER_VIEW = LIST;
+	public static final int RECYCLER_HEADER = LIST_HEADER;
+	public static final int RECYCLER_FOOTER = LIST_FOOTER;
 
 	public static final int ADAPTER = 45;
 	
@@ -422,7 +428,9 @@ public class Template {
 				case ADAPTER:
 				case LIST:
 
-					if (view instanceof AdapterView) {
+                    if (view instanceof RecyclerView) {
+                        ((RecyclerView) view).setAdapter((RecyclerView.Adapter) value);
+                    } else if (view instanceof AdapterView) {
 						Adapter adapter = ((AdapterView) view).getAdapter();
 						if (adapter != null && adapter instanceof HeaderViewListAdapter) {
 							adapter = ((HeaderViewListAdapter) adapter).getWrappedAdapter();
@@ -444,11 +452,17 @@ public class Template {
 					break;
 					
 				case LIST_HEADER:
-					
+
+                    if (view instanceof IRecyclerView) {
+                        ((IRecyclerView) view).setHeaderView((View) value);
+                        return value;
+                    }
+
 					if (value == null) {
 						return null;
 					}
-					if (((ListView) view).getHeaderViewsCount() == 0 && value instanceof Integer) {
+
+                    if (((ListView) view).getHeaderViewsCount() == 0 && value instanceof Integer) {
 						final View headerView = mOwner.inflate((Integer) value, (ListView) view, false);
 						((ListView) view).addHeaderView(headerView);
 						return headerView;
@@ -459,7 +473,12 @@ public class Template {
 					break;
 					
 				case LIST_FOOTER:
-					
+
+                    if (view instanceof IRecyclerView) {
+                        ((IRecyclerView) view).setFooterView((View) value);
+                        return value;
+                    }
+
 					if (value == null) {
 						return null;
 					}

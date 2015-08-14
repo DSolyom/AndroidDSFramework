@@ -30,8 +30,8 @@ abstract public class AbsDSAsyncDataFragment extends DSFormFragment
 	protected ArrayList<AbsAsyncData> mDynamicData = new ArrayList<AbsAsyncData>();
 	private int mAsyncDataLoadState;
 	private boolean mInLoadData = false;
-	
-	private int mLoadingViewID;
+
+	private int mLoadingViewResID;
 	
 	public AbsDSAsyncDataFragment() {
 		super();
@@ -175,11 +175,11 @@ abstract public class AbsDSAsyncDataFragment extends DSFormFragment
 	public void display() {
 		super.display();
 		
-		if (mLoadingViewID == 0) {
-			mLoadingViewID = getLoadingViewID();
+		if (mLoadingViewResID == 0) {
+			mLoadingViewResID = getLoadingViewID();
 		}
 		
-		if (mLoadingViewID != 0) {
+		if (mLoadingViewResID != 0) {
 			setLoadingVisibility();
 		}
 	}
@@ -188,7 +188,7 @@ abstract public class AbsDSAsyncDataFragment extends DSFormFragment
 	 * set loading view visibility 
 	 */
 	protected void setLoadingVisibility() {
-		mTemplate.fill(mLoadingViewID, shouldShowLoading(), Template.VISIBLE);
+		mTemplate.fill(mLoadingViewResID, shouldShowLoading(), Template.VISIBLE);
 	}
 
 // implementing OnDataLoadListener

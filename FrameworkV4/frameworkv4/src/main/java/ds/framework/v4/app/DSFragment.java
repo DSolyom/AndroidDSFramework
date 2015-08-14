@@ -64,6 +64,11 @@ abstract public class DSFragment extends DialogFragment
      */
     protected String mFragmentTitle;
 
+    /**
+     * ths root view's layout resource id (to be inflated)
+     */
+    protected int mRootViewLayoutResID;
+
 	/**
 	 * the root view in the fragment's view hierarchy
 	 */
@@ -142,12 +147,12 @@ abstract public class DSFragment extends DialogFragment
 	public DSFragment(boolean isDialog) {
 		super();
 
-		setShowsDialog(isDialog);
+        setShowsDialog(isDialog);
 	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+        super.onCreate(savedInstanceState);
 
 		if (savedInstanceState != null) {
 			onRestoreInstanceState(savedInstanceState);
@@ -348,7 +353,7 @@ abstract public class DSFragment extends DialogFragment
 		loadDataAndDisplay();
 
 		for(DSFragment subfragment : mSubFragments.values()) {
-			subfragment.onResume();
+            subfragment.onResume();
 		}
 	}
 
@@ -359,14 +364,14 @@ abstract public class DSFragment extends DialogFragment
 		}
 
 		for(DSFragment subfragment : mSubFragments.values()) {
-			subfragment.onPause();
+            subfragment.onPause();
 		}
 	}
 
 	@Override
 	public void onDestroyView() {
 		if (mParent == null) {
-			super.onDestroyView();
+            super.onDestroyView();
 		}
 
 		mTemplate = null;
@@ -401,7 +406,19 @@ abstract public class DSFragment extends DialogFragment
 		return mRootView;
 	}
 
-	abstract protected View getRootView(LayoutInflater inflater, ViewGroup container);
+	/**
+	 *
+	 * @param inflater
+	 * @param container
+	 * @return
+	 */
+	protected View getRootView(LayoutInflater inflater, ViewGroup container) {
+        if (mRootViewLayoutResID != 0) {
+            final View rootView = inflater.inflate(mRootViewLayoutResID, container, false);
+            return rootView;
+        }
+        return null;
+    }
 
 	/**
 	 * set the fragment id prior attach

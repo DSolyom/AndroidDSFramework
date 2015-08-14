@@ -48,7 +48,7 @@ public abstract class CursorList extends MultiCursorList {
 	
 	@Override
 	protected Cursor loadDataInThread(Thread in, int position) {
-			
+
 		// to be able to override single loading
 		return loadDataInThread(in);
 	}
