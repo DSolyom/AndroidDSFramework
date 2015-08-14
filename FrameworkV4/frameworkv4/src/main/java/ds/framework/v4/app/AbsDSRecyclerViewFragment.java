@@ -20,22 +20,27 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.ArrayList;
+
 import ds.framework.v4.R;
 import ds.framework.v4.common.Debug;
 import ds.framework.v4.data.AbsAsyncData;
 import ds.framework.v4.template.Template;
 import ds.framework.v4.widget.RecyclerViewHeaderedAdapter;
 import ds.framework.v4.widget.IRecyclerView;
+import ds.framework.v4.widget.RecyclerViewMultiAdapter;
 
 /**
  * @class AbsDSRecyclerViewFragment
  * 
  * A Fragment (might) having a recylcer view which data (might) be loadad asynchronously<br/>
- * !note: can only use the first data object as AbsRecyclerViewData
+ * !note: AbsRecyclerViewData's will 'fill' adapters in order of appearance in onDataLoaded<br/>
+ * and should only be as many as adapters when using RecyclerViewMultiAdapter and only one with any other adapter
  */
 abstract public class AbsDSRecyclerViewFragment extends AbsDSAsyncDataFragment {
 
 	protected RecyclerViewHeaderedAdapter mAdapter;
+    protected ArrayList<RecyclerViewHeaderedAdapter> mSubAdapters = new ArrayList<>();
 
 	private int mEmptyViewResID;
 
@@ -66,8 +71,18 @@ abstract public class AbsDSRecyclerViewFragment extends AbsDSAsyncDataFragment {
 	
 	@Override
 	public void onDataLoaded(AbsAsyncData data, int loadId) {		
-		if (mData.length > 0 && data == mData[0] && data instanceof AbsRecyclerViewData) {
-			setAdapterData((AbsRecyclerViewData) data, loadId);
+		if (data instanceof AbsRecyclerViewData) {
+            if (mAdapter instanceof RecyclerViewMultiAdapter) {
+                RecyclerViewHeaderedAdapter subAdapter;
+
+                for(int i = mSubAdapters.size(); i >= 0; --i) {
+                    if (mData[i] == data) {
+                        setAdapterData(mSubAdapters.get(i), (AbsRecyclerViewData) data, loadId);
+                    }
+                }
+            } else if (mData.length > 0 && data == mData[0]){
+                setAdapterData(mAdapter, (AbsRecyclerViewData) data, loadId);
+            }
 		}
 		
 		super.onDataLoaded(data, loadId);
@@ -280,7 +295,7 @@ abstract public class AbsDSRecyclerViewFragment extends AbsDSAsyncDataFragment {
 	 * @param data
 	 * @param loadId
 	 */
-	abstract protected void setAdapterData(AbsRecyclerViewData data, int loadId);
+	abstract protected void setAdapterData(RecyclerViewHeaderedAdapter adapter, AbsRecyclerViewData data, int loadId);
 	
 	/**
 	 * invalidate the adapter's data
