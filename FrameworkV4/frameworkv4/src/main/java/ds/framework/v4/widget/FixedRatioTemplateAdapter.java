@@ -5,7 +5,7 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import ds.framework.v4.app.ActivityInterface;
 
-public abstract class FixedRatioTemplateAdapter<T> extends TemplateListAdapter<T> {
+public abstract class FixedRatioTemplateAdapter<T> extends TemplateRecyclerViewAdapter<T> {
 	
 	private int mItemWidth;
 	
@@ -21,8 +21,8 @@ public abstract class FixedRatioTemplateAdapter<T> extends TemplateListAdapter<T
 	}
 		
 	@Override
-	protected View inflateConvertView(int rowRes, ViewGroup viewParent) {
-		final View view = super.inflateConvertView(rowRes, viewParent);
+	protected View inflateTemplateView(int rowRes, ViewGroup viewParent) {
+		final View view = super.inflateTemplateView(rowRes, viewParent);
 		final LayoutParams lp = view.getLayoutParams();
 		lp.width = mItemWidth;
 		lp.height = (int) ((float) mItemWidth / sizeRatio);

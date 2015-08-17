@@ -16,57 +16,117 @@
 package ds.framework.v4.data;
 
 import android.database.Cursor;
+
+import java.util.ArrayList;
+
+import ds.framework.v4.app.AbsDSRecyclerViewFragment;
+import ds.framework.v4.common.Debug;
 import ds.framework.v4.db.TableQuery;
 
-public abstract class CursorList extends MultiCursorList {
-	
+public abstract class CursorList extends AbsDSRecyclerViewFragment.AbsRecyclerViewData {
+
+    private Cursor mCursor;
+    private TableQuery mLoaderQuery;
+
 	public CursorList() {
-		super(1);
+		super();
 	}
 
 	public CursorList(String loaderTag) {
-		super(loaderTag, 1);
+		super(loaderTag);
 	}
 
 	public Cursor getCursor() {
-		return mCursors.get(0);
+		return mCursor;
 	}
 	
 	public void closeCursor() {
-		closeCursors();
+		if (mCursor != null && !mCursor.isClosed()) {
+            mCursor.close();
+        }
+
+        // data is not valid anymore
+        mValid = false;
 	}
 
-	/**
-	 * 
-	 * @return
-	 */
-	protected Cursor loadDataInThread(Thread in) {
-		
-		// to be able to override single loading
-		return super.loadDataInThread(in, 0);
-	}
-	
-	@Override
-	protected Cursor loadDataInThread(Thread in, int position) {
+    @Override
+    synchronized protected void load(final OnDataLoadListener listener, final int loadId) {
+        synchronized(mLoaderQuery) {
+            mLoaderQuery = getListLoaderQuery();
+        }
 
-		// to be able to override single loading
-		return loadDataInThread(in);
-	}
-	
-	@Override
-	protected TableQuery getListLoaderQuery(int position) {
-		
-		// to be able to override single loading
-		return getListLoaderQuery();
-	}
-	
-	/**
-	 * override this to return a preset list loader query
-	 * 
-	 * @return
-	 */
-    protected TableQuery getListLoaderQuery() {
-    	return null;
+        super.load(listener, loadId);
+
     }
-    
+
+    /**
+     *
+     * @param in
+     * @return
+     */
+    protected Cursor loadDataInThread(Thread in) {
+        if (mLoaderQuery == null) {
+            return null;
+        }
+        return mLoaderQuery.load();
+    }
+
+    /**
+     * override this to return a preset list loader query
+     *
+     * @return
+     */
+    abstract protected TableQuery getListLoaderQuery();
+
+    @Override
+    protected LoaderThread createLoader() {
+        return new CursorListLoaderThread();
+    }
+
+    /**
+     * @Class CursorListLoaderThread
+     */
+    protected class CursorListLoaderThread extends LoaderThread {
+
+        protected Cursor mResult;
+
+        @Override
+        protected boolean runCycle(Thread in) {
+            try {
+                synchronized(mLoaderQuery) {
+                    mResult = loadDataInThread(in);
+                }
+            } catch(Throwable e) {
+                Debug.logException(e);
+                return false;
+            }
+            return true;
+        }
+
+        @Override
+        protected void onFinished() {
+            mCursor = mResult;
+
+            super.onFinished();
+        }
+
+        @Override
+        protected void onFailure() {
+            if (mResult != null && !mResult.isClosed()) {
+                mResult.close();
+            }
+
+            super.onFailure();
+        }
+
+        @Override
+        protected void onInterrupt() {
+            if (mResult != null && !mResult.isClosed()) {
+                mResult.close();
+            }
+
+            super.onInterrupt();
+        }
+    }
+
 }

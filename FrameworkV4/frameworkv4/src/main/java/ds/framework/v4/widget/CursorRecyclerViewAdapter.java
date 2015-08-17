@@ -18,31 +18,43 @@ package ds.framework.v4.widget;
 import android.database.Cursor;
 
 import ds.framework.v4.app.ActivityInterface;
+import ds.framework.v4.data.CursorList;
 import ds.framework.v4.data.CursorListEntry;
 
-public abstract class CursorRecyclerViewAdapter extends MultiCursorRecyclerViewAdapter {
+public abstract class CursorRecyclerViewAdapter extends AbsTemplateViewHolderAdapter<CursorListEntry> {
+
+    private CursorListEntry mCLE;
 
 	public CursorRecyclerViewAdapter(ActivityInterface in, int rowLayoutId) {
 		super(in, rowLayoutId);
 	}
-	
+
+    /**
+     *
+     * @param data
+     * @param loadId
+     */
+    public void setData(CursorList data, int loadId) {
+        setCursor(data.getCursor());
+    }
+
 	/**
 	 * 
 	 * @param c
 	 */
 	public void setCursor(Cursor c) {
-		putCursor(c, 0);
+        if (mCLE == null) {
+            mCLE = new CursorListEntry(c);
+            return;
+        } else if (c == mCLE.getCursor()) {
+            return;
+        }
+        mCLE.setCursor(c);
 	}
 
 	@Override
 	public CursorListEntry getItem(int position) {
-		return super.getItem(0, position);
-	}
-	
-
-	@Override
-	protected void fillRow(CursorListEntry data, int cursorPosition,
-			int position) {
-		fillRow(data, position);
+        mCLE.getCursor().moveToPosition(position);
+		return mCLE;
 	}
 }

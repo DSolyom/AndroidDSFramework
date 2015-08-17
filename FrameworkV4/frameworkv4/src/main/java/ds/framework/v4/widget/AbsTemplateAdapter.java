@@ -94,7 +94,7 @@ abstract public class AbsTemplateAdapter<T> extends BaseAdapter implements DSAda
 	}
 	
 	/**
-	 * @param row - holding "row" data
+	 * @param data - holding "row" data
 	 */
 	abstract protected void fillRow(T data, int position);
 }

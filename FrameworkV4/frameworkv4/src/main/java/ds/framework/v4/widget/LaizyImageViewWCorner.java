@@ -341,7 +341,7 @@ public class LaizyImageViewWCorner extends LaizyImageView {
 	}
 	
 	/**
-	 * @class ImageDrawableWCorner
+	 * @class BitmapDrawableWCorner
 	 */
 	public static class BitmapDrawableWCorner extends Drawable {
 

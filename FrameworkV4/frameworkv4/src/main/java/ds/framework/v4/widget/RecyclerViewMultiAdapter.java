@@ -22,6 +22,7 @@ public class RecyclerViewMultiAdapter extends RecyclerViewHeaderedAdapter {
     private final MultiAdapterObserver mObserver = new MultiAdapterObserver();
 
     /**
+     * add an adapter
      *
      * @param adapter
      * @param position
@@ -69,6 +70,14 @@ public class RecyclerViewMultiAdapter extends RecyclerViewHeaderedAdapter {
         notifyDataSetChanged();
     }
 
+    /**
+     *
+     * @return
+     */
+    public ArrayList<RecyclerViewHeaderedAdapter> getAdapters() {
+        return mAdapters;
+    }
+
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         final RecyclerView.ViewHolder holder = super.onCreateViewHolder(parent, viewType);
@@ -85,13 +94,7 @@ public class RecyclerViewMultiAdapter extends RecyclerViewHeaderedAdapter {
     }
 
     @Override
-    public int getItemViewType(int position) {
-        final int type = super.getItemViewType(position);
-        if (type != ITEM_VIEW_TYPE_DEFAULT) {
-
-            // header or footer
-            return type;
-        }
+    public int getItemViewTypeInner(int position) {
 
         // create 'unique' type by adapter and adapters position type
         final AdapterInfo adapterInfo = getAdapterInfoFor(position);
@@ -162,24 +165,28 @@ public class RecyclerViewMultiAdapter extends RecyclerViewHeaderedAdapter {
         public void onItemRangeChanged(int positionStart, int itemCount) {
             countItems();
             // TODO:
+            notifyDataSetChanged();
         }
 
         @Override
         public void onItemRangeInserted(int positionStart, int itemCount) {
             countItems();
             // TODO:
+            notifyDataSetChanged();
         }
 
         @Override
         public void onItemRangeRemoved(int positionStart, int itemCount) {
             countItems();
             // TODO:
+            notifyDataSetChanged();
         }
 
         @Override
         public void onItemRangeMoved(int fromPosition, int toPosition, int itemCount) {
             countItems();
             // TODO:
+            notifyDataSetChanged();
         }
     }
 }

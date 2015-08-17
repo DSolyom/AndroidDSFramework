@@ -62,16 +62,13 @@ import ds.framework.v4.datatypes.WInteger;
 import ds.framework.v4.datatypes.WString;
 import ds.framework.v4.widget.AbsTemplateAdapter;
 import ds.framework.v4.widget.BothScrollView;
-import ds.framework.v4.widget.ContinuousListAdapter;
 import ds.framework.v4.widget.HtmlTextView;
 import ds.framework.v4.widget.IRecyclerView;
 import ds.framework.v4.widget.LaizyImageFlipAnimationLayout;
 import ds.framework.v4.widget.LaizyImageView;
 import ds.framework.v4.widget.MiniListView;
-import ds.framework.v4.widget.Slider;
-import ds.framework.v4.widget.TemplateListAdapter;
+import ds.framework.v4.widget.TemplateRecyclerViewAdapter;
 import ds.framework.v4.widget.LaizyImageView.LaizyImageViewInfo;
-import ds.framework.v4.widget.Slider.OnPositionChangedListener;
 
 public class Template {
 	
@@ -104,8 +101,11 @@ public class Template {
 	/**
 	 * any template list - (like TemplateListView or ContinuousListView)
 	 */
+	@Deprecated
 	public static final int LIST = 40;
+	@Deprecated
 	public static final int LIST_HEADER = 41;
+	@Deprecated
 	public static final int LIST_FOOTER = 42;
 
 	public static final int RECYCLER_VIEW = LIST;
@@ -418,15 +418,9 @@ public class Template {
 				case ENABLED:
 					view.setEnabled(isTrue(value));
 					break;
-					
-				case ONPOSITIONCHANGED_LISTENER:
-					
-					// only for slider atm
-					((Slider) view).setOnPositionChangedListener((OnPositionChangedListener) value);
-					break;
 
 				case ADAPTER:
-				case LIST:
+				case RECYCLER_VIEW:
 
                     if (view instanceof RecyclerView) {
                         ((RecyclerView) view).setAdapter((RecyclerView.Adapter) value);
@@ -438,8 +432,8 @@ public class Template {
 						if (adapter != (Adapter) value) {
 							((AdapterView) view).setAdapter((Adapter) value);
 						
-							if (value instanceof TemplateListAdapter) {
-								((TemplateListAdapter) value).setAdapterView((AdapterView) view);
+							if (value instanceof TemplateRecyclerViewAdapter) {
+								((TemplateRecyclerViewAdapter) value).setAdapterView((AdapterView) view);
 							}
 						} else if (value instanceof BaseAdapter) {
 							((BaseAdapter) value).notifyDataSetChanged();
@@ -451,7 +445,7 @@ public class Template {
 					}
 					break;
 					
-				case LIST_HEADER:
+				case RECYCLER_HEADER:
 
                     if (view instanceof IRecyclerView) {
                         ((IRecyclerView) view).setHeaderView((View) value);
@@ -472,7 +466,7 @@ public class Template {
 					}
 					break;
 					
-				case LIST_FOOTER:
+				case RECYCLER_FOOTER:
 
                     if (view instanceof IRecyclerView) {
                         ((IRecyclerView) view).setFooterView((View) value);

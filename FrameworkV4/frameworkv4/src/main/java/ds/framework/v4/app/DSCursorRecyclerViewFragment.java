@@ -15,40 +15,41 @@
 */
 package ds.framework.v4.app;
 
-import ds.framework.v4.data.MultiCursorList;
-import ds.framework.v4.widget.MultiCursorListAdapter;
+import ds.framework.v4.data.AbsAsyncData;
+import ds.framework.v4.data.CursorList;
+import ds.framework.v4.widget.CursorRecyclerViewAdapter;
+import ds.framework.v4.widget.RecyclerViewHeaderedAdapter;
 
 /**
  * a list fragment which gets it's data from a cursor<br/>
  * this needs a database set in the container activity to be able to work
  */
-abstract public class DSCursorListFragment extends AbsDSListFragment {
-	
-	public DSCursorListFragment() {
+abstract public class DSCursorRecyclerViewFragment extends AbsDSRecyclerViewFragment {
+
+	public DSCursorRecyclerViewFragment() {
 		super();
 	}
-	
-	public DSCursorListFragment(boolean isDialog) {
+
+	public DSCursorRecyclerViewFragment(boolean isDialog) {
 		super(isDialog);
 	}
 	
 	@Override
-	protected void setAdapterData(AbsListData data, int loadId) {
-		((MultiCursorListAdapter) mAdapter).setData((MultiCursorList) data, loadId);
+	protected void setAdapterData(RecyclerViewHeaderedAdapter adapter, AbsRecyclerViewData data, int loadId) {
+		((CursorRecyclerViewAdapter) adapter).setData((CursorList) data, loadId);
 	}
 	
 	@Override
-	protected void invalidateAdapter() {
-			
-		// close cursors
-		if (mAdapter != null && mAdapter instanceof MultiCursorListAdapter) {
-			((MultiCursorListAdapter) mAdapter).setCursors(null);
-		}
-	
+	protected void invalidateAdapter(RecyclerViewHeaderedAdapter adapter) {
+		super.invalidateAdapter(adapter);
+
 		// maybe we are just loaded new data and the adapter haven't got the chance to get it
-		if (mData != null && mData.length > 0 && mData[0] instanceof MultiCursorList) {
-			((MultiCursorList) mData[0]).closeCursors();
-		}
+		if (mData != null)
+        for(AbsAsyncData data : mData) {
+            if (data instanceof CursorList) {
+                ((CursorList) data).closeCursor();
+            }
+        }
 	}
     
 }

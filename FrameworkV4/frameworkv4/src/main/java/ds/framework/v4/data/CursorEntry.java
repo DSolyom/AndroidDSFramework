@@ -56,8 +56,6 @@ public abstract class CursorEntry extends BasicCursorEntry {
 	
 	/**
 	 * ensure query before using load(false)
-	 * 
-	 * @param query
 	 */
 	public void ensureQuery() {
 		mQuery = newEntryLoaderQuery();

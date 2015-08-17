@@ -83,6 +83,15 @@ abstract public class RecyclerViewHeaderedAdapter extends RecyclerView.Adapter<R
         if (mFooterView != null && position == getItemCount() - 1) {
             return ITEM_VIEW_TYPE_FOOTER;
         }
+        return getItemViewTypeInner(position - (mHeaderView != null ? 1: 0));
+    }
+
+    /**
+     *
+     * @param position
+     * @return
+     */
+    public int getItemViewTypeInner(int position) {
         return ITEM_VIEW_TYPE_DEFAULT;
     }
 

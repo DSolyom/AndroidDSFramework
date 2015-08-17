@@ -40,7 +40,6 @@ import ds.framework.v4.widget.RecyclerViewMultiAdapter;
 abstract public class AbsDSRecyclerViewFragment extends AbsDSAsyncDataFragment {
 
 	protected RecyclerViewHeaderedAdapter mAdapter;
-    protected ArrayList<RecyclerViewHeaderedAdapter> mSubAdapters = new ArrayList<>();
 
 	private int mEmptyViewResID;
 
@@ -75,9 +74,10 @@ abstract public class AbsDSRecyclerViewFragment extends AbsDSAsyncDataFragment {
             if (mAdapter instanceof RecyclerViewMultiAdapter) {
                 RecyclerViewHeaderedAdapter subAdapter;
 
-                for(int i = mSubAdapters.size(); i >= 0; --i) {
+                ArrayList<RecyclerViewHeaderedAdapter> subAdapters = ((RecyclerViewMultiAdapter) mAdapter).getAdapters();
+                for(int i = subAdapters.size() - 1; i >= 0; --i) {
                     if (mData[i] == data) {
-                        setAdapterData(mSubAdapters.get(i), (AbsRecyclerViewData) data, loadId);
+                        setAdapterData(subAdapters.get(i), (AbsRecyclerViewData) data, loadId);
                     }
                 }
             } else if (mData.length > 0 && data == mData[0]){
@@ -92,7 +92,7 @@ abstract public class AbsDSRecyclerViewFragment extends AbsDSAsyncDataFragment {
 	public void onDestroy() {
 		super.onDestroy();
 
-		invalidateAdapter();
+		invalidateAdapter(mAdapter);
 	}
 	
 	@Override
@@ -264,7 +264,7 @@ abstract public class AbsDSRecyclerViewFragment extends AbsDSAsyncDataFragment {
 	
 	@Override
 	public void reset() {
-		invalidateAdapter();
+		invalidateAdapter(mAdapter);
 		super.reset();
 	}
 	
@@ -300,9 +300,9 @@ abstract public class AbsDSRecyclerViewFragment extends AbsDSAsyncDataFragment {
 	/**
 	 * invalidate the adapter's data
 	 */
-	protected void invalidateAdapter() {
-        if (mAdapter != null) {
-            mAdapter.reset();
+	protected void invalidateAdapter(RecyclerViewHeaderedAdapter adapter) {
+        if (adapter != null) {
+            adapter.reset();
         }
     }
 
@@ -334,7 +334,6 @@ abstract public class AbsDSRecyclerViewFragment extends AbsDSAsyncDataFragment {
 	 */
 	abstract public static class AbsRecyclerViewData extends AbsAsyncData {
 
-		@Deprecated
 		public AbsRecyclerViewData() {
 		}
 		
