@@ -28,6 +28,8 @@ public abstract class CursorList extends AbsDSRecyclerViewFragment.AbsRecyclerVi
     private Cursor mCursor;
     private TableQuery mLoaderQuery;
 
+    private Object mLoaderQueryLock = new Object();
+
 	public CursorList() {
 		super();
 	}
@@ -51,7 +53,7 @@ public abstract class CursorList extends AbsDSRecyclerViewFragment.AbsRecyclerVi
 
     @Override
     synchronized protected void load(final OnDataLoadListener listener, final int loadId) {
-        synchronized(mLoaderQuery) {
+        synchronized(mLoaderQueryLock) {
             mLoaderQuery = getListLoaderQuery();
         }
 
@@ -93,7 +95,7 @@ public abstract class CursorList extends AbsDSRecyclerViewFragment.AbsRecyclerVi
         @Override
         protected boolean runCycle(Thread in) {
             try {
-                synchronized(mLoaderQuery) {
+                synchronized(mLoaderQueryLock) {
                     mResult = loadDataInThread(in);
                 }
             } catch(Throwable e) {

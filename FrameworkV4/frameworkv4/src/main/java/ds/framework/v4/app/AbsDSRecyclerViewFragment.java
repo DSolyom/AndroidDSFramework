@@ -15,6 +15,7 @@
 */
 package ds.framework.v4.app;
 
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -104,12 +105,12 @@ abstract public class AbsDSRecyclerViewFragment extends AbsDSAsyncDataFragment {
 		super.display();
 
 		if (mRecyclerView != null) {
-			addListHeadersAndFooters();
+            addListHeadersAndFooters();
 
             if (mRecyclerView.getLayoutManager() == null) {
                 mRecyclerView.setLayoutManager(createLayoutManager());
             }
-			mTemplate.fill(mRecyclerView, mAdapter, Template.ADAPTER, "");
+            mTemplate.fill(mRecyclerView, mAdapter, Template.ADAPTER, "");
 			
 			if (mEmptyViewResID != 0) {
 				setEmptyVisibility();

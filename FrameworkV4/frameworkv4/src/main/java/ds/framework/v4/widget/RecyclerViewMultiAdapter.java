@@ -107,6 +107,11 @@ public class RecyclerViewMultiAdapter extends RecyclerViewHeaderedAdapter {
         return mItemCount;
     }
 
+    @Override
+    public Object getItem(int position) {
+        return null;
+    }
+
     private void countItems() {
         mItemCount = 0;
         mAdapterStartPositions.clear();

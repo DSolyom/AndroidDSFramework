@@ -17,7 +17,7 @@ package ds.framework.v4.app;
 
 import ds.framework.v4.data.AbsAsyncData;
 import ds.framework.v4.data.CursorList;
-import ds.framework.v4.widget.CursorRecyclerViewAdapter;
+import ds.framework.v4.widget.CursorListAdapter;
 import ds.framework.v4.widget.RecyclerViewHeaderedAdapter;
 
 /**
@@ -36,7 +36,7 @@ abstract public class DSCursorRecyclerViewFragment extends AbsDSRecyclerViewFrag
 	
 	@Override
 	protected void setAdapterData(RecyclerViewHeaderedAdapter adapter, AbsRecyclerViewData data, int loadId) {
-		((CursorRecyclerViewAdapter) adapter).setData((CursorList) data, loadId);
+		((CursorListAdapter) adapter).setData((CursorList) data, loadId);
 	}
 	
 	@Override

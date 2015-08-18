@@ -21,11 +21,12 @@ import ds.framework.v4.app.ActivityInterface;
 import ds.framework.v4.data.CursorList;
 import ds.framework.v4.data.CursorListEntry;
 
-public abstract class CursorRecyclerViewAdapter extends AbsTemplateViewHolderAdapter<CursorListEntry> {
+public abstract class CursorListAdapter extends AbsTemplateViewHolderAdapter<CursorListEntry> {
 
+    protected CursorList mData;
     private CursorListEntry mCLE;
 
-	public CursorRecyclerViewAdapter(ActivityInterface in, int rowLayoutId) {
+	public CursorListAdapter(ActivityInterface in, int rowLayoutId) {
 		super(in, rowLayoutId);
 	}
 
@@ -36,6 +37,7 @@ public abstract class CursorRecyclerViewAdapter extends AbsTemplateViewHolderAda
      */
     public void setData(CursorList data, int loadId) {
         setCursor(data.getCursor());
+        mData = data;
     }
 
 	/**
@@ -50,11 +52,21 @@ public abstract class CursorRecyclerViewAdapter extends AbsTemplateViewHolderAda
             return;
         }
         mCLE.setCursor(c);
+
+        mData = null;
 	}
 
 	@Override
 	public CursorListEntry getItem(int position) {
         mCLE.getCursor().moveToPosition(position);
 		return mCLE;
+	}
+
+	/**
+	 *
+	 * @return
+	 */
+	public int getCount() {
+		return mCLE == null ? 0 : mCLE.getCount();
 	}
 }

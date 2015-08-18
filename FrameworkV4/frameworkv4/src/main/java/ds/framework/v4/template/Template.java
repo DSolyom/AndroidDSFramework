@@ -71,7 +71,9 @@ import ds.framework.v4.widget.TemplateRecyclerViewAdapter;
 import ds.framework.v4.widget.LaizyImageView.LaizyImageViewInfo;
 
 public class Template {
-	
+
+    public static final int VIEW_NONE = -1;
+
 	public static final int DETECT = 0;
 	
 	public static final int TEXT = 1;
@@ -195,6 +197,9 @@ public class Template {
 	 * @return
 	 */
 	public View findViewById(int viewResID) {
+		if (viewResID ==  VIEW_NONE) {
+			return null;
+		}
 		if (viewResID == 0 || mRootView.getId() == viewResID) {
 			return mRootView;
 		}

@@ -38,7 +38,7 @@ public class CursorListEntry extends CursorEntry {
 	 * @return
 	 */
 	public int getCount() {
-		if (mCursor == null) {
+		if (mCursor == null || mCursor.isClosed()) {
 			return 0;
 		}
 		return mCursor.getCount();

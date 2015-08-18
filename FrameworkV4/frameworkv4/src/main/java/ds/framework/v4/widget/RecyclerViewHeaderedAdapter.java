@@ -37,6 +37,9 @@ abstract public class RecyclerViewHeaderedAdapter extends RecyclerView.Adapter<R
      * @param headerView
      */
     public void setHeaderView(View headerView) {
+        if (mHeaderView == headerView) {
+            return;
+        }
         mHeaderView = headerView;
         notifyDataSetChanged();
     }
@@ -46,6 +49,9 @@ abstract public class RecyclerViewHeaderedAdapter extends RecyclerView.Adapter<R
      * @param footerView
      */
     public void setFooterView(View footerView) {
+        if (mFooterView == footerView) {
+            return;
+        }
         mFooterView = footerView;
         notifyDataSetChanged();
     }
@@ -69,6 +75,8 @@ abstract public class RecyclerViewHeaderedAdapter extends RecyclerView.Adapter<R
     }
 
     abstract public void onBindViewHolderInner(final RecyclerView.ViewHolder holder, final int position);
+
+    abstract public Object getItem(int position);
 
     @Override
     public int getItemCount() {
@@ -95,9 +103,20 @@ abstract public class RecyclerViewHeaderedAdapter extends RecyclerView.Adapter<R
         return ITEM_VIEW_TYPE_DEFAULT;
     }
 
+    /**
+     *
+     */
     public void reset() {
         notifyDataSetChanged();
     }
 
-    abstract int getCount();
+    /**
+     *
+     * @return
+     */
+    public boolean isEmpty() {
+        return getCount() == 0;
+    }
+
+    abstract public int getCount();
 }

@@ -283,14 +283,14 @@ public abstract class DSMapFragment extends MapFragment
 
 	/**
 	 * override to create the fragment view tree root<br/>
-	 * use the map view as root if null is returned (this is the default behavior)
+	 * use the map view as root if null is returned (this is the default behavior as most of the cases mRootView is null at this point)
 	 * 
 	 * @param inflater
 	 * @param container
 	 * @return
 	 */
 	protected View getRootView(LayoutInflater inflater, ViewGroup container) {
-		return null;
+		return mRootView;
 	}
 	
 	/**

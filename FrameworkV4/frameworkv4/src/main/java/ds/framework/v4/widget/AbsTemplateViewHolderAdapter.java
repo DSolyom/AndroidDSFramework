@@ -60,7 +60,7 @@ abstract public class AbsTemplateViewHolderAdapter<T> extends RecyclerViewHeader
     @Override
     public void onBindViewHolderInner(final RecyclerView.ViewHolder holder, final int position) {
         mTemplate.setRoot(holder.itemView);
-        fillRow(getItem(position), position);
+        fillRow((T) getItem(position), position);
     }
 	
 	/**
@@ -77,13 +77,6 @@ abstract public class AbsTemplateViewHolderAdapter<T> extends RecyclerViewHeader
 	 * @param data
 	 */
 	abstract protected void fillRow(T data, int position);
-
-    /**
-     *
-     * @param position
-     * @return
-     */
-    abstract T getItem(int position);
 
     /**
      * @class TemplateHolder
