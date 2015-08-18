@@ -18,6 +18,7 @@ package ds.framework.v4.widget;
 import ds.framework.v4.common.Common;
 import android.content.Context;
 import android.database.DataSetObserver;
+import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,7 +26,7 @@ import android.widget.LinearLayout;
 
 public class MiniListView extends LinearLayout {
 
-	private AbsTemplateAdapter<?> mAdapter;
+	private RecyclerViewHeaderedAdapter mAdapter;
 	private MiniListDataSetObserver mDataSetObserver = new MiniListDataSetObserver();
 
 	public MiniListView(Context context) {
@@ -41,7 +42,7 @@ public class MiniListView extends LinearLayout {
 	protected void init() {
 	}
 
-	public AbsTemplateAdapter<?> getAdapter() {
+	public RecyclerViewHeaderedAdapter getAdapter() {
 		return mAdapter;
 	}
 	
@@ -49,34 +50,32 @@ public class MiniListView extends LinearLayout {
 		return mAdapter.getCount();
 	}
 
-	public void setAdapter(AbsTemplateAdapter<?> adapter) {
+	public void setAdapter(RecyclerViewHeaderedAdapter adapter) {
 		if (adapter != null && adapter == mAdapter) {
 			mAdapter.notifyDataSetChanged();
 			return;
 		}
 
-		if (adapter == null) {
-			if (mAdapter != null) {
-				mAdapter.notifyDataSetInvalidated();
-				mAdapter.unregisterDataSetObserver(mDataSetObserver);
-				mAdapter = null;
-			}
-			return;
-		}
-				
 		if (mAdapter != null) {
-			mAdapter.notifyDataSetInvalidated();
-			mAdapter.unregisterDataSetObserver(mDataSetObserver);
+			mAdapter.unregisterAdapterDataObserver(mDataSetObserver);
+			mAdapter = null;
+		}
+
+		if (adapter == null) {
+			return;
 		}
 		
 		mAdapter = adapter;
 
 		mDataSetObserver = new MiniListDataSetObserver();
-		mAdapter.registerDataSetObserver(mDataSetObserver);
+		mAdapter.registerAdapterDataObserver(mDataSetObserver);
 		mAdapter.notifyDataSetChanged();
 	}
-	
-	class MiniListDataSetObserver extends DataSetObserver {
+
+    /**
+     * @class MiniListDataSetObserver
+     */
+	class MiniListDataSetObserver extends RecyclerView.AdapterDataObserver {
 		
 		ViewListFiller vlf;
 		
@@ -112,14 +111,6 @@ public class MiniListView extends LinearLayout {
 			// add the new views
 			vlf = new ViewListFiller(newViews);
 			vlf.run();
-		}
-		
-		@Override
-		public void onInvalidated() {
-			if (vlf != null) {
-				vlf.invalidate();
-			}
-			removeAllViews();
 		}
 		
 		class ViewListFiller implements Runnable {
@@ -160,7 +151,7 @@ public class MiniListView extends LinearLayout {
 							return;
 						}
 						try {
-							for(int i = 0; i < 60 && at < count; ++i) {
+							for(int i = 0; i < 15 && at < count; ++i) {
 								if (views[at] != null) {
 									removeViewAt(at);
 								}
@@ -182,12 +173,25 @@ public class MiniListView extends LinearLayout {
 			}
 		}
 	}
-	
+
+    /**
+     *
+     * @param position
+     * @param convertView
+     * @return
+     */
 	public View getView(int position, View convertView) {
 		LayoutParams lp;
-		convertView = mAdapter.getView(position, convertView, MiniListView.this);
+        if (convertView == null) {
+            RecyclerView.ViewHolder vh = mAdapter.onCreateViewHolder(MiniListView.this, RecyclerViewHeaderedAdapter.ITEM_VIEW_TYPE_DEFAULT);
+            convertView = vh.itemView;
+            convertView.setTag(vh);
+        }
+
 		lp = new LayoutParams(convertView.getLayoutParams());
 		convertView.setLayoutParams(lp);
+
+        mAdapter.onBindViewHolder((RecyclerView.ViewHolder) convertView.getTag(), position);
 		
 		return convertView;
 	}

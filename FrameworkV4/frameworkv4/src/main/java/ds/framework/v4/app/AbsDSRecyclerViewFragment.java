@@ -15,7 +15,6 @@
 */
 package ds.framework.v4.app;
 
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -27,8 +26,8 @@ import ds.framework.v4.R;
 import ds.framework.v4.common.Debug;
 import ds.framework.v4.data.AbsAsyncData;
 import ds.framework.v4.template.Template;
-import ds.framework.v4.widget.RecyclerViewHeaderedAdapter;
 import ds.framework.v4.widget.IRecyclerView;
+import ds.framework.v4.widget.RecyclerViewHeaderedAdapter;
 import ds.framework.v4.widget.RecyclerViewMultiAdapter;
 
 /**
@@ -60,7 +59,10 @@ abstract public class AbsDSRecyclerViewFragment extends AbsDSAsyncDataFragment {
 		
 		super.onViewCreated(rootView);
 
-        mRecyclerView = (IRecyclerView) mTemplate.findViewById(getRecyclerViewID());
+        View recyclerViewOrNot = mTemplate.findViewById(getRecyclerViewID());
+        if (recyclerViewOrNot instanceof IRecyclerView) {
+            mRecyclerView = (IRecyclerView) recyclerViewOrNot;
+        }
 	}
 	
 	@Override
@@ -110,50 +112,57 @@ abstract public class AbsDSRecyclerViewFragment extends AbsDSAsyncDataFragment {
             if (mRecyclerView.getLayoutManager() == null) {
                 mRecyclerView.setLayoutManager(createLayoutManager());
             }
-            mTemplate.fill(mRecyclerView, mAdapter, Template.ADAPTER, "");
 			
 			if (mEmptyViewResID != 0) {
 				setEmptyVisibility();
 			}
 		}
+
+        mTemplate.fill(getRecyclerViewID(), mAdapter, Template.ADAPTER, "");
 	}
 	
 	/**
 	 * 
 	 */
 	protected void setEmptyVisibility() {
-		if (mRecyclerView instanceof IRecyclerView && ((IRecyclerView) mRecyclerView).getHeaderView() != null) {
-			final View emptyView = ((IRecyclerView) mRecyclerView).getHeaderView().findViewById(mEmptyViewResID);
-			if (emptyView != null) {
-                mTemplate.fill(emptyView, shouldShowEmpty(), Template.VISIBLE, "");
-			} else {
-				mTemplate.fill(mEmptyViewResID, shouldShowEmpty(), Template.VISIBLE);
-			}
-		} else {
-			mTemplate.fill(mEmptyViewResID, shouldShowEmpty(), Template.VISIBLE);
-		}
+        final View emptyView = getEmptyView();
+        if (emptyView != null) {
+            mTemplate.fill(emptyView, shouldShowEmpty(), Template.VISIBLE, "");
+        }
+    }
+
+    /**
+     *
+     * @return
+     */
+    protected View getEmptyView() {
+		return mTemplate.findViewById(mEmptyViewResID);
 	}
-	
-	@Override
-	protected void setLoadingVisibility() {
-        if (mRecyclerView instanceof IRecyclerView && ((IRecyclerView) mRecyclerView).getHeaderView() != null) {
-            final View loadingView = ((IRecyclerView) mRecyclerView).getHeaderView().findViewById(mEmptyViewResID);
-			if (loadingView != null) {
-                mTemplate.fill(loadingView, shouldShowLoading(), Template.VISIBLE, "");
-			} else {
-				super.setLoadingVisibility();
-			}
-		} else {
-			super.setLoadingVisibility();
-		}
-	}
+
+    /**
+     *
+     */
+    protected void setLoadingVisibility() {
+        final View loadingView = getLoadingView();
+        if (loadingView != null) {
+            mTemplate.fill(loadingView, shouldShowLoading(), Template.VISIBLE, "");
+        }
+    }
+
+    /**
+     *
+     * @return
+     */
+    protected View getLoadingView() {
+        return mTemplate.findViewById(mLoadingViewResID);
+    }
 	
 	/**
 	 * 
 	 * @return
 	 */
 	public boolean isListEmpty() {
-		if (shouldShowLoading() || (mAdapter != null && mAdapter.getItemCount() != 0)) {
+		if (shouldShowLoading() || (mAdapter != null && mAdapter.getCount() != 0)) {
 			return false;
 		}
 		if (mData != null)
@@ -173,20 +182,9 @@ abstract public class AbsDSRecyclerViewFragment extends AbsDSAsyncDataFragment {
 		return isListEmpty();
 	}
 	
-	/**
-	 * 
-	 * @return
-	 */
-	protected boolean isListDataValid() {
-		return mData != null 
-				&& mData.length > 0 
-				&& (mData[0] instanceof AbsRecyclerViewData)
-				&& ((AbsRecyclerViewData) mData[0]).isValid();
-	}
-	
 	@Override
 	protected boolean shouldShowLoading() {
-		return (mRecyclerView != null && (mAdapter == null || mAdapter.getItemCount() == 0)) && super.shouldShowLoading();
+		return (mRecyclerView != null && (mAdapter == null || mAdapter.getCount() == 0)) && super.shouldShowLoading();
 	}
 	
 	@Override
@@ -217,31 +215,35 @@ abstract public class AbsDSRecyclerViewFragment extends AbsDSAsyncDataFragment {
 	 * 
 	 */
 	protected void addListHeadersAndFooters() {
-		final View RecyclerView = getRecyclerView();
-		if (!(RecyclerView instanceof IRecyclerView)) {
+		final View recyclerView = getRecyclerView();
+		if (!(recyclerView instanceof IRecyclerView)) {
 			return;
 		}
+        final IRecyclerView irecyclerView = (IRecyclerView) recyclerView;
+        if (irecyclerView.getHeaderView() != null || irecyclerView.getFooterView() != null) {
+            return;
+        }
 		
 		View listHeader = createHeaderView();
 		if (listHeader != null && (!(listHeader instanceof ViewGroup) || ((ViewGroup) listHeader).getChildCount() > 0)) {
-			if (((IRecyclerView) RecyclerView).getHeaderView() == null) {
-				final ViewGroup headerParent = ((ViewGroup) listHeader.getParent());
-				if (headerParent != null) {
-					headerParent.removeView(listHeader);
-				}
-				((IRecyclerView) RecyclerView).setHeaderView(listHeader);
-			}
+            final ViewGroup headerParent = ((ViewGroup) listHeader.getParent());
+            if (headerParent != null) {
+                headerParent.removeView(listHeader);
+            }
+            (irecyclerView).setHeaderView(listHeader);
+
+            mTemplate.addOtherRoot(listHeader);
 		}
 
         View listFooter = createFooterView();
         if (listFooter != null && (!(listFooter instanceof ViewGroup) || ((ViewGroup) listFooter).getChildCount() > 0)) {
-            if (((IRecyclerView) RecyclerView).getFooterView() == null) {
-                final ViewGroup FooterParent = ((ViewGroup) listFooter.getParent());
-                if (FooterParent != null) {
-                    FooterParent.removeView(listFooter);
-                }
-                ((IRecyclerView) RecyclerView).setFooterView(listFooter);
+            final ViewGroup FooterParent = ((ViewGroup) listFooter.getParent());
+            if (FooterParent != null) {
+                FooterParent.removeView(listFooter);
             }
+            (irecyclerView).setFooterView(listFooter);
+
+            mTemplate.addOtherRoot(listFooter);
         }
 	}
 	

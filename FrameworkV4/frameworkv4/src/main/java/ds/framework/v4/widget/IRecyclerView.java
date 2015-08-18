@@ -74,4 +74,5 @@ public class IRecyclerView extends RecyclerView {
     public View getFooterView() {
         return mFooterView;
     }
+
 }

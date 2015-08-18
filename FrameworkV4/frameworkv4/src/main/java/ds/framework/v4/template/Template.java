@@ -60,13 +60,13 @@ import ds.framework.v4.datatypes.Datatype;
 import ds.framework.v4.datatypes.Transport;
 import ds.framework.v4.datatypes.WInteger;
 import ds.framework.v4.datatypes.WString;
-import ds.framework.v4.widget.AbsTemplateAdapter;
 import ds.framework.v4.widget.BothScrollView;
 import ds.framework.v4.widget.HtmlTextView;
 import ds.framework.v4.widget.IRecyclerView;
 import ds.framework.v4.widget.LaizyImageFlipAnimationLayout;
 import ds.framework.v4.widget.LaizyImageView;
 import ds.framework.v4.widget.MiniListView;
+import ds.framework.v4.widget.RecyclerViewHeaderedAdapter;
 import ds.framework.v4.widget.TemplateRecyclerViewAdapter;
 import ds.framework.v4.widget.LaizyImageView.LaizyImageViewInfo;
 
@@ -166,6 +166,7 @@ public class Template {
 
 	private ActivityInterface mOwner;
 	private View mRootView;
+    private ArrayList<View> mOtherRoots;
 	
 	public Template(ActivityInterface owner, View rootView) {
 		mOwner = owner;
@@ -203,7 +204,16 @@ public class Template {
 		if (viewResID == 0 || mRootView.getId() == viewResID) {
 			return mRootView;
 		}
-		return mRootView.findViewById(viewResID);
+		View v = mRootView.findViewById(viewResID);
+        if (v == null && mOtherRoots != null) {
+            for(View root : mOtherRoots) {
+                v = root.findViewById(viewResID);
+                if (v != null) {
+                    break;
+                }
+            }
+        }
+        return v;
 	}
 	
 	public Object fill(int viewRes, Object value) {
@@ -444,7 +454,7 @@ public class Template {
 							((BaseAdapter) value).notifyDataSetChanged();
 						}
 					} else if (view instanceof MiniListView) {
-						((MiniListView) view).setAdapter((AbsTemplateAdapter<?>) value);
+						((MiniListView) view).setAdapter((RecyclerViewHeaderedAdapter) value);
 					} else if (view instanceof ViewPagerModByDS) {
 						((ViewPagerModByDS) view).setAdapter((PagerAdapter) value);
 					}
@@ -844,8 +854,28 @@ public class Template {
 		return TEXT;
 	}
 
+    /**
+     *
+     * @param view
+     */
 	public void setRoot(View view) {
 		mRootView = view;
 	}
 
+    /**
+     *
+     */
+    public void clearOtherRoots() {
+        mOtherRoots = null;
+    }
+
+    /**
+     *
+     */
+    public void addOtherRoot(View rootView) {
+        if (mOtherRoots == null) {
+            mOtherRoots = new ArrayList();
+        }
+        mOtherRoots.add(rootView);
+    }
 }

@@ -31,7 +31,7 @@ abstract public class AbsDSAsyncDataFragment extends DSFormFragment
 	private int mAsyncDataLoadState;
 	private boolean mInLoadData = false;
 
-	private int mLoadingViewResID;
+	protected int mLoadingViewResID;
 	
 	public AbsDSAsyncDataFragment() {
 		super();
