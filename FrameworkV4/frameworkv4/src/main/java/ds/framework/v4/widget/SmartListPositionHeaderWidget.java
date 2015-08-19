@@ -1,22 +1,32 @@
 package ds.framework.v4.widget;
 
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.widget.AbsListView;
-import android.widget.AbsListView.OnScrollListener;
-import android.widget.ListView;
 
-public class SmartListPositionHeaderWidget implements OnScrollListener {
+public class SmartListPositionHeaderWidget extends RecyclerView.OnScrollListener {
 
 	private Integer mSavedFirstChildTop;
 	private int mSavedFirstVisibleItem;
 	
 	@Override
-	public void onScroll(AbsListView view, int firstVisibleItem,
-			int visibleItemCount, int totalItemCount) {
+	public void onScrolled(RecyclerView view, int dx, int dy) {
 
-		if (visibleItemCount == 0) {
-			return;
-		}
-		final int fcTop = ((ListView) view).getChildAt(0).getTop();
+        final RecyclerView.LayoutManager lm = view.getLayoutManager();
+		int firstVisibleItem = 0;
+
+        if (lm instanceof LinearLayoutManager) {
+            firstVisibleItem = ((LinearLayoutManager) view.getLayoutManager()).findFirstVisibleItemPosition();
+        } else if (lm instanceof GridLayoutManager) {
+            firstVisibleItem = ((GridLayoutManager) view.getLayoutManager()).findFirstVisibleItemPosition();
+        } else {
+
+            // TODO: ?
+            return;
+        }
+
+		final int fcTop = view.getChildAt(0).getTop();
 		if (mSavedFirstChildTop == null || 
 				mSavedFirstChildTop == fcTop && mSavedFirstVisibleItem == firstVisibleItem) {
 			mSavedFirstChildTop = fcTop;
@@ -30,8 +40,7 @@ public class SmartListPositionHeaderWidget implements OnScrollListener {
 	}
 
 	@Override
-	public void onScrollStateChanged(AbsListView view,
-			int scrollState) {
+	public void onScrollStateChanged(RecyclerView view, int newState) {
 		;
 	}
 

@@ -29,7 +29,7 @@ import ds.framework.v4.io.ImageLoader;
 
 public class Global {
 	
-	static Global sInstance;
+	protected static Global sInstance;
 	
 	static ArrayList<Activity> sActivities = new ArrayList<Activity>();
 
@@ -63,14 +63,6 @@ public class Global {
 	
 	/**
 	 * 
-	 * @return
-	 */
-	public static void setInstance(Global instance) {
-		sInstance = instance;
-	}
-	
-	/**
-	 * 
 	 */
 	public Global() {
 		;
@@ -87,7 +79,7 @@ public class Global {
 	        ApplicationInfo appinfo = pm.getApplicationInfo(context.getPackageName(), 0);
 	        sInstance.mDEBUG = (0 != (appinfo.flags &= ApplicationInfo.FLAG_DEBUGGABLE));
 	    } catch(Throwable e) {
-	        ;
+	        e.printStackTrace();
 	    }
 	    
 	    sInstance.mIsLargeScreen = context.getResources().getBoolean(R.bool.screen_large); 

@@ -78,6 +78,18 @@ public class RecyclerViewMultiAdapter extends RecyclerViewHeaderedAdapter {
         return mAdapters;
     }
 
+    /**
+     *
+     * @return
+     */
+    public RecyclerViewHeaderedAdapter getAdapter(int position) {
+        try {
+            return mAdapters.get(position);
+        } catch(IndexOutOfBoundsException e) {
+            return null;
+        }
+    }
+
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         final RecyclerView.ViewHolder holder = super.onCreateViewHolder(parent, viewType);
@@ -117,11 +129,11 @@ public class RecyclerViewMultiAdapter extends RecyclerViewHeaderedAdapter {
         mAdapterStartPositions.clear();
         for(RecyclerViewHeaderedAdapter adapter : mAdapters) {
             mAdapterStartPositions.add(mItemCount);
-            mItemCount += adapter.getCount();
+            mItemCount += adapter.getItemCount();
         }
     }
 
-    private AdapterInfo getAdapterInfoFor(int position) {
+    protected AdapterInfo getAdapterInfoFor(int position) {
         final AdapterInfo ai = new AdapterInfo();
         final int aS = mAdapters.size();
         for(int i = 1; i < aS; ++i) {
@@ -140,9 +152,9 @@ public class RecyclerViewMultiAdapter extends RecyclerViewHeaderedAdapter {
     /**
      * @class AdapterInfo
      */
-    private class AdapterInfo {
-        int index;
-        int startPosition;
+    public class AdapterInfo {
+        public int index;
+        public int startPosition;
     }
 
     /**

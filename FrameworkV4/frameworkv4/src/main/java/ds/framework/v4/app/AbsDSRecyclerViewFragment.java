@@ -35,7 +35,7 @@ import ds.framework.v4.widget.RecyclerViewMultiAdapter;
  * 
  * A Fragment (might) having a recylcer view which data (might) be loadad asynchronously<br/>
  * !note: AbsRecyclerViewData's will 'fill' adapters in order of appearance in onDataLoaded<br/>
- * and should only be as many as adapters when using RecyclerViewMultiAdapter and only one with any other adapter
+ * and should be exactly as many data objects as adapters when using RecyclerViewMultiAdapter and only one with any other adapter
  */
 abstract public class AbsDSRecyclerViewFragment extends AbsDSAsyncDataFragment {
 
@@ -43,7 +43,7 @@ abstract public class AbsDSRecyclerViewFragment extends AbsDSAsyncDataFragment {
 
 	private int mEmptyViewResID;
 
-	protected RecyclerView mRecyclerView;
+	protected View mRecyclerAdapterView;
 
 	public AbsDSRecyclerViewFragment() {
 		super();
@@ -55,14 +55,11 @@ abstract public class AbsDSRecyclerViewFragment extends AbsDSAsyncDataFragment {
 	
 	@Override
 	protected void onViewCreated(View rootView) {
-        mRecyclerView = null;
-		
-		super.onViewCreated(rootView);
+        mRecyclerAdapterView = null;
 
-        View recyclerViewOrNot = mTemplate.findViewById(getRecyclerViewID());
-        if (recyclerViewOrNot instanceof IRecyclerView) {
-            mRecyclerView = (IRecyclerView) recyclerViewOrNot;
-        }
+        super.onViewCreated(rootView);
+
+        mRecyclerAdapterView = mTemplate.findViewById(getRecyclerViewID());
 	}
 	
 	@Override
@@ -86,16 +83,16 @@ abstract public class AbsDSRecyclerViewFragment extends AbsDSAsyncDataFragment {
             } else if (mData.length > 0 && data == mData[0]){
                 setAdapterData(mAdapter, (AbsRecyclerViewData) data, loadId);
             }
-		}
-		
-		super.onDataLoaded(data, loadId);
+        }
+
+        super.onDataLoaded(data, loadId);
 	}
 		
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
 
-		invalidateAdapter(mAdapter);
+        invalidateAdapter(mAdapter);
 	}
 	
 	@Override
@@ -106,19 +103,21 @@ abstract public class AbsDSRecyclerViewFragment extends AbsDSAsyncDataFragment {
 		
 		super.display();
 
-		if (mRecyclerView != null) {
-            addListHeadersAndFooters();
+		if (mRecyclerAdapterView != null) {
+            if (mRecyclerAdapterView instanceof RecyclerView) {
+                addListHeadersAndFooters();
 
-            if (mRecyclerView.getLayoutManager() == null) {
-                mRecyclerView.setLayoutManager(createLayoutManager());
+                if (((RecyclerView) mRecyclerAdapterView).getLayoutManager() == null) {
+                    ((RecyclerView) mRecyclerAdapterView).setLayoutManager(createLayoutManager());
+                }
             }
 			
 			if (mEmptyViewResID != 0) {
 				setEmptyVisibility();
 			}
-		}
 
-        mTemplate.fill(getRecyclerViewID(), mAdapter, Template.ADAPTER, "");
+			mTemplate.fill(mRecyclerAdapterView, mAdapter, Template.ADAPTER, "");
+		}
 	}
 	
 	/**
@@ -184,7 +183,7 @@ abstract public class AbsDSRecyclerViewFragment extends AbsDSAsyncDataFragment {
 	
 	@Override
 	protected boolean shouldShowLoading() {
-		return (mRecyclerView != null && (mAdapter == null || mAdapter.getCount() == 0)) && super.shouldShowLoading();
+		return (mRecyclerAdapterView != null && (mAdapter == null || mAdapter.getCount() == 0)) && super.shouldShowLoading();
 	}
 	
 	@Override
@@ -279,10 +278,10 @@ abstract public class AbsDSRecyclerViewFragment extends AbsDSAsyncDataFragment {
 	}
 	
 	public View getRecyclerView() {
-		if (mRecyclerView == null) {
-			mRecyclerView = (RecyclerView) mTemplate.findViewById(getRecyclerViewID());
+		if (mRecyclerAdapterView == null) {
+			mRecyclerAdapterView = (RecyclerView) mTemplate.findViewById(getRecyclerViewID());
 		}
-		return mRecyclerView;
+		return mRecyclerAdapterView;
 	}
 	
     /**

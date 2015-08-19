@@ -47,13 +47,15 @@ public abstract class CursorListAdapter extends AbsTemplateViewHolderAdapter<Cur
 	public void setCursor(Cursor c) {
         if (mCLE == null) {
             mCLE = new CursorListEntry(c);
-            return;
         } else if (c == mCLE.getCursor()) {
             return;
+        } else {
+            mCLE.setCursor(c);
         }
-        mCLE.setCursor(c);
 
         mData = null;
+
+		notifyDataSetChanged();
 	}
 
 	@Override
