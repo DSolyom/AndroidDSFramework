@@ -102,6 +102,13 @@ abstract public class Db {
 		
 		++openCount;
 	}
+
+	/**
+	 *
+	 */
+	synchronized public boolean isClosed() {
+		return openCount == 0;
+	}
 	
 	/**
 	 * decrease close count and close the database if it is reached zero

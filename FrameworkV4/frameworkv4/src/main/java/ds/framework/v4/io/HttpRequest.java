@@ -674,7 +674,7 @@ public class HttpRequest {
 	 * 
 	 */
 	public String toString() {
-		return getResponse(false) + " - " + mStatusCode;
+		return mUrl;
 	}
 	
 	/**
@@ -692,7 +692,7 @@ public class HttpRequest {
 			throw(e);
 		}
 	}
-	
+
 	public String getResponse(boolean nullIfNotOk) {
 		try {
 			if (nullIfNotOk && mStatusCode != HttpStatus.SC_OK) {

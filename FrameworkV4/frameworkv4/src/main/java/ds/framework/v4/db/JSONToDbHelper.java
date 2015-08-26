@@ -168,7 +168,7 @@ public class JSONToDbHelper {
 				}
 				
 				android.util.Log.e("Bad data format", "table: " + table.getName() + " / column: " + mColumns[i].name + " / value: " + valStr);
-				android.util.Log.e("Bad data format - row verson", row.toString());
+				android.util.Log.e("Bad data format (raw)", row.toString());
 			}
 		}
 		

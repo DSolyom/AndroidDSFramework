@@ -103,6 +103,8 @@ public class Global {
 		
 		if (a == null) {
 			Global.removeRegisteredDialog();
+		} else {
+			sInstance.mContext = a.getApplicationContext();
 		}
 	}
 	
