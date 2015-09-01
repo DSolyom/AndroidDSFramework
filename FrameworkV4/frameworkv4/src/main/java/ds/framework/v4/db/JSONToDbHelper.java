@@ -35,10 +35,32 @@ public class JSONToDbHelper {
 			}
 		}
 	}
-	
+
+    /**
+     *
+     * @param ih
+     * @param table
+     * @param row
+     * @param lJSONToDbValueInterface
+     * @return
+     */
 	public int bind(InsertHelper ih, Table table, JSONObject row, 
 			JSONToDbValueInterface lJSONToDbValueInterface) {
-		
+
+        return bind(ih, table, row, lJSONToDbValueInterface, false);
+    }
+
+    /**
+     *
+     * @param ih
+     * @param table
+     * @param row
+     * @param lJSONToDbValueInterface
+     * @param implicitOverrideNull
+     * @return
+     */
+    public int bind(InsertHelper ih, Table table, JSONObject row,
+                    JSONToDbValueInterface lJSONToDbValueInterface, boolean implicitOverrideNull) {
 		final int cc = mColumns.length;
 		
 		int id = -1;
@@ -52,16 +74,14 @@ public class JSONToDbHelper {
 				if (mColumns[i] == null) {
 					continue;
 				}
-				if (!row.has(mColumns[i].name) && (mColumns[i].type & Table.NULL) > 0) {
+				if (((!row.has(mColumns[i].name) && implicitOverrideNull) || row.isNull(mColumns[i].name)) && (mColumns[i].type & Table.NULL) > 0) {
 					ih.bindNull(mColumnsPosition[i]);
-//Debug.logD("JSONToDb", "binding null for " + mColumns[i].name);						
+//Debug.logD("JSONToDb", "binding null for " + mColumns[i].name);
 					continue;
 				}
-				if (row.isNull(mColumns[i].name)) {
-					ih.bindNull(mColumnsPosition[i]);
-//Debug.logD("JSONToDb", "binding null for " + mColumns[i].name);						
-					continue;
-				}
+                if (!row.has(mColumns[i].name)) {
+                    continue;
+                }
 				
 				if ((mColumns[i].type & Table.INTEGER) > 0) {
 					int val;
@@ -109,7 +129,9 @@ public class JSONToDbHelper {
 						type = Table.REAL;
 					}
 				} else {
-					final String val = row.getString(mColumns[i].name);
+
+					// this way it can either be a string, a jsonobject, etc...
+					final Object val = row.get(mColumns[i].name).toString();
 					value = val;
 					
 					type = Table.TEXT;
