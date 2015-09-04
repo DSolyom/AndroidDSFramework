@@ -22,6 +22,9 @@
     <dimen name="list_row_height_two_lines">72dp</dimen>
     <dimen name="list_row_height_three_lines">96dp</dimen>
     <dimen name="list_row_half_height">32dp</dimen>
+
+    <dimen name="padding_dialog">24dp</dimen>
+    <dimen name="dialog_question_height">@dimen/list_row_height</dimen>
     
     <dimen name="shadow_height">6dp</dimen>
 

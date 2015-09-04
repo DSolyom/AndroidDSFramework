@@ -1,14 +1,14 @@
 package ds.framework.v4.app;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 abstract public class DSFragmentSwitcherFragment extends DSFragment {
 
@@ -172,8 +172,8 @@ abstract public class DSFragmentSwitcherFragment extends DSFragment {
 	}
 	
 	@Override
-	public void setActive(boolean active) {
-		super.setActive(active);
+	protected void setActiveInner(boolean active) {
+		super.setActiveInner(active);
 		
 		if (active && getDSActivity() != null) {
 			switchToFragment(mCurrentFragmentPosition);

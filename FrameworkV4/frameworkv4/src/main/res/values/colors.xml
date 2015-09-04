@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="background">#ffffff</color> 
+    <color name="primary">#FF6464</color>
+    <color name="secondary">#90FF6464</color>
+    <color name="primary_semi_transparent">#60FF6464</color>
+
+    <color name="background">#fefefe</color>
+    <color name="foreground">#ffffff</color>
     <color name="text">#f3f3f3</color>
     <color name="subtext">#bebebe</color>
 	<color name="title">#33b5e5</color>
@@ -9,7 +14,7 @@
 	<color name="text_on_image">@color/text</color>
 	<color name="text_on_image_shadow">@color/text_inverse</color>
 	
-	<color name="actionbar_bg">#333333</color>
+	<color name="actionbar_bg">@color/primary</color>
 	<color name="actionbar_text">#f3f3f3</color>
 	<color name="actionbar_title">#33b5e5</color>
 	<color name="actionbar_dialog_bg">@color/actionbar_bg</color>
@@ -30,6 +35,13 @@
 	<color name="shadow_semidark">#40000000</color>
 	<color name="shadow_semilight">#10000000</color>
 	<color name="shadow_light">#00000000</color>
+
+	<color name="separator">#E0E0E0</color>
 	
 	<color name="dialog_transparent">#50000000</color>
+    <color name="dialog_title">@color/text</color>
+    <color name="dialog_text">@color/subtext</color>
+	<color name="dialog_button_text_normal">@color/primary</color>
+    <color name="dialog_button_text_pressed">@color/secondary</color>
+    <color name="dialog_button_text_disabled">@color/primary_semi_transparent</color>
 </resources>

@@ -15,8 +15,6 @@
 */
 package ds.framework.v4.app;
 
-import java.util.HashMap;
-
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.DialogFragment;
@@ -27,6 +25,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+
+import java.util.HashMap;
+
 import ds.framework.v4.R;
 import ds.framework.v4.app.widget.SearchActionView;
 import ds.framework.v4.app.widget.SearchActionView.OnSearchActionListener;
@@ -38,9 +39,9 @@ abstract public class DSFragment extends DialogFragment
 	public final static int DATA_INVALID = 0;
 	public final static int DATA_LOADING = 1;
 	public final static int DATA_LOADED = 2;
-
+	
 	public final static int DATA_DISPLAYED = 4;
-
+	
 	/**
 	 * the current data state<br/>
 	 * <br/>
@@ -50,7 +51,7 @@ abstract public class DSFragment extends DialogFragment
 	 * DATA_DISPLAYED - data is loaded and displayed
 	 */
 	protected int mDataState = DATA_INVALID;
-
+	
 	protected Template mTemplate;
 
 	/**
@@ -63,17 +64,12 @@ abstract public class DSFragment extends DialogFragment
      * title of the fragment - used when a fragment can have it's own title (ie. in a viewpager-tab context)
      */
     protected String mFragmentTitle;
-
-    /**
-     * ths root view's layout resource id (to be inflated)
-     */
-    protected int mRootViewLayoutResID;
-
+	
 	/**
 	 * the root view in the fragment's view hierarchy
 	 */
 	protected View mRootView;
-
+	
 	/**
 	 * is fragment state restored?
 	 */
@@ -83,157 +79,160 @@ abstract public class DSFragment extends DialogFragment
 	 * flag to tell if the fragment is active when resumed<br/>
 	 * set to true as default
 	 */
-	protected boolean mActiveDefault = true;
+	protected boolean mActiveWhenAttached = true;
 
 	protected boolean mActive = false;
-
+	
 	/**
 	 * map of sub fragments
 	 */
 	private final HashMap<Integer, DSFragment> mSubFragments = new HashMap<Integer, DSFragment>();
-
+	
 	/**
 	 * parent fragment of subfragment
 	 */
 	private DSFragment mParent;
-
+	
 	/**
 	 * root view id of subfragment (only used if mContainerViewID is unset)
 	 */
 	private Integer mRootViewID;
-
+	
 	/**
 	 * parent of root view for subfragment
 	 */
 	private Integer mContainerViewID;
-
+	
 	/**
 	 * are action bar items created
 	 */
 	boolean mActionBarItemsCreated;
-
+	
 	/**
 	 * can search content using action bar SearchView
 	 */
 	protected boolean mSearchable;
-
+	
 	/**
 	 * hint for search if mSearchable = true
 	 */
 	protected String mSearchHint;
-
+	
 	private String mSearchText;
 	MenuItem mMenuSearchItem;
 	private boolean mSearchOpened;
-
+	
 	/**
 	 * should remove search text and reset search when back pressed while searching?
 	 */
 	protected boolean mRemoveSearchOnBack = true;
-
+	
 	/**
-	 *
+	 * 
 	 */
 	public DSFragment() {
 		super();
-
+		
 		setShowsDialog(false);
 	}
-
+	
 	/**
-	 *
+	 * 
 	 * @param isDialog
 	 */
 	public DSFragment(boolean isDialog) {
 		super();
-
-        setShowsDialog(isDialog);
+		
+		setShowsDialog(isDialog);
 	}
-
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
+		super.onCreate(savedInstanceState);
+		
 		if (savedInstanceState != null) {
 			onRestoreInstanceState(savedInstanceState);
 		}
 	}
-
+	
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
-
+		
 		if (mFragmentId == null) {
 			mFragmentId = getTag();
 		}
 
-		mActive = mActiveDefault;
-
+		mActive = mActiveWhenAttached;
+		
 		((DSActivity) activity).onFragmentAttached(this);
-
+		
 		attachSubFragmentsInner();
 	}
-
+	
 	/**
-	 *
+	 * 
 	 */
+    @Override
 	public void onDetach() {
 		mActive = false;
 
+        getDSActivity().onFragmentDetached(this);
+
 		super.onDetach();
 	}
-
+	
 	/**
-	 *
+	 * 
 	 */
 	final public void attachSubFragmentsInner() {
 		if (mSubFragments.isEmpty()) {
 			attachSubFragments();
 		}
 	}
-
+	
 	/**
 	 * Override to attach sub fragments
 	 */
 	public void attachSubFragments() {
 		;
 	}
-
+	
 	/**
-	 *
+	 * 
 	 * @return
 	 */
 	public HashMap<Integer, DSFragment> getSubFragments() {
 		return mSubFragments;
 	}
-
+	
 	/**
-	 *
+	 * 
 	 * @param containerResID
 	 * @return
 	 */
 	public DSFragment findSubFragmentByContainer(int containerResID) {
 		return mSubFragments.get(containerResID);
 	}
-
+	
 	/**
-	 *
+	 * 
 	 * @param parent
 	 */
 	protected void setParent(DSFragment parent) {
 		mParent = parent;
 	}
-
+	
 	/**
-	 *
+	 * 
 	 * @return
 	 */
 	public DSFragment getParent() {
 		return mParent;
 	}
-
+	
 	/**
-	 *
+	 * 
 	 * @return
 	 */
 	public DSActivity getDSActivity() {
@@ -242,10 +241,10 @@ abstract public class DSFragment extends DialogFragment
 		}
 		return (DSActivity) getActivity();
 	}
-
+	
 	/**
 	 * attach subfragment
-	 *
+	 * 
 	 * @param containerViewID
 	 * @param fragment
 	 * @param name
@@ -257,38 +256,38 @@ abstract public class DSFragment extends DialogFragment
 		mSubFragments.put(containerViewID, fragment);
 		fragment.setParent(this);
 	}
-
+	
 	/**
-	 *
+	 * 
 	 * @param id
 	 */
 	public void setRootViewID(int id) {
 		mRootViewID = id;
 	}
-
+	
 	/**
-	 *
+	 * 
 	 * @param id
 	 */
 	public void setContainerViewID(int id) {
 		mContainerViewID = id;
 	}
-
+	
 	/**
-	 *
+	 * 
 	 */
 	public Integer getContainerViewID() {
 		return mContainerViewID;
 	}
-
+	
 	/**
-	 *
+	 * 
 	 * @param rootView
 	 */
 	public void setRootView(View rootView) {
 		mRootView = rootView;
 	}
-
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		if (savedInstanceState != null && !mStateRestored) {
@@ -299,7 +298,7 @@ abstract public class DSFragment extends DialogFragment
 		mRootView = getRootView(inflater, container);
 
 		onViewCreated(mRootView);
-
+		
 		for(Integer containerViewID : mSubFragments.keySet()) {
 			final DSFragment subfragment = mSubFragments.get(containerViewID);
 			if (containerViewID != null) {
@@ -310,14 +309,14 @@ abstract public class DSFragment extends DialogFragment
 			}
 			subfragment.onViewCreated(mRootView);
 		}
-
-		loadData(true);
+		
+		loadData(true);	
 
 		display(true);
-
+		
 		return mRootView;
 	}
-
+	
 	/**
 	 * called from onCreateView after root view is created and started data loading but before display
 	 */
@@ -329,10 +328,10 @@ abstract public class DSFragment extends DialogFragment
 				mRootView = rootView;
 			}
 		}
-
+		
 		mTemplate = createTemplate();
 	}
-
+	
 	protected Template createTemplate() {
 		return new Template((ActivityInterface) getDSActivity(), mRootView);
 	}
@@ -342,116 +341,104 @@ abstract public class DSFragment extends DialogFragment
 		if (mParent == null) {
 			super.onResume();
 		}
-
+		
 		final DSActivity activity = getDSActivity();
 		if (mActive && activity.getOptionsMenu() != null) {
-
+			
 			// only handle options menu if active
 			createAndHandleOptionsMenu(activity);
 		}
-
+	
 		loadDataAndDisplay();
-
+		
 		for(DSFragment subfragment : mSubFragments.values()) {
-            subfragment.onResume();
+			subfragment.onResume();
 		}
 	}
-
+	
 	@Override
 	public void onPause() {
 		if (mParent == null) {
 			super.onPause();
 		}
-
+		
 		for(DSFragment subfragment : mSubFragments.values()) {
-            subfragment.onPause();
+			subfragment.onPause();
 		}
 	}
 
 	@Override
 	public void onDestroyView() {
 		if (mParent == null) {
-            super.onDestroyView();
+			super.onDestroyView();
 		}
-
+		
 		mTemplate = null;
 		mRootView = null;
 		if (mDataState == DATA_DISPLAYED) {
 			mDataState = DATA_LOADED;
 		}
-
+		
 		for(DSFragment subfragment : mSubFragments.values()) {
 			subfragment.onDestroyView();
 		}
 	}
-
+	
 	@Override
 	public void onDestroy() {
 		if (mParent == null) {
 			super.onDestroy();
 		}
-
+		
 		mDataState = DATA_INVALID;
-
+		
 		for(DSFragment subfragment : mSubFragments.values()) {
 			subfragment.onDestroy();
 		}
 	}
-
+	
 	/**
-	 *
+	 * 
 	 * @return
 	 */
 	public View getRootView() {
 		return mRootView;
 	}
 
-	/**
-	 *
-	 * @param inflater
-	 * @param container
-	 * @return
-	 */
-	protected View getRootView(LayoutInflater inflater, ViewGroup container) {
-        if (mRootViewLayoutResID != 0) {
-            final View rootView = inflater.inflate(mRootViewLayoutResID, container, false);
-            return rootView;
-        }
-        return null;
-    }
-
+	abstract protected View getRootView(LayoutInflater inflater, ViewGroup container);
+	
 	/**
 	 * set the fragment id prior attach
-	 *
+	 * 
 	 * @param id
 	 */
 	public void setFragmentId(String id) {
 		mFragmentId = id;
 	}
-
+	
 	/**
-	 *
+	 * 
 	 * @return
 	 */
 	public String getFragmentId() {
 		return mFragmentId;
 	}
 
-    /**
-     *
-     * @return
-     */
-    public String getFragmentTitle() {
-        return mFragmentTitle;
-    }
+	/**
+	 *
+	 * @return
+	 */
+	public String getFragmentTitle() {
+		return mFragmentTitle;
+	}
 
-    /**
-     *
-     * @param title
-     */
-    public void setFragmentTitle(String title) {
-        mFragmentTitle = title;
-    }
+	/**
+	 *
+	 * @param title
+	 */
+	public void setFragmentTitle(String title) {
+		mFragmentTitle = title;
+	}
 	
 	/**
 	 * get rootView's or container activity's context
@@ -712,17 +699,37 @@ abstract public class DSFragment extends DialogFragment
 			subfragment.onTransport(data);
 		}
 	}
-	
-	/**
-	 * use this if any activation required (like when using a view pager)
-	 * 
-	 * @param active
-	 */
-	public void setActive(boolean active) {
-		mActiveDefault = active;
+
+
+    @Override
+    public void setMenuVisibility(boolean visible) {
+        super.setMenuVisibility(visible);
+
+        // also set this to be as active as visible
+        setActiveInner(visible);
+    }
+
+    /**
+     *
+     * @param active
+     */
+    final public void setActive(boolean active) {
+        setMenuVisibility(active);
+    }
+
+    /**
+     *
+     * @param active
+     */
+    protected void setActiveInner(boolean active) {
+
+		// change active when attached to active to handle cases where setActiveInner is called before attaching (onAttach)
+		mActiveWhenAttached = active;
+
+        final DSActivity activity = getDSActivity();
 		
-		if (!active || isAdded()) {
-			mActive = mActiveDefault;
+		if (!mActiveWhenAttached || activity != null) {
+			mActive = mActiveWhenAttached;
 		}
 		
 		if (!mActive) {
@@ -730,9 +737,7 @@ abstract public class DSFragment extends DialogFragment
 		}
 
 		setActiveSubFragments(active);
-		
-		final DSActivity activity = getDSActivity();
-		
+
 		if (activity == null) {
 			return;
 		}
@@ -740,6 +745,10 @@ abstract public class DSFragment extends DialogFragment
 		if (activity.getOptionsMenu() != null) {
 			createAndHandleOptionsMenu(activity);
 		}
+
+        if (active) {
+            loadDataAndDisplay();
+        }
 	}
 	
 	/**
@@ -751,8 +760,10 @@ abstract public class DSFragment extends DialogFragment
 			mActionBarItemsCreated = true;
 			createActionBarItems(activity.getOptionsMenu());
 		}
-		
-		handleActionBarItems(mActive);
+
+        if (mActive) {
+            handleActionBarItems(mActive);
+        }
 	}
 
 	/**
@@ -871,7 +882,8 @@ abstract public class DSFragment extends DialogFragment
 	}
 	
 	/**
-	 * create action bar items for the first time (called from setActive(true))
+	 * create action bar items for the first time<br/>
+     * be sure to set item visibility too here if the fragment could be not active when this called
 	 * 
 	 * @param menu
 	 */
@@ -880,9 +892,9 @@ abstract public class DSFragment extends DialogFragment
 		if (mSearchable) {
 			if (activity.findMenuItem(R.string.x_Search) == null) {
 				final MenuItem searchItem = activity.addMenuItem(
-						R.string.x_Search, 
-						R.string.x_Search, 
-						R.drawable.x_ic_action_search, 
+						R.string.x_Search,
+						R.string.x_Search,
+						R.drawable.x_ic_action_search,
 						0, 
 						false
 				);
@@ -901,7 +913,8 @@ abstract public class DSFragment extends DialogFragment
 	}
 	
 	/**
-	 * handle action bar items (visibility etc...) (called from setActive after changing state)
+	 * handle action bar items (visibility etc...) (called from setActive after changing state)<br/>
+     * !note: only called for active fragments after changing active state
 	 *
 	 * @param active
 	 */
@@ -909,26 +922,34 @@ abstract public class DSFragment extends DialogFragment
 		if (!mSearchable) {
 			return;
 		}
-		
+
 		final DSActivity activity = getDSActivity();
-		
+
 		if (activity == null) {
 			return;
 		}
-		
+
 		final MenuItem searchItem = activity.findMenuItem(R.string.x_Search);
 		if (searchItem != null) {
 			final SearchActionView searchActionView = (SearchActionView) searchItem.getActionView();
 			searchActionView.setHint(mSearchHint);
 			searchActionView.setOnSearchActionListener(this);
 			searchItem.setVisible((active || mSearchOpened) && mSearchable);
-			
+
 			if (!searchActionView.isOpen() && mSearchText != null && mSearchText.length() > 0 && mSearchOpened) {
 				searchActionView.setSearchText(mSearchText);
 				searchActionView.open();
 			}
 		}
 	}
+
+    /**
+     *
+     * @return
+     */
+    protected String getSearchHint() {
+        return mSearchHint;
+    }
 	
 	/**
 	 * called when a menu item is selected (like overflow menu item, title spinner item or popup menu item)
@@ -971,7 +992,7 @@ abstract public class DSFragment extends DialogFragment
 		if (!mActive) {
 			return;
 		}
-		
+
 		for(DSFragment subfragment : mSubFragments.values()) {
 			subfragment.startSearch();
 		}

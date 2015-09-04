@@ -40,11 +40,22 @@ public class BasicCursorEntry {
 	public boolean isEmpty() {
 		return mCursor == null || mCursor.getCount() == 0;
 	}
-	
+
+	/**
+	 *
+	 * @param field
+	 * @return
+	 */
 	public Integer getInt(String field) {
 		return getInt(mCursor, field);
 	}
-	
+
+    /**
+     *
+     * @param c
+     * @param field
+     * @return
+     */
 	static public Integer getInt(Cursor c, String field) {
 		try {
 			return c.getInt(c.getColumnIndex(field));
@@ -53,10 +64,44 @@ public class BasicCursorEntry {
 		}
 	}
 
+    /**
+     *
+     * @param field
+     * @return
+     */
+    public Long getLong(String field) {
+        return getLong(mCursor, field);
+    }
+
+    /**
+     *
+     * @param c
+     * @param field
+     * @return
+     */
+    static public Long getLong(Cursor c, String field) {
+        try {
+            return c.getLong(c.getColumnIndex(field));
+        } catch(Throwable e) {
+            return null;
+        }
+    }
+
+	/**
+	 *
+	 * @param field
+	 * @return
+	 */
 	public String getString(String field) {
 		return getString(mCursor, field);
 	}
-	
+
+	/**
+	 *
+	 * @param c
+	 * @param field
+	 * @return
+	 */
 	static public String getString(Cursor c, String field) {
 		try {
 			final int index = c.getColumnIndex(field);
@@ -69,11 +114,22 @@ public class BasicCursorEntry {
 			return "";
 		}
 	}
-	
+
+    /**
+     *
+     * @param field
+     * @return
+     */
 	public boolean getBoolean(String field) {
 		return getBoolean(mCursor, field);
 	}
-	
+
+    /**
+     *
+     * @param c
+     * @param field
+     * @return
+     */
 	static public boolean getBoolean(Cursor c, String field) {
 		try {
 			return c.getInt(c.getColumnIndex(field)) > 0;
@@ -85,7 +141,13 @@ public class BasicCursorEntry {
 	public double getDouble(String field) {
 		return getDouble(mCursor, field);
 	}
-		
+
+    /**
+     *
+     * @param c
+     * @param field
+     * @return
+     */
 	static public double getDouble(Cursor c, String field) {
 		try {
 			return c.getDouble(c.getColumnIndex(field));

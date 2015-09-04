@@ -16,6 +16,7 @@
 
 package android.support.v4.view;
 
+import android.app.Fragment;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
@@ -28,6 +29,7 @@ import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.SystemClock;
+import android.support.v13.app.FragmentPagerAdapterModByDS;
 import android.support.v4.os.ParcelableCompat;
 import android.support.v4.os.ParcelableCompatCreatorCallbacks;
 import android.support.v4.view.accessibility.AccessibilityEventCompat;
@@ -54,6 +56,8 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+
+import ds.framework.v4.app.DSFragment;
 
 /**
  * Layout manager that allows the user to flip left and right
@@ -451,6 +455,15 @@ public class ViewPagerModByDS extends ViewGroup {
                 requestLayout();
             }
         }
+
+        // Mod by DS
+        if (mAdapter instanceof FragmentPagerAdapterModByDS) {
+            final Fragment currentFragment = (Fragment) ((FragmentPagerAdapterModByDS) mAdapter).getItem(mCurItem);
+            if (currentFragment != null && currentFragment instanceof DSFragment) {
+                ((DSFragment) currentFragment).setActive(true);
+            }
+        }
+        //
 
         if (mAdapterChangeListener != null && oldAdapter != adapter) {
             mAdapterChangeListener.onAdapterChanged(oldAdapter, adapter);

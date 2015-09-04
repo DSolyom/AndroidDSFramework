@@ -142,6 +142,16 @@
 	<style name="FullscreenDialog" parent="android:style/Theme.Black.NoTitleBar.Fullscreen">
 		<item name="android:windowAnimationStyle">@android:style/Animation.Dialog</item>
 	</style>
+
+	<style name="DialogButton" parent="TitleText">
+		<item name="android:minWidth">64dp</item>
+		<item name="android:background">@android:color/transparent</item>
+		<item name="android:textAllCaps">true</item>
+		<item name="android:textColor">@drawable/dialog_button_text_color_selector</item>
+		<item name="android:padding">@dimen/padding_small</item>
+		<item name="android:layout_marginLeft">@dimen/padding_half</item>
+		<item name="android:layout_marginRight">@dimen/padding_half</item>
+	</style>
 	
 	<style name="ImageButton" parent="Block">
 	    <item name="android:background">@android:color/transparent</item>

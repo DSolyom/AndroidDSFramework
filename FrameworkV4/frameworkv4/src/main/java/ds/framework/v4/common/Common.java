@@ -269,13 +269,19 @@ public class Common {
 	 * @param defaultMessage
 	 */
 	public static void startSendingEmail(Context context, String[] emails, 
-			String subject, String defaultMessage) {
+			String subject, String defaultMessage, File... attachments) {
 		final Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
 
 		emailIntent.setType("plain/text");
 		emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL, emails);
 		emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, subject);
 		emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, defaultMessage);
+
+		if (attachments != null) {
+            for(File attachment : attachments) {
+                emailIntent.putExtra(android.content.Intent.EXTRA_STREAM, Uri.fromFile(attachment));
+            }
+        }
 
 		context.startActivity(Intent.createChooser(emailIntent, "Send mail..."));
 	}

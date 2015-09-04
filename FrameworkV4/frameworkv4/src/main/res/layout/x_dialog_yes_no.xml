@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:ds="http://schemas.android.com/apk/res-auto"
+    style="@style/FillContainer"
+>
+    <RelativeLayout
+        style="@style/FillContainer"
+        android:background="@color/dialog_transparent"
+        android:paddingTop="@dimen/padding_small"
+    >
+        <android.support.v7.widget.CardView
+            style="@style/Container"
+            ds:cardBackgroundColor="@color/foreground"
+            ds:cardElevation="@dimen/padding_small"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="@dimen/padding_dialog"
+        >
+            <LinearLayout
+                style="@style/Container"
+                android:orientation="vertical"
+            >
+                <ScrollView
+                    style="@style/Container"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:scrollbarStyle="insideOverlay"
+                >
+                    <LinearLayout
+                        style="@style/Container"
+                        android:orientation="vertical"
+                        android:paddingLeft="@dimen/padding_dialog"
+                        android:paddingRight="@dimen/padding_dialog"
+                        android:paddingTop="@dimen/padding_dialog"
+                        android:paddingBottom="@dimen/padding_medium"
+                    >
+                        <TextView android:id="@+id/tv_dialog_title"
+                            style="@style/LargeText"
+                            android:textColor="@color/dialog_title"
+                            android:layout_marginBottom="@dimen/padding_medium"
+                        />
+
+                        <TextView android:id="@+id/tv_dialog_question"
+                            style="@style/Text"
+                            android:textColor="@color/dialog_text"
+                        />
+                    </LinearLayout>
+                </ScrollView>
+
+                <LinearLayout
+                    style="@style/Block"
+                    android:layout_height="@dimen/dialog_question_height"
+                    android:orientation="horizontal"
+                    android:layout_gravity="right"
+                    android:gravity="center_vertical"
+                    android:layout_marginRight="@dimen/padding_medium"
+                    android:layout_marginBottom="@dimen/padding_small"
+                >
+                    <Button android:id="@+id/btn_negative"
+                        style="@style/DialogButton"
+                    />
+
+                    <Button android:id="@+id/btn_positive"
+                        style="@style/DialogButton"
+                    />
+                </LinearLayout>
+
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
+    </RelativeLayout>
+</LinearLayout>

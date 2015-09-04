@@ -36,7 +36,7 @@ public class Condition {
 	int mRelation;
 	String mStringRelation;
 	String mStrValue;
-	Integer mIntValue;
+	Long mLongValue;
 	Float mFloatValue;
 	int[] mIntArrayValue;
 	Object[] mArrayValue;
@@ -89,6 +89,15 @@ public class Condition {
      * @param field
      * @param value
      */
+    public Condition(String field, long value) {
+        this(field, EQUALS, value);
+    }
+
+    /**
+     *
+     * @param field
+     * @param value
+     */
     public Condition(String field, boolean value) {
         this(field, value ? HIGHER : EQUALS, 0);
     }
@@ -100,10 +109,20 @@ public class Condition {
      * @param value
      */
 	public Condition(String field, int relation, int value) {
+		this(field, relation, (long) value);
+	}
+
+	/**
+	 *
+	 * @param field
+	 * @param relation
+	 * @param value
+	 */
+	public Condition(String field, int relation, long value) {
 		mField = field;
 		mRelation = relation;
 		mStringRelation = null;
-		mIntValue = value;
+		mLongValue = value;
 	}
 
     /**
@@ -113,9 +132,19 @@ public class Condition {
      * @param value
      */
 	public Condition(String field, String relation, int value) {
+        this(field, relation, (long) value);
+    }
+
+    /**
+     *
+     * @param field
+     * @param relation
+     * @param value
+     */
+    public Condition(String field, String relation, long value) {
 		mField = field;
 		mStringRelation = relation;
-		mIntValue = value;
+		mLongValue = value;
 	}
 
     /**
@@ -227,8 +256,8 @@ public class Condition {
 		}
 		if (mStrValue != null) {
 			ret += DbQuery.quoteNameOrValue(mStrValue);
-		} else if (mIntValue != null) {
-			ret += mIntValue;
+		} else if (mLongValue != null) {
+			ret += mLongValue;
 		} else if (mFloatValue != null) {
 			ret += mFloatValue;
 		} else if (mIntArrayValue != null) {
