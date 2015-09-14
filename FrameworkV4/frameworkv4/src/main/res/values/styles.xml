@@ -147,7 +147,7 @@
 		<item name="android:minWidth">64dp</item>
 		<item name="android:background">@android:color/transparent</item>
 		<item name="android:textAllCaps">true</item>
-		<item name="android:textColor">@drawable/dialog_button_text_color_selector</item>
+		<item name="android:textColor">@drawable/flat_button_text_color_selector</item>
 		<item name="android:padding">@dimen/padding_small</item>
 		<item name="android:layout_marginLeft">@dimen/padding_half</item>
 		<item name="android:layout_marginRight">@dimen/padding_half</item>

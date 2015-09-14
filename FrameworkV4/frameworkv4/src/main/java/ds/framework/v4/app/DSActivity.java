@@ -835,7 +835,7 @@ abstract public class DSActivity extends ActionBarActivity
 		mMenu = menu;
 		MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(mMenuResID, mMenu);
-        
+
         for(DSFragmentInterface fragment : mFragments.values()) {
         	if (fragment instanceof DSFragment && ((DSFragment) fragment).getDSActivity() == this) {
         		((DSFragment) fragment).createAndHandleOptionsMenu(this);

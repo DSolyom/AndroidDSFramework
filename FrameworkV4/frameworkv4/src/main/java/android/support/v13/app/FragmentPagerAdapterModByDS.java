@@ -73,6 +73,8 @@ public abstract class FragmentPagerAdapterModByDS extends PagerAdapter {
                     makeFragmentName(container.getId(), itemId));
         }
         if (fragment != mCurrentPrimaryItem) {
+
+            // set non current fragment to not active
             fragment.setMenuVisibility(false);
             fragment.setUserVisibleHint(false);
         }
@@ -107,9 +109,16 @@ public abstract class FragmentPagerAdapterModByDS extends PagerAdapter {
     }
 
     // added by DS
+
+    /**
+     *
+     * @return
+     */
     public Fragment getPrimaryItem() {
         return mCurrentPrimaryItem;
     }
+
+    //
 
     @Override
     public void finishUpdate(ViewGroup container) {

@@ -41,7 +41,7 @@
 	<color name="dialog_transparent">#50000000</color>
     <color name="dialog_title">@color/text</color>
     <color name="dialog_text">@color/subtext</color>
-	<color name="dialog_button_text_normal">@color/primary</color>
-    <color name="dialog_button_text_pressed">@color/secondary</color>
-    <color name="dialog_button_text_disabled">@color/primary_semi_transparent</color>
+	<color name="flat_button_text_normal">@color/primary</color>
+    <color name="flat_button_text_pressed">@color/secondary</color>
+    <color name="flat_button_text_disabled">@color/primary_semi_transparent</color>
 </resources>

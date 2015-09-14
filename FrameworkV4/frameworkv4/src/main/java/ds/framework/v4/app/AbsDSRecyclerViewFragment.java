@@ -188,13 +188,17 @@ abstract public class AbsDSRecyclerViewFragment extends AbsDSAsyncDataFragment {
 	
 	@Override
 	protected void reloadForSearch(boolean finalTouch) {
-		if (mData == null 
-				|| mData.length == 0 
-				|| !(mData[0] instanceof AbsRecyclerViewData)) {
+		if (mData == null) {
 			return;
 		}
 		try {
-			invalidateData(0);
+			final int sD = mData.length;
+			for(int i = 0; i < sD; ++i) {
+                if (!(mData[i] instanceof AbsRecyclerViewData)) {
+                    break;
+                }
+				invalidateData(i);
+			}
 			loadDataAndDisplay();
 		} catch(Throwable e) {
 			Debug.logException(e);

@@ -64,7 +64,9 @@ abstract public class DSFragment extends DialogFragment
      * title of the fragment - used when a fragment can have it's own title (ie. in a viewpager-tab context)
      */
     protected String mFragmentTitle;
-	
+
+	protected int mRootViewLayoutResID;
+
 	/**
 	 * the root view in the fragment's view hierarchy
 	 */
@@ -405,7 +407,20 @@ abstract public class DSFragment extends DialogFragment
 		return mRootView;
 	}
 
-	abstract protected View getRootView(LayoutInflater inflater, ViewGroup container);
+    /**
+     *
+     * @param inflater
+     * @param container
+     * @return
+     */
+	protected View getRootView(LayoutInflater inflater, ViewGroup container) {
+        if (mRootViewLayoutResID != 0) {
+            final View rootView = inflater.inflate(mRootViewLayoutResID, container, false);
+            return rootView;
+        } else {
+            return null;
+        }
+    }
 	
 	/**
 	 * set the fragment id prior attach
@@ -713,6 +728,14 @@ abstract public class DSFragment extends DialogFragment
      *
      * @param active
      */
+    final public void setActiveWhenAttached(boolean active) {
+        mActiveWhenAttached = active;
+    }
+
+    /**
+     *
+     * @param active
+     */
     final public void setActive(boolean active) {
         setMenuVisibility(active);
     }
@@ -752,18 +775,20 @@ abstract public class DSFragment extends DialogFragment
 	}
 	
 	/**
-	 * 
+	 * use this instead normal fragment onCreateOptionsMenu - activity will handle
+     * TODO: maybe remove this part and just use onCreateOptionsMenu - but this is good for now
+     *
 	 * @param activity
 	 */
 	void createAndHandleOptionsMenu(DSActivity activity) {
 		if (!mActionBarItemsCreated) {
-			mActionBarItemsCreated = true;
 			createActionBarItems(activity.getOptionsMenu());
 		}
 
-        if (mActive) {
+        if (mActionBarItemsCreated || mActiveWhenAttached) {
             handleActionBarItems(mActive);
         }
+        mActionBarItemsCreated = true;
 	}
 
 	/**
@@ -854,7 +879,7 @@ abstract public class DSFragment extends DialogFragment
 // ActionBar
 	
 	/**
-	 * 
+	 *
 	 * @param id
 	 * @param titleRes
 	 * @param icon
@@ -864,11 +889,13 @@ abstract public class DSFragment extends DialogFragment
 	 */
 	public MenuItem addMenuItem(int id, int titleRes, int icon, int order, boolean refresh) {
 		final DSActivity activity = getDSActivity();
-		return activity.addMenuItem(id, titleRes, icon, order, refresh);
+		final MenuItem item = activity.addMenuItem(id, titleRes, icon, order, refresh);
+        item.setVisible(mActiveWhenAttached);
+        return item;
 	}
 	
 	/**
-	 * 
+	 *
 	 * @param id
 	 * @param title
 	 * @param icon
@@ -878,24 +905,26 @@ abstract public class DSFragment extends DialogFragment
 	 */
 	public MenuItem addMenuItem(int id, String title, int icon, int order, boolean refresh) {
 		final DSActivity activity = getDSActivity();
-		return activity.addMenuItem(id, title, icon, order, refresh);
+        final MenuItem item = activity.addMenuItem(id, title, icon, order, refresh);
+        item.setVisible(mActiveWhenAttached);
+        return item;
 	}
-	
+
 	/**
 	 * create action bar items for the first time<br/>
      * be sure to set item visibility too here if the fragment could be not active when this called
-	 * 
+	 *
 	 * @param menu
 	 */
 	protected void createActionBarItems(Menu menu) {
 		final DSActivity activity = getDSActivity();
-		if (mSearchable) {
+        if (mSearchable) {
 			if (activity.findMenuItem(R.string.x_Search) == null) {
-				final MenuItem searchItem = activity.addMenuItem(
-						R.string.x_Search,
-						R.string.x_Search,
+                final MenuItem searchItem = addMenuItem(
+                        R.string.x_Search,
+                        R.string.x_Search,
 						R.drawable.x_ic_action_search,
-						0, 
+						0,
 						false
 				);
 				searchItem.setActionView(createSearchActionView());

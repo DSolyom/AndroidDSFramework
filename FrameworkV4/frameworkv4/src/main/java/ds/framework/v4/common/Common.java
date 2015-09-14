@@ -52,6 +52,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
+import android.text.Html;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -71,7 +72,9 @@ import ds.framework.v4.app.ActivityInterface;
 import ds.framework.v4.widget.MiniListView;
 
 public class Common {
-	
+
+    final static public int SEND_EMAIL_ACTION_CODE = 50445;
+
 	/**
 	 * 
 	 * @param context
@@ -89,7 +92,7 @@ public class Common {
 		}
 		Uri uri = createHttpUri(url);
 		Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-		context.startActivity(intent);
+        context.startActivity(intent);
 	}
 	
 	/**
@@ -132,8 +135,8 @@ public class Common {
 	public static Uri createHttpUri(String url) {
 		if (url.length() < 8 || !"http://".equals(url.substring(0, 7)) && !"https://".equals(url.substring(0, 8))) {
 			url = "http://" + url;
-		}
-		return Uri.parse(url);
+        }
+        return Uri.parse(url);
 	}
 	
 	/**
@@ -157,7 +160,7 @@ public class Common {
 		PackageManager pm = context.getPackageManager();
 		
 		Intent intent = new Intent("android.intent.action.MAIN");
-		intent.addCategory("android.intent.category.LAUNCHER");
+        intent.addCategory("android.intent.category.LAUNCHER");
 		for(ResolveInfo ri : pm.queryIntentActivities(intent, 0)) {
 			if (ri.activityInfo.packageName.equals(packageName)) {
 				try {
@@ -261,29 +264,31 @@ public class Common {
 	}
 	
 	/**
-	 * start email
+	 * start email - context must be an activity if you want to add attachments
 	 * 
 	 * @param context
 	 * @param emails
 	 * @param subject
 	 * @param defaultMessage
 	 */
-	public static void startSendingEmail(Context context, String[] emails, 
-			String subject, String defaultMessage, File... attachments) {
+	public static void startSendingEmail(Context context, String[] emails,
+			String subject, String defaultMessage, Uri... attachments) {
 		final Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
 
 		emailIntent.setType("plain/text");
 		emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL, emails);
-		emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, subject);
-		emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, defaultMessage);
+		emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, Html.fromHtml(subject));
+		emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, Html.fromHtml(defaultMessage));
 
-		if (attachments != null) {
-            for(File attachment : attachments) {
-                emailIntent.putExtra(android.content.Intent.EXTRA_STREAM, Uri.fromFile(attachment));
+		if (attachments != null && attachments.length > 0) {
+            for(Uri attachment : attachments) {
+                emailIntent.putExtra(android.content.Intent.EXTRA_STREAM, attachment);
             }
-        }
-
-		context.startActivity(Intent.createChooser(emailIntent, "Send mail..."));
+            emailIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            ((Activity) context).startActivityForResult(Intent.createChooser(emailIntent, "Send mail..."), SEND_EMAIL_ACTION_CODE);
+        } else {
+			context.startActivity(Intent.createChooser(emailIntent, "Send mail..."));
+		}
 	}
 	
 	/**
