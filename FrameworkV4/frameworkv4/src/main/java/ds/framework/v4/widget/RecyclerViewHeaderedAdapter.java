@@ -20,7 +20,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 
-import ds.framework.v4.common.Debug;
+import ds.framework.v4.data.AbsAsyncData;
+import ds.framework.v4.data.AbsRecyclerViewData;
 
 abstract public class RecyclerViewHeaderedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
@@ -118,5 +119,22 @@ abstract public class RecyclerViewHeaderedAdapter extends RecyclerView.Adapter<R
         return getCount() == 0;
     }
 
+    /**
+     *
+     * @return
+     */
     abstract public int getCount();
+
+    /**
+     *
+     * @return
+     */
+    abstract public AbsRecyclerViewData[] getRecyclerViewData();
+
+    /**
+     *
+     * @param data
+     * @param loadId
+     */
+    abstract public void onDataLoaded(AbsAsyncData data, int loadId);
 }

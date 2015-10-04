@@ -23,6 +23,8 @@ import android.view.ViewGroup;
 import java.util.HashMap;
 
 import ds.framework.v4.app.ActivityInterface;
+import ds.framework.v4.data.AbsAsyncData;
+import ds.framework.v4.data.AbsRecyclerViewData;
 import ds.framework.v4.template.Template;
 
 abstract public class AbsTemplateViewHolderAdapter<T> extends RecyclerViewHeaderedAdapter {
@@ -33,7 +35,9 @@ abstract public class AbsTemplateViewHolderAdapter<T> extends RecyclerViewHeader
 	private HashMap<Integer, Integer> mRowLayoutRess = new HashMap<Integer, Integer>();
 	protected Template mTemplate;
 
-	public AbsTemplateViewHolderAdapter(ActivityInterface in, int rowLayoutId) {
+    protected AbsRecyclerViewData mRecyclerViewData;
+
+    public AbsTemplateViewHolderAdapter(ActivityInterface in, int rowLayoutId) {
 		mIn = in;
 		mRowLayoutRess.put(ITEM_VIEW_TYPE_DEFAULT, rowLayoutId);
 		mTemplate = new Template(mIn, null);
@@ -72,11 +76,38 @@ abstract public class AbsTemplateViewHolderAdapter<T> extends RecyclerViewHeader
 		final View view = mIn.inflate(rowRes, viewParent, false);
 		return view;
 	}
+
+    @Override
+    public AbsRecyclerViewData[] getRecyclerViewData() {
+        return new AbsRecyclerViewData[] { mRecyclerViewData };
+    }
+
+    /**
+     *
+     * @param data
+     */
+    public void setRecyclerViewData(AbsRecyclerViewData data) {
+        if (mRecyclerViewData == data) {
+            return;
+        }
+
+        mRecyclerViewData = data;
+
+        super.reset();
+    }
+
+    @Override
+    public void reset() {
+        mRecyclerViewData.invalidate();
+
+        super.reset();
+    }
 	
 	/**
 	 * @param data
 	 */
 	abstract protected void fillRow(T data, int position);
+
 
     /**
      * @class TemplateHolder

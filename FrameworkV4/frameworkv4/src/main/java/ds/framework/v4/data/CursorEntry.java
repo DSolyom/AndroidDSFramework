@@ -67,6 +67,9 @@ public abstract class CursorEntry extends BasicCursorEntry {
 	 * @param c
 	 */
 	public void setCursor(Cursor c) {
+		if (mCursor == c) {
+			return;
+		}
 		if (mCursor != null) {
 			if (!mCursor.isClosed()) {
 				mCursor.close();

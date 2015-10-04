@@ -157,13 +157,13 @@ public abstract class FragmentPagerAdapterModByDS extends PagerAdapter {
     }
 
     /**
-     * CHANGED TO public static FROM private by DS
+     * CHANGED TO public FROM private by DS
      * 
      * @param viewId
      * @param id
      * @return
      */
-    public static String makeFragmentName(int viewId, long id) {
+    public String makeFragmentName(int viewId, long id) {
         return "android:switcher:" + viewId + ":" + id;
     }
 }

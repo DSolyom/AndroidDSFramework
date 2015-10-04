@@ -81,11 +81,18 @@ abstract public class AbsDSAsyncDataFragment extends DSFormFragment
 	
 	@Override
 	public void loadData() {
-		if (mData == null) {
-			mData = getAsyncDataObjects();
-		}
+        if (mData == null) {
+            createData();
+        }
 
 		loadAsyncData();
+	}
+
+	/**
+	 * create data objects
+	 */
+	protected void createData() {
+        mData = getAsyncDataObjects();
 	}
 	
 	/**

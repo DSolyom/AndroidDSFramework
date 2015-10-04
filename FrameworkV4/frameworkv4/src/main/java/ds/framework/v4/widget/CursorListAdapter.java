@@ -18,6 +18,7 @@ package ds.framework.v4.widget;
 import android.database.Cursor;
 
 import ds.framework.v4.app.ActivityInterface;
+import ds.framework.v4.data.AbsAsyncData;
 import ds.framework.v4.data.CursorList;
 import ds.framework.v4.data.CursorListEntry;
 
@@ -30,16 +31,6 @@ public abstract class CursorListAdapter extends AbsTemplateViewHolderAdapter<Cur
 		super(in, rowLayoutId);
 	}
 
-    /**
-     *
-     * @param data
-     * @param loadId
-     */
-    public void setData(CursorList data, int loadId) {
-        setCursor(data.getCursor());
-        mData = data;
-    }
-
 	/**
 	 * 
 	 * @param c
@@ -47,8 +38,6 @@ public abstract class CursorListAdapter extends AbsTemplateViewHolderAdapter<Cur
 	public void setCursor(Cursor c) {
         if (mCLE == null) {
             mCLE = new CursorListEntry(c);
-        } else if (c == mCLE.getCursor()) {
-            return;
         } else {
             mCLE.setCursor(c);
         }
@@ -71,4 +60,21 @@ public abstract class CursorListAdapter extends AbsTemplateViewHolderAdapter<Cur
 	public int getCount() {
 		return mCLE == null ? 0 : mCLE.getCount();
 	}
+
+	@Override
+	public void onDataLoaded(AbsAsyncData data, int loadId) {
+		setCursor(((CursorList) data).getCursor());
+		mData = (CursorList) data;
+	}
+
+    @Override
+    public void reset() {
+        super.reset();
+
+        // maybe we are just loaded new data and the adapter haven't got the chance to get it
+        if (mData != null) {
+            mData.closeCursor();
+        }
+    }
+
 }

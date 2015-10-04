@@ -82,7 +82,7 @@ abstract public class AbsAsyncData implements Serializable {
 	
 	/**
 	 * 
-	 * @param OnDataLoadListener
+	 * @param listener
 	 */
 	synchronized public void setOnDataLoadListener(OnDataLoadListener listener) {
 		LoaderThread loader = recoverLoader();

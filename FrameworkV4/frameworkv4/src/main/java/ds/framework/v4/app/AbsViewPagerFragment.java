@@ -5,6 +5,7 @@ import android.support.v4.view.ViewPagerModByDS;
 import android.support.v4.view.ViewPagerModByDS.OnPageChangeListener;
 import android.view.View;
 import ds.framework.v4.data.AbsAsyncData;
+import ds.framework.v4.data.AbsRecyclerViewData;
 import ds.framework.v4.template.Template;
 import ds.framework.v4.widget.AbsTemplatePagerAdapter;
 
@@ -50,8 +51,8 @@ abstract public class AbsViewPagerFragment extends AbsDSAsyncDataFragment {
 	
 	@Override
 	public void onDataLoaded(AbsAsyncData data, int loadId) {		
-		if (data instanceof AbsDSRecyclerViewFragment.AbsRecyclerViewData) {
-			setAdapterData((AbsDSRecyclerViewFragment.AbsRecyclerViewData) data, loadId);
+		if (data instanceof AbsRecyclerViewData) {
+			setAdapterData((AbsRecyclerViewData) data, loadId);
 		}
 		
 		super.onDataLoaded(data, loadId);
@@ -129,8 +130,8 @@ abstract public class AbsViewPagerFragment extends AbsDSAsyncDataFragment {
 	protected boolean isPagerDataValid() {
 		return mData != null 
 				&& mData.length > 0 
-				&& (mData[0] instanceof AbsDSRecyclerViewFragment.AbsRecyclerViewData)
-				&& ((AbsDSRecyclerViewFragment.AbsRecyclerViewData) mData[0]).isValid();
+				&& (mData[0] instanceof AbsRecyclerViewData)
+				&& ((AbsRecyclerViewData) mData[0]).isValid();
 	}
 	
 	@Override

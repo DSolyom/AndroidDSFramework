@@ -20,15 +20,13 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.ArrayList;
-
 import ds.framework.v4.R;
 import ds.framework.v4.common.Debug;
 import ds.framework.v4.data.AbsAsyncData;
+import ds.framework.v4.data.AbsRecyclerViewData;
 import ds.framework.v4.template.Template;
 import ds.framework.v4.widget.IRecyclerView;
 import ds.framework.v4.widget.RecyclerViewHeaderedAdapter;
-import ds.framework.v4.widget.RecyclerViewMultiAdapter;
 
 /**
  * @class AbsDSRecyclerViewFragment
@@ -41,9 +39,11 @@ abstract public class AbsDSRecyclerViewFragment extends AbsDSAsyncDataFragment {
 
 	protected RecyclerViewHeaderedAdapter mAdapter;
 
+    private boolean mRecyclerViewDataAdded;
+
 	private int mEmptyViewResID;
 
-	protected View mRecyclerAdapterView;
+	protected ViewGroup mRecyclerAdapterView;
 
 	public AbsDSRecyclerViewFragment() {
 		super();
@@ -59,7 +59,7 @@ abstract public class AbsDSRecyclerViewFragment extends AbsDSAsyncDataFragment {
 
         super.onViewCreated(rootView);
 
-        mRecyclerAdapterView = mTemplate.findViewById(getRecyclerViewID());
+        mRecyclerAdapterView = (ViewGroup) mTemplate.findViewById(getRecyclerViewID());
 	}
 	
 	@Override
@@ -67,22 +67,33 @@ abstract public class AbsDSRecyclerViewFragment extends AbsDSAsyncDataFragment {
 		ensureAdapter();
 		super.loadData();
 	}
+
+    @Override
+    protected AbsAsyncData[] getAsyncDataObjects() {
+        return new AbsAsyncData[] {};
+    }
+
+    @Override
+    public void createData() {
+        super.createData();
+
+        final AbsRecyclerViewData[] recyclerViewData = mAdapter.getRecyclerViewData();
+        final AbsAsyncData[] normalData = mData;
+        mData = new AbsAsyncData[normalData.length + recyclerViewData.length];
+
+        int i = 0;
+        for(;i < recyclerViewData.length; ++i) {
+            mData[i] = recyclerViewData[i];
+        }
+        for(int j = 0; j < normalData.length; ++j) {
+            mData[i + j] = normalData[j];
+        }
+    }
 	
 	@Override
 	public void onDataLoaded(AbsAsyncData data, int loadId) {		
 		if (data instanceof AbsRecyclerViewData) {
-            if (mAdapter instanceof RecyclerViewMultiAdapter) {
-                RecyclerViewHeaderedAdapter subAdapter;
-
-                ArrayList<RecyclerViewHeaderedAdapter> subAdapters = ((RecyclerViewMultiAdapter) mAdapter).getAdapters();
-                for(int i = subAdapters.size() - 1; i >= 0; --i) {
-                    if (mData[i] == data) {
-                        setAdapterData(subAdapters.get(i), (AbsRecyclerViewData) data, loadId);
-                    }
-                }
-            } else if (mData.length > 0 && data == mData[0]){
-                setAdapterData(mAdapter, (AbsRecyclerViewData) data, loadId);
-            }
+            mAdapter.onDataLoaded(data, loadId);
         }
 
         super.onDataLoaded(data, loadId);
@@ -188,9 +199,10 @@ abstract public class AbsDSRecyclerViewFragment extends AbsDSAsyncDataFragment {
 	
 	@Override
 	protected void reloadForSearch(boolean finalTouch) {
-		if (mData == null) {
+		if (mAdapter == null) {
 			return;
 		}
+
 		try {
 			final int sD = mData.length;
 			for(int i = 0; i < sD; ++i) {
@@ -294,15 +306,17 @@ abstract public class AbsDSRecyclerViewFragment extends AbsDSAsyncDataFragment {
      * @return
      */
     abstract protected RecyclerViewHeaderedAdapter createAdapter();
-	
+
 	/**
 	 * set adapter data
-	 * 
+	 *
 	 * @param data
 	 * @param loadId
 	 */
+    /*
 	abstract protected void setAdapterData(RecyclerViewHeaderedAdapter adapter, AbsRecyclerViewData data, int loadId);
-	
+	*/
+
 	/**
 	 * invalidate the adapter's data
 	 */
@@ -334,18 +348,5 @@ abstract public class AbsDSRecyclerViewFragment extends AbsDSAsyncDataFragment {
 	protected int getEmptyViewID() {
 		return 0;
 	}
-	
-	/**
-	 * @class AbsListData
-	 */
-	abstract public static class AbsRecyclerViewData extends AbsAsyncData {
 
-		public AbsRecyclerViewData() {
-		}
-		
-		public AbsRecyclerViewData(String loaderTag) {
-			super(loaderTag);
-		}
-		
-	}
 }

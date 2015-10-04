@@ -17,13 +17,10 @@ package ds.framework.v4.data;
 
 import android.database.Cursor;
 
-import java.util.ArrayList;
-
-import ds.framework.v4.app.AbsDSRecyclerViewFragment;
 import ds.framework.v4.common.Debug;
 import ds.framework.v4.db.TableQuery;
 
-public abstract class CursorList extends AbsDSRecyclerViewFragment.AbsRecyclerViewData {
+public abstract class CursorList extends AbsRecyclerViewData {
 
     private Cursor mCursor;
     private TableQuery mLoaderQuery;
