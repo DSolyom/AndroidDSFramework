@@ -23,7 +23,7 @@ import android.view.ViewGroup;
 import ds.framework.v4.data.AbsAsyncData;
 import ds.framework.v4.data.AbsRecyclerViewData;
 
-abstract public class RecyclerViewHeaderedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+abstract public class RecyclerViewHeaderedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements AbsAsyncData.OnDataLoadListener {
 
     public final static int ITEM_VIEW_TYPE_HEADER = 250;
     public final static int ITEM_VIEW_TYPE_FOOTER = 251;
@@ -131,10 +131,17 @@ abstract public class RecyclerViewHeaderedAdapter extends RecyclerView.Adapter<R
      */
     abstract public AbsRecyclerViewData[] getRecyclerViewData();
 
-    /**
-     *
-     * @param data
-     * @param loadId
-     */
-    abstract public void onDataLoaded(AbsAsyncData data, int loadId);
+// implements AbsAsyncData.OnDataLoadListener
+
+    public void onDataLoadStart(AbsAsyncData data, int loadId) {
+
+    }
+
+    public void onDataLoadFailed(AbsAsyncData data, int loadId) {
+
+    }
+
+    public void onDataLoadInterrupted(AbsAsyncData data, int loadId) {
+
+    }
 }

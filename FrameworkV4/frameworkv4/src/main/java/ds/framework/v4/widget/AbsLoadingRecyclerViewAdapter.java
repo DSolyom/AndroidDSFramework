@@ -19,6 +19,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
 
 import ds.framework.v4.app.ActivityInterface;
+import ds.framework.v4.common.Debug;
+import ds.framework.v4.data.AbsAsyncData;
 
 abstract public class AbsLoadingRecyclerViewAdapter<T> extends AbsTemplateViewHolderAdapter<T> {
 
@@ -32,6 +34,9 @@ abstract public class AbsLoadingRecyclerViewAdapter<T> extends AbsTemplateViewHo
     protected RecyclerViewHeaderedAdapter mAdapter;
     private int mAdapterDataCount;
 
+    private int mCountBeforeLoad;
+    private int mPositionBeforeLoad = -1;
+
     private final LoadingAdapterObserver mObserver = new LoadingAdapterObserver();
 
     public AbsLoadingRecyclerViewAdapter(ActivityInterface in, int loadingRowLayoutId) {
@@ -43,28 +48,37 @@ abstract public class AbsLoadingRecyclerViewAdapter<T> extends AbsTemplateViewHo
         if (position < mDataOffset) {
 
             // start loading items at the 'top'
-            ((LoadingRecyclerViewAdapterData) mRecyclerViewData).loadSome(false);
+            loadSomeIfNeeded(position);
             super.onBindViewHolderInner(holder, position);
         } else if (position >= mDataOffset + mAdapterDataCount) {
 
             // start loading items at the 'bottom'
-            ((LoadingRecyclerViewAdapterData) mRecyclerViewData).loadSome(true);
+            loadSomeIfNeeded(position);
             super.onBindViewHolderInner(holder, position);
         } else {
-
-            // check if reached load threshold
-            if (position < mDataOffset + mLoadThreshold) {
-
-                // start loading items at the 'top'
-                ((LoadingRecyclerViewAdapterData) mRecyclerViewData).loadSome(false);
-            }
-            if (position >= mDataOffset + mAdapterDataCount - mLoadThreshold) {
-
-                // start loading items at the 'bottom'
-                ((LoadingRecyclerViewAdapterData) mRecyclerViewData).loadSome(true);
-            }
+            loadSomeIfNeeded(position);
 
             mAdapter.onBindViewHolderInner(holder, position - mDataOffset);
+        }
+    }
+
+    /**
+     *
+     * @param position
+     */
+    protected void loadSomeIfNeeded(int position) {
+        if (position == -1) {
+            return;
+        }
+        mPositionBeforeLoad = position;
+        if (position < mDataOffset + mLoadThreshold && mDataOffset > 0) {
+            mCountBeforeLoad = getCount();
+            ((LoadingRecyclerViewAdapterData) mRecyclerViewData).loadSome(false, position + mDataOffset, this);
+        } else if (position >= mDataOffset + mAdapterDataCount - mLoadThreshold) {
+            mCountBeforeLoad = getCount();
+            ((LoadingRecyclerViewAdapterData) mRecyclerViewData).loadSome(true, position + mDataOffset, this);
+        } else {
+            mPositionBeforeLoad = -1;
         }
     }
 
@@ -73,7 +87,7 @@ abstract public class AbsLoadingRecyclerViewAdapter<T> extends AbsTemplateViewHo
         if (viewType != LOADING_VIEW_TYPE_DEFAULT) {
             return mAdapter.onCreateViewHolder(parent, viewType);
         } else {
-            return super.onCreateViewHolder(parent, viewType);
+            return super.onCreateViewHolder(parent, ITEM_VIEW_TYPE_DEFAULT);
         }
     }
 
@@ -88,24 +102,19 @@ abstract public class AbsLoadingRecyclerViewAdapter<T> extends AbsTemplateViewHo
 
     @Override
     public int getCount() {
-        return mCount;
-    }
-
-    /**
-     *
-     * @param count
-     */
-    public void setCount(int count) {
-        mCount = count;
+        return ((LoadingRecyclerViewAdapterData) mRecyclerViewData).getAllCount();
     }
 
     /**
      *
      * @param dataOffset
      */
-    public void setDataOffset(int dataOffset) {
+    protected void setDataOffset(int dataOffset) {
+        if (mDataOffset == dataOffset) {
+            return;
+        }
         mDataOffset = dataOffset;
-        notifyDataSetChanged();
+        notifyItemRangeChanged(0, mDataOffset);
     }
 
     /**
@@ -140,6 +149,14 @@ abstract public class AbsLoadingRecyclerViewAdapter<T> extends AbsTemplateViewHo
         return mAdapter.getItemViewType(position - mDataOffset);
     }
 
+
+    @Override
+    public void onDataLoaded(AbsAsyncData absAsyncData, int loadId) {
+        mAdapter.onDataLoaded(absAsyncData, loadId);
+
+        setDataOffset(((LoadingRecyclerViewAdapterData) absAsyncData).getDataOffset());
+    }
+
     /**
      * @Class LoadingAdapterObserver
      */
@@ -149,30 +166,41 @@ abstract public class AbsLoadingRecyclerViewAdapter<T> extends AbsTemplateViewHo
         public void onChanged() {
             mAdapterDataCount = mAdapter.getItemCount();
             notifyDataSetChanged();
+            loadSomeIfNeeded(mPositionBeforeLoad);
         }
 
         @Override
         public void onItemRangeChanged(int positionStart, int itemCount) {
             mAdapterDataCount = mAdapter.getItemCount();
             notifyItemRangeChanged(positionStart, itemCount);
+            loadSomeIfNeeded(mPositionBeforeLoad);
         }
 
         @Override
         public void onItemRangeInserted(int positionStart, int itemCount) {
             mAdapterDataCount = mAdapter.getItemCount();
-            notifyItemRangeInserted(positionStart, itemCount);
+
+            // need to check if mAdapter's insert is an insert or just a change for us
+            if (mCountBeforeLoad < getCount()) {
+                notifyItemRangeInserted(positionStart, itemCount);
+            } else {
+                notifyItemRangeChanged(positionStart, itemCount);
+            }
+            loadSomeIfNeeded(mPositionBeforeLoad);
         }
 
         @Override
         public void onItemRangeRemoved(int positionStart, int itemCount) {
             mAdapterDataCount = mAdapter.getItemCount();
             notifyItemRangeChanged(positionStart, itemCount);
+            loadSomeIfNeeded(mPositionBeforeLoad);
         }
 
         @Override
         public void onItemRangeMoved(int fromPosition, int toPosition, int itemCount) {
             mAdapterDataCount = mAdapter.getItemCount();
             notifyItemMoved(fromPosition, toPosition);
+            loadSomeIfNeeded(mPositionBeforeLoad);
         }
     }
 
@@ -180,6 +208,8 @@ abstract public class AbsLoadingRecyclerViewAdapter<T> extends AbsTemplateViewHo
      * @Interface LoadingRecyclerViewAdapterData
      */
     public interface LoadingRecyclerViewAdapterData {
-        void loadSome(boolean wayForward);
+        void loadSome(boolean wayForward, int positionAskingForLoad, AbsAsyncData.OnDataLoadListener onDataLoadListener);
+        int getDataOffset();
+        int getAllCount();
     }
 }

@@ -1,6 +1,7 @@
 package ds.framework.v4.widget;
 
 import android.content.Context;
+import android.os.Parcelable;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.View;
@@ -12,6 +13,7 @@ public class IRecyclerView extends RecyclerView {
 
     protected View mHeaderView;
     protected View mFooterView;
+    private Parcelable mStateSave;
 
     public IRecyclerView(Context context) {
         super(context);
@@ -73,6 +75,23 @@ public class IRecyclerView extends RecyclerView {
      */
     public View getFooterView() {
         return mFooterView;
+    }
+
+    /**
+     *
+     */
+    public void saveState() {
+        mStateSave = getLayoutManager().onSaveInstanceState();
+    }
+
+    @Override
+    protected void onLayout(boolean changed, int l, int t, int r, int b) {
+        if (mStateSave != null) {
+            final Parcelable stateSave = mStateSave;
+            mStateSave = null;
+            getLayoutManager().onRestoreInstanceState(stateSave);
+        }
+        super.onLayout(changed, l ,t, r, b);
     }
 
 }

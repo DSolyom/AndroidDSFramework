@@ -19,26 +19,22 @@ package ds.framework.v4.io;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
 
-import android.R;
-import android.app.Activity;
-import android.app.ActivityManager;
-import android.app.ActivityManager.MemoryInfo;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.net.Uri;
+import android.util.LruCache;
+
 import ds.framework.v4.Global;
 import ds.framework.v4.common.Bitmaps;
 import ds.framework.v4.common.Debug;
 import ds.framework.v4.common.Files;
-import ds.framework.v4.io.LaizyLoader.Callback;
 
 public class ImageLoader extends LaizyLoader<ImageLoader.ImageInfo, Bitmap> {
 
-	private static LocalImageCache sCache;
+	private static ImageFileCache sFileCache;
+    private static LruCache<String, Bitmap> sBitmapCache;
 	
 	/**
 	 * get an ImageLoader singleton<br/>
@@ -48,13 +44,21 @@ public class ImageLoader extends LaizyLoader<ImageLoader.ImageInfo, Bitmap> {
 	 * @param capacity
 	 * @param imagedir
 	 * @param filemaxsize
-	 * @param useReferenceCount
 	 * @return
 	 */
-	public static ImageLoader getInstance(Context context, long capacity, String imagedir, long filemaxsize) {
-		if (sCache == null) {
-			sCache = new LocalImageCache(context, capacity, imagedir, filemaxsize);
+	public static ImageLoader getInstance(Context context, int capacity, String imagedir, long filemaxsize) {
+		if (sFileCache == null) {
+			sFileCache = new ImageFileCache(context, imagedir, filemaxsize);
 		}
+        if (sBitmapCache == null) {
+            sBitmapCache = new LruCache<String, Bitmap>(capacity) {
+
+                @Override
+                protected int sizeOf(String key, Bitmap bitmap) {
+                    return bitmap.getByteCount() / 1024;
+                }
+            };
+        }
 		return new ImageLoader();
 	}
 	
@@ -65,11 +69,46 @@ public class ImageLoader extends LaizyLoader<ImageLoader.ImageInfo, Bitmap> {
 	 * @return
 	 */
 	public static Bitmap getFromCache(ImageInfo info) {
-		if (sCache == null) {
-			return null;
-		}
-		return sCache.getBitmap(info);
+		Bitmap bmp = getFromBitmapCache(info);
+        if (bmp == null) {
+            bmp = getFromFileCache(info);
+        }
+        return bmp;
 	}
+
+    /**
+     *
+     * @param info
+     * @return
+     */
+    public static Bitmap getFromBitmapCache(ImageInfo info) {
+        final Bitmap bmp = sBitmapCache.get(info.prefix + info.url);
+        return bmp;
+    }
+
+    /**
+     *
+     * @param info
+     * @return
+     */
+    public static Bitmap getFromFileCache(ImageInfo info) {
+        byte[] bmpBytes = sFileCache.get(info.prefix + info.url);
+        if (bmpBytes == null || bmpBytes.length == 0) {
+            Point max = new Point();
+            ImageLoader.parsePrefix(info.prefix, max);
+            bmpBytes = sFileCache.get(info.url, max.x, max.y);
+
+            if (bmpBytes == null || bmpBytes.length == 0) {
+                return null;
+            }
+
+            sFileCache.put(info.prefix + info.url, bmpBytes);
+        }
+
+        Bitmap bmp = Bitmaps.createBitmap(bmpBytes);
+        return bmp;
+    }
+
 	
 	/**
 	 * get uri for cache file
@@ -78,20 +117,14 @@ public class ImageLoader extends LaizyLoader<ImageLoader.ImageInfo, Bitmap> {
 	 * @return
 	 */
 	public static Uri getCacheUri(ImageInfo info) {
-		if (sCache == null) {
+		if (sFileCache == null) {
 			return null;
 		}
-		return sCache.getUri(info.prefix + info.url);
+		return sFileCache.getUri(info.prefix + info.url);
 	}
 	
 	@Override
 	public boolean loadInBackground(QueueItem item) {
-		while (sCache != null && sCache.isFull()) {
-Debug.logW("ImageLoader", "!cache full!");	
-			
-			// tell the cache to remove some
-			sCache.onCapacityFull();
-		}
 
 		final Bitmap bmp = loadImage(item.item);
 		if (bmp != null) {
@@ -120,97 +153,72 @@ Debug.logNativeHeapAllocatedSize();
 	 * @param info
 	 * @return
 	 */
-	public static Bitmap loadImage(ImageInfo info) {
-		final byte[] byteArray = loadImageByteArray(info);
-    	if (byteArray != null) {
-    		return Bitmaps.createBitmap(byteArray);
-    	}
-    	return null;
-	}
-	
-	/**
-	 * call from thread to load image as byte array (either from file or net) in background<br/>
-	 * most steps are synchronized except for the real downloading 
-	 * 
-	 * @param info
-	 * @return
-	 */
-	public static byte[] loadImageByteArray(ImageInfo info) {
-		if (!info.url.substring(0, 4).equals("http")) {
-			info.url = "http://" + info.url;
-    	}
-		
-		try {
-			// first try file cache
-			byte[] byteArray = null;
-	
-			synchronized(ImageLoader.class) {
-				if (info.cacheType != ImageInfo.CACHE_TYPE_NONE && sCache != null) {
-					try{
-					
-						// try with prefix
-						byteArray = sCache.getByteArrayFromFile(info.prefix + info.url);
-						
-						if (byteArray != null) {
-							sCache.put(info.prefix + info.url, byteArray, info.cacheType == ImageInfo.CACHE_TYPE_FULL);
-							return byteArray;
-						}
-						
-					} catch(Throwable e){
-						Debug.logException(e);
-					}
-				}
-			}
-Debug.logD("ImageLoader", "download start: " + info.url);
+	public static Bitmap loadImage(final ImageInfo info) {
+        if (!info.url.substring(0, 4).equals("http")) {
+            info.url = "http://" + info.url;
+        }
 
-			// put downloaded image to memory and file cache or only file cache if it is 'big'
-			Point max = new Point(Integer.MAX_VALUE, Integer.MAX_VALUE);;
-      		if (info.prefix == null || info.prefix.length() == 0 || "big".equals(info.prefix)) {
-      			max.x = (int) Global.getScreenWidth();
-      			max.y = (int) Global.getScreenHeight();
-      		} else {	
-      			// check if we may need to resize the image	      			
-      			if (info.prefix.length() > 0 && info.cacheType != ImageInfo.CACHE_TYPE_NONE && sCache != null) {
-      				
-      				parsePrefix(info.prefix, max);	      				
-      			}
-      		}
-			if (info.cacheType != ImageInfo.CACHE_TYPE_NONE && sCache != null && max.x != Integer.MAX_VALUE) {
-				// we may need to resize the image
-				
-				// we already tried this to load from file cache
-				// so try to load from file without prefix as we haven't tried that
-				// resizing while doing it
-				byteArray = sCache.getByteArrayFromFile(info.url, max.x, max.y);
-			}
+        try {
 
-      			
-  			if (byteArray == null) {
-  				
+            synchronized (ImageLoader.class) {
+
+                if (info.cacheType == ImageInfo.CACHE_TYPE_FULL) {
+
+                    // from file cache
+                    final Bitmap bmp;
+                    bmp = getFromFileCache(info);
+                    if (bmp != null) {
+                        sBitmapCache.put(info.prefix + info.url, bmp);
+                        return bmp;
+                    }
+                }
+
+                final Bitmap bmp;
+
+                // from url
+                Point max = new Point(Integer.MAX_VALUE, Integer.MAX_VALUE);
+                parsePrefix(info.prefix, max);
+
 Debug.logD("ImageLoader", "downloading: " + info.url);
-  				
-				if (max.x == Integer.MAX_VALUE) {
-					byteArray = Bitmaps.downloadImageAsByteArray(new URL(info.url));
-				} else {
-					final Bitmap bmp = Bitmaps.getResizedImageFromHttpStream(new URL(info.url), max.x, max.y);
-					byteArray = Bitmaps.compressBitmapToByteArray(bmp, 
-							"big".equals(info.prefix) ? Bitmap.CompressFormat.JPEG : Bitmap.CompressFormat.PNG, 100);
-					bmp.recycle();
-				}
-  			}
-  			
-			synchronized(ImageLoader.class) {
-				if (info.cacheType != ImageInfo.CACHE_TYPE_NONE && sCache != null) {
-					sCache.put(info.prefix + info.url, byteArray, info.cacheType == ImageInfo.CACHE_TYPE_FULL);
-				}
-			}
-      		return byteArray;
 
-		} catch(Throwable e){
-			Debug.logException(e);
-		}
+                if (max.x == Integer.MAX_VALUE) {
+                    bmp = Bitmaps.downloadImage(new URL(info.url));
+                } else {
+                    bmp = Bitmaps.getResizedImageFromHttpStream(new URL(info.url), max.x, max.y);
+                }
+                if (bmp == null) {
 
-		return null;
+                    // not found
+                    return null;
+                }
+
+                if (info.cacheType != ImageInfo.CACHE_TYPE_NONE) {
+
+                    // put in bitmap cache
+                    sBitmapCache.put(info.prefix + info.url, bmp);
+
+                    if (info.cacheType != ImageInfo.CACHE_TYPE_MEMORY) {
+
+                        // put in file cache (in another thread - so we can give this bitmap right away
+                        new Thread() {
+
+                            @Override
+                            public void run() {
+                                sFileCache.put(info.prefix + info.url, Bitmaps.compressBitmapToByteArray(bmp));
+                            }
+                        }.start();
+                    }
+                }
+
+                return bmp;
+            }
+
+        } catch(OutOfMemoryError e) {
+            Debug.logException(e);
+        } catch(Throwable e) {
+            Debug.logException(e);
+        }
+        return null;
 	}
 	
 	/**
@@ -222,18 +230,6 @@ Debug.logD("ImageLoader", "downloading: " + info.url);
 	static String encodeUrl(String url) {
 		return url.replace("/", "|||");
 	}
-	
-	/**
-	 * clear memory cache
-	 */
-	static public void clearCache() {
-		if (sCache == null) {
-			return;
-		}
-		synchronized(sCache) {
-			sCache.clear();
-		}
-	}
 
 	/**
 	 * 
@@ -241,6 +237,11 @@ Debug.logD("ImageLoader", "downloading: " + info.url);
 	 * @param max
 	 */
 	private static void parsePrefix(String prefix, Point max) {
+        if (prefix == null || prefix.length() == 0 || "big".equals(prefix)) {
+            max.x = (int) Global.getScreenWidth();
+            max.y = (int) Global.getScreenHeight();
+            return;
+        }
 		try {
 			max.x = max.y = Integer.parseInt(prefix);
 		} catch(Throwable e) {
@@ -257,231 +258,20 @@ Debug.logD("ImageLoader", "downloading: " + info.url);
 	/**
 	 * class ImageCache
 	 */
-	public static class LocalImageCache extends AbsFileCache<byte[]> {
-		
-		private final ArrayList<String> mOrder = new ArrayList<String>();
-	    private final HashMap<String, byte[]> mValues = new HashMap<String, byte[]>();
-	    
-	    long mSize = 0;
-		private long mCapacity;
+	public static class ImageFileCache extends AbsFileCache<byte[]> {
 
-	    public LocalImageCache(Context context, long capacity, String imagedir, long maxfilesize) {
+	    public ImageFileCache(Context context, String imagedir, long maxfilesize) {
 	    	super(context, imagedir, maxfilesize);
-	    	
-	    	mCapacity = capacity;
 	    }
-	    
-	    /**
-	     * 
-	     */
-	    void onCapacityFull() {
-	    	long limit = (mCapacity * 10) / 16;
-	    	while(mSize > limit) {
-	    		synchronized(mValues) {
-	    			mSize -= mValues.remove(mOrder.remove(0)).length;
-	    		}
-			}
-		}
 
 		/**
-	     * the 'real' get using ImageInfo
-	     * 
-	     * @param info
-	     * @return
-	     */
-		public Bitmap getBitmap(ImageInfo info) {
-			Bitmap bmp = getBitmap(info.prefix + info.url);
-			if (bmp != null || sCache == null || info.cacheType == ImageInfo.CACHE_TYPE_NONE || info.prefix.equals(bmp)) {
-				return bmp;
-			}
-			bmp = getBitmap(info.url);
-			if (bmp != null) {
-				
-				Point max = new Point(Integer.MAX_VALUE, Integer.MAX_VALUE);
-				ImageLoader.parsePrefix(info.prefix, max);
-				if (max.x != Integer.MAX_VALUE) {
-					bmp = Bitmaps.resizeBitmap(bmp, max.x, max.y);
-					put(info.prefix + info.url, Bitmaps.compressBitmapToByteArray(bmp));
-				}
-			}
-			return bmp;
-		}
-
-		/**
-		 * the 'real' get using key
-		 * 
-		 * @param key
-		 * @return
-		 */
-	    public Bitmap getBitmap(String key) {
-    		Bitmap ret = null;
-    		
-    		// try to get the compressed byte array and create a bitmap from it
-    		// put bitmap in cache
-	    	final byte[] byteArray = getByteArrayFromCache(key);
-	    	if (byteArray != null) {
-	    		ret = Bitmaps.createBitmap(byteArray);
-	    	}
-    		return ret;
-	    }
-	    
-	    /**
-	     * 
-	     * @param key
-	     * @param value
-	     * @return
-	     */
-	    @Override
-	    public byte[] put(String key, byte[] value) {
-	    	return putByteArrayInCache(key, value);
-	    }
-   
-    	/**
-    	 * 
-    	 * @param key
-    	 * @param value
-    	 * @param useFileCacheToo
-    	 * @return
-    	 */
-	    public byte[] put(String key, byte[] value, boolean useFileCacheToo) {
-	    	return putByteArrayInCache(key, value, useFileCacheToo);
-	    }
-	    
-	    /**
-	     * 
-	     * @param key
-	     * @return
-	     */
-	    public byte[] getByteArrayFromCache(String key) {
-	    	synchronized(mValues) {
-		    	if (!mOrder.contains(key)) {
-		    		return null;
-		    	}
-		    	mOrder.remove(key);
-		    	mOrder.add(key);
-		    	
-		    	return mValues.get(key);
-	    	}
-	    }
-	    
-	    /**
-	     * 
-	     * @return
-	     */
-	    public byte[] putByteArrayInCache(String key, byte[] value) {
-	    	return putByteArrayInCache(key, value, true);
-	    }
-	    
-	    /**
-	     * 
-	     * @return
-	     */
-	    public byte[] putByteArrayInCache(String key, byte[] value, boolean useFileCacheToo) {
-	    	if (value == null) {
-	    		return null;
-	    	}
-	    	Context context = Global.getContext();
-	    	if (context == null) {
-	    		return null;
-	    	}
-	    	
-	    	synchronized(ImageLoader.class) {
-	    		synchronized(mValues) {
-	    			
-		    		if (mOrder.contains(key)) {
-		    			
-		    			// already got this key
-		    			// remove it
-		    			mOrder.remove(key);
-		    			mSize -= mValues.remove(key).length;
-		    		}
-	    		
-		    		// check memory
-		    		ActivityManager activityManager = (ActivityManager) context.getSystemService(Activity.ACTIVITY_SERVICE);
-		    		MemoryInfo memoryInfo = new ActivityManager.MemoryInfo();
-		    		activityManager.getMemoryInfo(memoryInfo);
-
-		    		if (memoryInfo.lowMemory) {
-		    			
-		    			// low memory
-		    			// remove half of the entries
-		    			for(int i = mOrder.size() / 2; i > 0; --i) {
-		    				mSize -= mValues.remove(mOrder.remove(0)).length;
-		    			}
-		    		}
-		    		
-		    		mValues.put(key, value);
-		    		mOrder.add(key);
-		    		mSize += value.length;
-		    		Debug.logD("ImageLoader", "bytearray cache size: " + mSize);
-	    		}
-	    		
-	    		if (useFileCacheToo) {
-	    			putInFileCache(key, value);
-	    		}
-		    	
-		    	return value;
-	    	}
-	    }
-	    
-	    /**
-	     * 
-	     * @param key
-	     * @param value
-	     * @return
-	     */
-	    public void putInFileCache(final String key, final byte[] value) {
-	    	if (!has(key)) {
-
-	    		// put in file
-	    		final Thread thread = new Thread() {
-	    			
-	    			@Override
-	    			public void run() {
-	    				LocalImageCache.super.put(key, value);	    				
-	    			}
-	    		};
-	    		thread.setPriority(Thread.MIN_PRIORITY);
-	    		thread.start();
-        	}
-	    }
-	    
-	    /**
-	     * 
-	     * @return
-	     */
-	    public boolean isFull() {
-	    	return mSize > mCapacity;
-	    }
-	    
-	    /**
-	     * 
-	     */
-	    public void clear() {
-	    	synchronized(mValues) {
-	    		mOrder.clear();
-	    		mValues.clear();
-	    		mSize = 0;
-	    	}
-	    }
-
-	    /**
-	     * 
-	     * @param url
-	     * @return
-	     */
-		public byte[] getByteArrayFromFile(String key) {
-			return super.get(key);
-		}
-		
-		/**
-		 * 
+		 *
 		 * @param key
 		 * @param maxWidth
 		 * @param maxHeight
 		 * @return
 		 */
-		public byte[] getByteArrayFromFile(String key, int maxWidth, int maxHeight) {
+		public byte[] get(String key, int maxWidth, int maxHeight) {
 			final byte[] byteArray = super.get(key);
 			if (byteArray == null) {
 				return null;

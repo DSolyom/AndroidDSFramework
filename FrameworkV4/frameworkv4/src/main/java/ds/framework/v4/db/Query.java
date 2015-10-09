@@ -187,7 +187,7 @@ public class Query {
 	/**
 	 * set limit
 	 * 
-	 * @param end
+	 * @param limit
 	 */
 	public void setLimit(int limit) {
 		mLimit = new Interval(0, limit);
@@ -196,8 +196,8 @@ public class Query {
 	/**
 	 * set limit 
 	 * 
-	 * @param start
-	 * @param end
+	 * @param offset
+	 * @param limit
 	 */
 	public void setLimit(int offset, int limit) {
 		mLimit = new Interval(offset, limit + offset);

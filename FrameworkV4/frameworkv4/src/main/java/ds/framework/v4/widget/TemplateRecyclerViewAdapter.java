@@ -55,35 +55,50 @@ public abstract class TemplateRecyclerViewAdapter<T> extends AbsTemplateViewHold
 	}
 	
 	synchronized public void addItems(Collection<T> items) {
-		mItems.addAll(items);
-		notifyDataSetChanged();
+        addItems(items.size(), items);
+    }
+
+    synchronized public void addItems(int index, Collection<T> items) {
+		final int itemsS = items.size();
+		mItems.addAll(index, items);
+		notifyItemRangeInserted(index, itemsS);
 	}
 	
 	synchronized public void addItems(T[] items) {
 		addItems(Arrays.asList(items));
 	}
+
+    synchronized public void addItems(int index, T[] items) {
+        addItems(index, Arrays.asList(items));
+    }
 	
 	synchronized public void addItem(T item) {
 		mItems.add(item);
-		notifyDataSetChanged();
+		notifyItemInserted(mItems.size() - 1);
 	}
 	
 	synchronized public boolean removeItem(T item) {
-		if (mItems.remove(item)) {
-			notifyDataSetChanged();
+        int indexOfItem = mItems.indexOf(item);
+		if (indexOfItem != -1) {
+            mItems.remove(item);
+			notifyItemRemoved(indexOfItem);
 			return true;
 		}
 		return false;
 	}
-	
-	synchronized public T removeLastItem() {
-		try {
-			return mItems.remove(mItems.size() - 1);
-		} catch(Exception e) {
-			return null;
-		}
-	}
-	
+
+    synchronized public int removeItems(int position, int itemCount) {
+        if (mItems.size() < position + itemCount) {
+            itemCount = mItems.size() - position;
+        }
+        for(int i = itemCount; i > 0; --i) {
+            mItems.remove(position);
+        }
+        notifyItemRangeRemoved(position, itemCount);
+
+        return itemCount;
+    }
+
 	synchronized public boolean replaceItem(T newItem, T oldItem) {
 		final int at = mItems.indexOf(oldItem);
 		if (at == -1) {

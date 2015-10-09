@@ -23,6 +23,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
 
 import android.content.Context;
 import android.net.Uri;
@@ -31,6 +32,9 @@ import android.os.StatFs;
 import ds.framework.v4.common.Debug;
 
 abstract public class AbsFileCache<T> implements InterfaceCache<String, T> {
+
+	private static HashMap<String, Object> mFileCacheLocks = new HashMap<>();
+    private static HashMap<String, Integer> mFileCacheLockCounts = new HashMap<>();
 
 	private Thread mCT;
 	private Thread mDT;
@@ -89,8 +93,11 @@ abstract public class AbsFileCache<T> implements InterfaceCache<String, T> {
 			return false;
 		}
 
-		synchronized(AbsFileCache.class) {
-			return new File(mDir, getRealFilename(filename)).exists();
+		synchronized(getLock(filename)) {
+			boolean exists = new File(mDir, getRealFilename(filename)).exists();
+            removeLock(filename);
+            return exists;
+
 		}
 	}
 
@@ -101,7 +108,7 @@ abstract public class AbsFileCache<T> implements InterfaceCache<String, T> {
 	 * @return
 	 */
 	public T get(String filename) {
-		synchronized(AbsFileCache.class) {
+		synchronized(getLock(filename)) {
 			if (mMaxSize == 0 || mDir == null || !Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
 				return null;
 			}
@@ -130,6 +137,8 @@ abstract public class AbsFileCache<T> implements InterfaceCache<String, T> {
 				// file exists but could not get from filesystem - remove that file
 				new File(mDir, filename).delete();
 			}
+
+            removeLock(filename);
 			
 			return result;
 		}
@@ -139,51 +148,76 @@ abstract public class AbsFileCache<T> implements InterfaceCache<String, T> {
 	 * put content into file cache
 	 */
 	public T put(String filename, T value) {
-		synchronized(AbsFileCache.class) {
+		synchronized(getLock(filename)) {
 			File file = getOutFile(filename);
-			if (file == null) {
-				return value;
-			}
-	
-			if (file.exists()) {
-				
-				// only return value if file already exists - need to delete this to overwrite
-				return value;
-			}
-			try {
-				FileOutputStream outStream = new FileOutputStream(file);
-	
-				putObjectIntoStream(value, outStream);
-	
-				outStream.flush();
-				outStream.close();
-			} catch (IOException e) {
-				return null;
-			}
-			mSize += file.length();
-			if (mSize > getCurrentMaxSize()) {
-				
-				Debug.logW("file cache max size exceeded", mSize + "");
-				
-				if (mDT != null) {
-					
-					// already doing this
-					return value;
-				}
-				mDT = new Thread() {
-					
-					@Override
-					public void run() {
-						deleteAboveMax(new File(mDir));
-						mDT = null;
-					}
-				};
-				mDT.start();
-			}
-	
-			return value;
+			if (file != null && !file.exists()) {                // only return value if file already exists - need to delete this to overwrite
+                try {
+                    FileOutputStream outStream = new FileOutputStream(file);
+
+                    putObjectIntoStream(value, outStream);
+
+                    outStream.flush();
+                    outStream.close();
+
+                    synchronized (AbsFileCache.class) {
+                        mSize += file.length();
+                        if (mSize > getCurrentMaxSize()) {
+
+                            Debug.logW("file cache max size exceeded", mSize + "");
+
+                            if (mDT != null) {
+
+                                // already doing this
+                                return value;
+                            }
+                            mDT = new Thread() {
+
+                                @Override
+                                public void run() {
+                                    deleteAboveMax(new File(mDir));
+                                    mDT = null;
+                                }
+                            };
+                            mDT.start();
+                        }
+                    }
+                } catch (IOException e) {
+                    value = null;
+                }
+            }
 		}
+
+        removeLock(filename);
+
+        return value;
 	}
+
+    private Object getLock(String filename) {
+        synchronized (AbsFileCache.class) {
+            Object lock = mFileCacheLocks.get(filename);
+            if (lock != null) {
+                mFileCacheLockCounts.put(filename, mFileCacheLockCounts.get(filename) + 1);
+                return lock;
+            }
+            lock = new Object();
+            mFileCacheLockCounts.put(filename, 1);
+            return lock;
+        }
+    }
+
+    private void removeLock(String filename) {
+        synchronized (AbsFileCache.class) {
+            if (mFileCacheLocks.remove(filename) == null) {
+                return;
+            }
+            int count = mFileCacheLockCounts.get(filename);
+            if (count == 1) {
+                mFileCacheLockCounts.remove(filename);
+            } else {
+                mFileCacheLockCounts.put(filename, count - 1);
+            }
+        }
+    }
 	
 	/**
 	 * 

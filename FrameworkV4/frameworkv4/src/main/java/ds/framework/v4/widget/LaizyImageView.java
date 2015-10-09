@@ -202,7 +202,7 @@ public class LaizyImageView extends ImageView implements Callback<ImageInfo, Bit
 			mCurrentImageInfo = mInfo.info;
 		}
 
-		if (!mAlwaysLoadInBackground ) {
+		if (!mAlwaysLoadInBackground) {
 		
 			// first try imageLoader's memory cache
 			final Bitmap bmp = ImageLoader.getFromCache(mCurrentImageInfo);
@@ -214,6 +214,12 @@ public class LaizyImageView extends ImageView implements Callback<ImageInfo, Bit
 			
 			startLoadingInBg();
 		} else {
+			final Bitmap bmp = ImageLoader.getFromBitmapCache(mCurrentImageInfo);
+			if (bmp != null) {
+				setImage(bmp, false);
+				return;
+			}
+
 			showDefault();
 			
 			class FastImageLoaderThread extends Thread {
@@ -556,7 +562,7 @@ Debug.logD("LaizyImageView", "bitmap was recylced at draw");
 		
 		/**
 		 * 
-		 * @param url
+		 * @param imageUrl
 		 * @param defaultResID
 		 * @param isThumbnail
 		 */

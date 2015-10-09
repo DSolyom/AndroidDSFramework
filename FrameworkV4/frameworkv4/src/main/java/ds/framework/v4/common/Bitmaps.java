@@ -129,10 +129,8 @@ public class Bitmaps {
 	 * !please note: this does not checks if the input byteArray is 'small' enough to create the bitmap(s)
 	 * 
 	 * @param byteArray
-	 * @param width
-	 * @param height
-	 * @param format
-	 * @param quality
+	 * @param maxWidth
+	 * @param maxHeight
 	 * @throws OutOfMemoryError
 	 * @return
 	 */
@@ -325,7 +323,7 @@ public class Bitmaps {
 	        is = context.getContentResolver().openInputStream(uri);
 	        bmp = BitmapFactory.decodeStream(is, null, o2);
 	        is.close();
-	
+
 			return bmp;
 		} catch(Throwable e) {
 			e.printStackTrace();
@@ -379,7 +377,7 @@ public class Bitmaps {
 	
 	/**
 	 * 
-	 * @param stream
+	 * @param url
 	 * @param approxWidth
 	 * @param approxHeight
 	 * @return

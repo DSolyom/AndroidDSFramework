@@ -55,7 +55,16 @@ public abstract class CursorList extends AbsRecyclerViewData {
         }
 
         super.load(listener, loadId);
+    }
 
+    /**
+     * call when 'manual' query refresh needed
+     * !note: make sure you're doing the right thing
+     */
+    protected void refreshQuery() {
+        synchronized(mLoaderQueryLock) {
+            mLoaderQuery = getListLoaderQuery();
+        }
     }
 
     /**

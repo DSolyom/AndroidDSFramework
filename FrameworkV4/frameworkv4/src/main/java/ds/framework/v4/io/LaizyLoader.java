@@ -149,12 +149,12 @@ Debug.logE("starting", mDownloaders.get(i).getId() + "");
 						// set first (which is not downloading) from queue for downloading
 						for(S key : mQueueOrder) {
 							current = mQueue.get(key);
-							if (!current.downloading) {
+							if (current != null && !current.downloading) {
 								break;
 							}
 						
 						}
-						if (current.downloading) {
+						if (current == null || current.downloading) {
 							current = null;
 						} else {
 							current.downloading = true;

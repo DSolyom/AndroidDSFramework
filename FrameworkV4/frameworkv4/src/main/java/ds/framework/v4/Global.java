@@ -18,10 +18,12 @@ package ds.framework.v4;
 import java.util.ArrayList;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.util.DisplayMetrics;
 import ds.framework.v4.common.Debug;
 import ds.framework.v4.db.Db;
@@ -178,19 +180,10 @@ public class Global {
 	 * @return
 	 */
 	public static ImageLoader getImageLoaderInstance(Context context) {
-		long cs = 0;
-		try {
-			final long maxMem = Runtime.getRuntime().maxMemory();
-			cs = maxMem / 12;
-			if (cs > 7 * 1024 * 1024) {
-				cs = 7 * 1024 * 1024;
-			}
-		} catch(Throwable e) {
-			;
-		}
-		if (cs < 3 * 480 * 800) {
-			cs = 3 * 480 * 800;
-		}
+		int cs = 0;
+
+		ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+		cs = 1024 * am.getLargeMemoryClass() / 7;
 
 		return ImageLoader.getInstance(context, cs, sInstance.mContext.getPackageName() + "/images/", 
 				Settings.getInstance(getContext()).getLong(Settings.SETTINGS_IMAGE_CACHE_SIZE, -1));
