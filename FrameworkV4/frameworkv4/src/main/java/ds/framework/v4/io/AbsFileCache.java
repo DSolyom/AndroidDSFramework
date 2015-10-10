@@ -27,8 +27,11 @@ import java.util.HashMap;
 
 import android.content.Context;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.os.StatFs;
+
+import ds.framework.v4.BuildConfig;
 import ds.framework.v4.common.Debug;
 
 abstract public class AbsFileCache<T> implements InterfaceCache<String, T> {
@@ -239,8 +242,14 @@ abstract public class AbsFileCache<T> implements InterfaceCache<String, T> {
 		long maxSize = mMaxSize;
 		try {
 			StatFs stat = new StatFs(Environment.getExternalStorageDirectory().getPath());
-			long sdAvailSize = (long) stat.getAvailableBlocks()
-		                   	* (long) stat.getBlockSize();
+			long sdAvailSize;
+
+            if (Build.VERSION.SDK_INT < 18) {
+                sdAvailSize = (long) stat.getAvailableBlocks()
+                        * (long) stat.getBlockSize();
+            } else {
+                sdAvailSize = stat.getAvailableBlocksLong() * stat.getBlockSizeLong();
+            }
 			if (maxSize == -1 || maxSize > sdAvailSize / 10) {
 				maxSize = sdAvailSize / 10;
 			}

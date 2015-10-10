@@ -24,7 +24,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.net.Uri;
-import android.util.LruCache;
+import android.support.v4.util.LruCache;
 
 import ds.framework.v4.Global;
 import ds.framework.v4.common.Bitmaps;
@@ -83,6 +83,9 @@ public class ImageLoader extends LaizyLoader<ImageLoader.ImageInfo, Bitmap> {
      */
     public static Bitmap getFromBitmapCache(ImageInfo info) {
         final Bitmap bmp = sBitmapCache.get(info.prefix + info.url);
+if (bmp != null) {
+    Debug.logE("ImageLoader", "loaded from cache: " + info.prefix + " " + info.url);
+}
         return bmp;
     }
 
@@ -101,11 +104,16 @@ public class ImageLoader extends LaizyLoader<ImageLoader.ImageInfo, Bitmap> {
             if (bmpBytes == null || bmpBytes.length == 0) {
                 return null;
             }
-
             sFileCache.put(info.prefix + info.url, bmpBytes);
         }
 
         Bitmap bmp = Bitmaps.createBitmap(bmpBytes);
+
+		if (bmp != null) {
+			sBitmapCache.put(info.prefix + info.url, bmp);
+		}
+
+Debug.logE("ImageLoader", "loaded from file: " + info.prefix + " " + info.url);
         return bmp;
     }
 
@@ -168,7 +176,6 @@ Debug.logNativeHeapAllocatedSize();
                     final Bitmap bmp;
                     bmp = getFromFileCache(info);
                     if (bmp != null) {
-                        sBitmapCache.put(info.prefix + info.url, bmp);
                         return bmp;
                     }
                 }
@@ -282,7 +289,6 @@ Debug.logD("ImageLoader", "downloading: " + info.url);
 		@Override
 		synchronized protected byte[] getObjectFromStream(FileInputStream inStream) {
 			try {
-Debug.logE("ImageLoader", "from file");
 				return Files.getFileAsByteArray(inStream);
 			} catch(Throwable e) {
 				Debug.logException(e);
