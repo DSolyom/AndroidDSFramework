@@ -26,8 +26,9 @@ public abstract class BackgroundThread {
 
 	public static final int EMPTY = 0;
 	public static final int RUNNING = 1;
-	public static final int FINISHED = 2;
-	public static final int INTERRUPTED = 4;
+	public static final int FINISHING = 2;
+	public static final int FINISHED = 4;
+	public static final int INTERRUPTED = 8;
 	
 	static private HashMap<String, BackgroundThread> sThreads = new HashMap<String, BackgroundThread>();
 		
@@ -403,8 +404,9 @@ public abstract class BackgroundThread {
 				    						// probably interrupted and already started another thread
 				    						return;
 				    					}
-										mState = FINISHED;
+										mState = FINISHING;
 				    					onFinished();
+                                        mState = FINISHED;
 				    				} 		
 				    	    	} : new Runnable() {
 				    				
@@ -416,13 +418,14 @@ public abstract class BackgroundThread {
 				    						mState = FINISHED;
 				    						return;
 				    					}
-				    					if (mState == FINISHED) {
+				    					if (mState == FINISHING || mState == FINISHED) {
 				    						
 				    						// probably interrupted and already started another thread
 				    						return;
 				    					}
-										mState = FINISHED;
+										mState = FINISHING;
 				    					onFailure();
+                                        mState = FINISHED;
 				    				}
 				    	    	}
 			    	    	);

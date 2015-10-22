@@ -84,7 +84,7 @@ public class ImageLoader extends LaizyLoader<ImageLoader.ImageInfo, Bitmap> {
     public static Bitmap getFromBitmapCache(ImageInfo info) {
         final Bitmap bmp = sBitmapCache.get(info.prefix + info.url);
 if (bmp != null) {
-    Debug.logE("ImageLoader", "loaded from cache: " + info.prefix + " " + info.url);
+    Debug.logD("ImageLoader", "loaded from cache: " + info.prefix + " " + info.url);
 }
         return bmp;
     }
@@ -113,7 +113,7 @@ if (bmp != null) {
 			sBitmapCache.put(info.prefix + info.url, bmp);
 		}
 
-Debug.logE("ImageLoader", "loaded from file: " + info.prefix + " " + info.url);
+Debug.logD("ImageLoader", "loaded from file: " + info.prefix + " " + info.url);
         return bmp;
     }
 

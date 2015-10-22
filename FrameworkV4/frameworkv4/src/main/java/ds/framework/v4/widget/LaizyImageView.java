@@ -202,64 +202,21 @@ public class LaizyImageView extends ImageView implements Callback<ImageInfo, Bit
 			mCurrentImageInfo = mInfo.info;
 		}
 
+		final Bitmap bmp;
 		if (!mAlwaysLoadInBackground) {
-		
-			// first try imageLoader's memory cache
-			final Bitmap bmp = ImageLoader.getFromCache(mCurrentImageInfo);
-			if (bmp != null) {
-				setImage(bmp, false);
-				return;
-			}
-			showDefault();
-			
-			startLoadingInBg();
-		} else {
-			final Bitmap bmp = ImageLoader.getFromBitmapCache(mCurrentImageInfo);
-			if (bmp != null) {
-				setImage(bmp, false);
-				return;
-			}
 
-			showDefault();
-			
-			class FastImageLoaderThread extends Thread {
-				
-				ImageInfo mFastInfo;
-				
-				public FastImageLoaderThread(ImageInfo info) {
-					mFastInfo = info;
-				}
-			}
-			new FastImageLoaderThread(mCurrentImageInfo) {
-				
-				@Override
-				public void run() {
-					final Bitmap bmp = ImageLoader.getFromCache(mFastInfo);
-					if (bmp != null) {
-						synchronized(LaizyImageView.class) {
-							if (mCurrentImageInfo == null) {
-								return;
-							} else if (mFastInfo.equals(mCurrentImageInfo)) {
-								onLoadFinished(mFastInfo, bmp);
-							}
-						}
-					} else {
-						runOnUiThread(new Runnable() {
-							
-							@Override
-							public void run() {
-								synchronized(LaizyImageView.class) {
-									if (mFastInfo.equals(mCurrentImageInfo)) {
-										startLoadingInBg();
-									}
-								}
-							}
-						});
-					}
-				}
-			}.start();
-			
+			// first try imageLoader's memory or file cache
+			bmp = ImageLoader.getFromCache(mCurrentImageInfo);
+		} else {
+			bmp = ImageLoader.getFromBitmapCache(mCurrentImageInfo);
 		}
+		if (bmp != null) {
+			setImage(bmp, false);
+			return;
+		}
+		showDefault();
+
+		startLoadingInBg();
 	}
 	
 	private void startLoadingInBg() {

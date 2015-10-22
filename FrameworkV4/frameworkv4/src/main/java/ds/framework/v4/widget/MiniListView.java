@@ -17,7 +17,6 @@ package ds.framework.v4.widget;
 
 import ds.framework.v4.common.Common;
 import android.content.Context;
-import android.database.DataSetObserver;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.View;
@@ -183,7 +182,7 @@ public class MiniListView extends LinearLayout {
 	public View getView(int position, View convertView) {
 		LayoutParams lp;
         if (convertView == null) {
-            RecyclerView.ViewHolder vh = mAdapter.onCreateViewHolder(MiniListView.this, RecyclerViewHeaderedAdapter.ITEM_VIEW_TYPE_DEFAULT);
+            RecyclerView.ViewHolder vh = mAdapter.onCreateViewHolder(MiniListView.this, RecyclerViewHeaderedAdapter.VIEWTYPE_DEFAULT);
             convertView = vh.itemView;
             convertView.setTag(vh);
         }

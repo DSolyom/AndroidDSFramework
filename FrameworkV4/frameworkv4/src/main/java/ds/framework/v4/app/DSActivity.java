@@ -129,6 +129,8 @@ abstract public class DSActivity extends ActionBarActivity
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		selfOnCreate(savedInstanceState);
+
 		Settings.getInstance(this).forceLocale(this);
 		
 		if (mId == -1) {
@@ -153,6 +155,10 @@ abstract public class DSActivity extends ActionBarActivity
 
 		onEnterActivity(getIntent(), false);
 	}
+
+    protected void selfOnCreate(Bundle savedInstanceState) {
+        ;
+    }
 	
 	@Override
 	public void onResume() {
@@ -413,7 +419,7 @@ abstract public class DSActivity extends ActionBarActivity
 	}
 	
 	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (resultCode == RESULT_OK) {
 			mReturnRequestCode = requestCode;
 			if (data.getAction() == null || data.getAction().length() == 0) {
@@ -493,7 +499,6 @@ abstract public class DSActivity extends ActionBarActivity
 	}
 
 	/**
-	 * 
 	 * @param fragment
 	 */
 	void onFragmentAttached(DSFragmentInterface fragment) {

@@ -25,10 +25,10 @@ import ds.framework.v4.data.AbsRecyclerViewData;
 
 abstract public class RecyclerViewHeaderedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements AbsAsyncData.OnDataLoadListener {
 
-    public final static int ITEM_VIEW_TYPE_HEADER = 250;
-    public final static int ITEM_VIEW_TYPE_FOOTER = 251;
+    public final static int VIEWTYPE_HEADER = 250;
+    public final static int VIEWTYPE_FOOTER = 251;
 
-    public final static int ITEM_VIEW_TYPE_DEFAULT = 252;
+    public final static int VIEWTYPE_DEFAULT = 252;
 
     protected View mHeaderView;
     protected View mFooterView;
@@ -59,9 +59,9 @@ abstract public class RecyclerViewHeaderedAdapter extends RecyclerView.Adapter<R
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        if (viewType == ITEM_VIEW_TYPE_HEADER) {
+        if (viewType == VIEWTYPE_HEADER) {
             return new RecyclerView.ViewHolder(mHeaderView) {};
-        } else if (viewType == ITEM_VIEW_TYPE_FOOTER) {
+        } else if (viewType == VIEWTYPE_FOOTER) {
             return new RecyclerView.ViewHolder(mFooterView) {};
         }
         return null;
@@ -87,10 +87,10 @@ abstract public class RecyclerViewHeaderedAdapter extends RecyclerView.Adapter<R
     @Override
     public int getItemViewType(int position) {
         if (position == 0 && mHeaderView != null) {
-            return ITEM_VIEW_TYPE_HEADER;
+            return VIEWTYPE_HEADER;
         }
         if (mFooterView != null && position == getItemCount() - 1) {
-            return ITEM_VIEW_TYPE_FOOTER;
+            return VIEWTYPE_FOOTER;
         }
         return getItemViewTypeInner(position - (mHeaderView != null ? 1: 0));
     }
@@ -101,7 +101,7 @@ abstract public class RecyclerViewHeaderedAdapter extends RecyclerView.Adapter<R
      * @return
      */
     public int getItemViewTypeInner(int position) {
-        return ITEM_VIEW_TYPE_DEFAULT;
+        return VIEWTYPE_DEFAULT;
     }
 
     /**

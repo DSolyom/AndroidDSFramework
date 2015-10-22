@@ -36,8 +36,8 @@ public abstract class FixedRatioTemplateAdapter<T> extends TemplateRecyclerViewA
 	}
 		
 	@Override
-	protected View inflateTemplateView(int rowRes, ViewGroup viewParent) {
-		final View view = super.inflateTemplateView(rowRes, viewParent);
+	protected View inflateTemplateView(int rowRes, ViewGroup viewParent, int viewType) {
+		final View view = super.inflateTemplateView(rowRes, viewParent, viewType);
 		final LayoutParams lp = view.getLayoutParams();
 		lp.width = mItemWidth;
 		lp.height = (int) ((float) mItemWidth / sizeRatio);

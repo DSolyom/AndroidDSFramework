@@ -189,9 +189,15 @@ abstract public class AbsAsyncData implements Serializable {
 		if (mLoaderTag == null) {
 			mLoader = loader;
 		}
-		loader.mOwner = this;
-		loader.mListener = listener;
-		loader.start(mLoaderTag);
+		if (mLoader != null) {
+			mLoader.mOwner = this;
+			mLoader.mListener = listener;
+			mLoader.start(mLoaderTag);
+		} else {
+
+			// no loader - just pretend we have finished loading
+            listener.onDataLoaded(this, loadId);
+		}
 	}
 	
 	/**
@@ -202,7 +208,7 @@ abstract public class AbsAsyncData implements Serializable {
 		LoaderThread loader = recoverLoader();
 
 		// has loader and it's loading
-		return loader != null && loader.getState() == BackgroundThread.RUNNING;
+		return loader != null && (loader.getState() == BackgroundThread.RUNNING || loader.getState() == BackgroundThread.FINISHING);
 	}
 	
 	/**
@@ -270,9 +276,8 @@ abstract public class AbsAsyncData implements Serializable {
 	 */
 	protected void onDataLoaded(Object result, OnDataLoadListener listener) {
 		mValid = true;
-		mLoader = null;
-		
 		listener.onDataLoaded(this, mLoadId);
+		mLoader = null;
 	}
 	
 	/**
@@ -282,16 +287,14 @@ abstract public class AbsAsyncData implements Serializable {
 	 */
 	protected void onDataLoadFailed(Object result, OnDataLoadListener listener) {
 		mValid = mStartsAsValid;
-		mLoader = null;
-		
 		listener.onDataLoadFailed(this, mLoadId);
+        mLoader = null;
 	}
 	
 	protected void onInterrupt(OnDataLoadListener listener) {
 		mValid = mStartsAsValid;
-		mLoader = null;
-		
 		listener.onDataLoadInterrupted(this, mLoadId);
+        mLoader = null;
 	}
 	
 	/**

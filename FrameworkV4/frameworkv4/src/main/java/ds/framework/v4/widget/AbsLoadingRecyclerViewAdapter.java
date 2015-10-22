@@ -19,12 +19,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
 
 import ds.framework.v4.app.ActivityInterface;
-import ds.framework.v4.common.Debug;
 import ds.framework.v4.data.AbsAsyncData;
 
 abstract public class AbsLoadingRecyclerViewAdapter<T> extends AbsTemplateViewHolderAdapter<T> {
 
-    public final static int LOADING_VIEW_TYPE_DEFAULT = 240;
+    public final static int VIEWTYPE_LOADING = 240;
 
     protected int mDataOffset;
     protected int mLoadThreshold;
@@ -43,21 +42,20 @@ abstract public class AbsLoadingRecyclerViewAdapter<T> extends AbsTemplateViewHo
         super(in, loadingRowLayoutId);
     }
 
+    /**
+     *
+     * @param threshold
+     */
+    public void setLoadThreshold(int threshold) {
+        mLoadThreshold = threshold;
+    }
+
     @Override
     public void onBindViewHolderInner(RecyclerView.ViewHolder holder, int position) {
-        if (position < mDataOffset) {
-
-            // start loading items at the 'top'
-            loadSomeIfNeeded(position);
-            super.onBindViewHolderInner(holder, position);
-        } else if (position >= mDataOffset + mAdapterDataCount) {
-
-            // start loading items at the 'bottom'
-            loadSomeIfNeeded(position);
+        loadSomeIfNeeded(position);
+        if (position < mDataOffset || position >= mDataOffset + mAdapterDataCount) {
             super.onBindViewHolderInner(holder, position);
         } else {
-            loadSomeIfNeeded(position);
-
             mAdapter.onBindViewHolderInner(holder, position - mDataOffset);
         }
     }
@@ -84,10 +82,10 @@ abstract public class AbsLoadingRecyclerViewAdapter<T> extends AbsTemplateViewHo
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        if (viewType != LOADING_VIEW_TYPE_DEFAULT) {
+        if (viewType != VIEWTYPE_LOADING) {
             return mAdapter.onCreateViewHolder(parent, viewType);
         } else {
-            return super.onCreateViewHolder(parent, ITEM_VIEW_TYPE_DEFAULT);
+            return super.onCreateViewHolder(parent, VIEWTYPE_DEFAULT);
         }
     }
 
@@ -144,7 +142,7 @@ abstract public class AbsLoadingRecyclerViewAdapter<T> extends AbsTemplateViewHo
      */
     public int getItemViewTypeInner(int position) {
         if (position < mDataOffset || position >= mDataOffset + mAdapterDataCount) {
-            return LOADING_VIEW_TYPE_DEFAULT;
+            return VIEWTYPE_LOADING;
         }
         return mAdapter.getItemViewType(position - mDataOffset);
     }

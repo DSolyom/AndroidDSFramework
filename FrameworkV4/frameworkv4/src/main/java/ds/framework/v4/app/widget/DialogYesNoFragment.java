@@ -45,6 +45,8 @@ public class DialogYesNoFragment extends DSFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        mRootViewLayoutResID = ds.framework.v4.R.layout.x_dialog_yes_no;
+
         setStyle(STYLE_NO_FRAME & STYLE_NO_TITLE, ds.framework.v4.R.style.Theme_Transparent);
         setCancelable(false);
     }
@@ -65,12 +67,6 @@ public class DialogYesNoFragment extends DSFragment {
             Debug.logI("DialogYesNoFragment", "No click runnable for either negative or positive button - dismissing!");
             dismissAllowingStateLoss();
         }
-    }
-
-    @Override
-    protected View getRootView(LayoutInflater inflater, ViewGroup container) {
-        final View rootView = inflater.inflate(ds.framework.v4.R.layout.x_dialog_yes_no, container, false);
-        return rootView;
     }
 
     /**

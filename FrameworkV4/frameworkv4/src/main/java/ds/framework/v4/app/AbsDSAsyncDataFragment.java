@@ -115,6 +115,8 @@ abstract public class AbsDSAsyncDataFragment extends DSFormFragment
 			mInLoadData = true;
 			for(AbsAsyncData data : mData) {
 				if (data.isValid() || !data.loadIfNeeded(this, at)) {
+
+					// no loading needed
 					mAsyncDataLoadState &= ~(1 << at);
 				}
 

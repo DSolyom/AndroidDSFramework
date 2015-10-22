@@ -28,8 +28,8 @@ import ds.framework.v4.data.AbsRecyclerViewData;
  */
 public class RecyclerViewMultiAdapter extends RecyclerViewHeaderedAdapter {
 
-    public final static int VIEW_TYPE_SHIFT = 8;
-    public final static int VIEW_TYPE_REAL_MASK = 255;
+    public final static int VIEWTYPE_SHIFT = 8;
+    public final static int VIEWTYPE_REAL_MASK = 255;
 
     private ArrayList<Integer> mAdapterStartPositions = new ArrayList<>();
     private ArrayList<RecyclerViewHeaderedAdapter> mAdapters = new ArrayList<>();
@@ -114,7 +114,7 @@ public class RecyclerViewMultiAdapter extends RecyclerViewHeaderedAdapter {
         if (holder != null) {
             return holder;
         }
-        return mAdapters.get(viewType >> VIEW_TYPE_SHIFT).onCreateViewHolder(parent, viewType & VIEW_TYPE_REAL_MASK);
+        return mAdapters.get(viewType >> VIEWTYPE_SHIFT).onCreateViewHolder(parent, viewType & VIEWTYPE_REAL_MASK);
     }
 
     @Override
@@ -129,7 +129,7 @@ public class RecyclerViewMultiAdapter extends RecyclerViewHeaderedAdapter {
         // create 'unique' type by adapter and adapters position type
         final AdapterInfo adapterInfo = getAdapterInfoFor(position);
 
-        return mAdapters.get(adapterInfo.index).getItemViewType(position - adapterInfo.startPosition) + (adapterInfo.index << VIEW_TYPE_SHIFT);
+        return mAdapters.get(adapterInfo.index).getItemViewType(position - adapterInfo.startPosition) + (adapterInfo.index << VIEWTYPE_SHIFT);
     }
 
     @Override

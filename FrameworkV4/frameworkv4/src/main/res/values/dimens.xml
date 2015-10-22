@@ -29,4 +29,6 @@
     <dimen name="shadow_height">6dp</dimen>
 
     <dimen name="fab_medium">72dp</dimen>
+
+    <dimen name="tabbar_height">40dp</dimen>
 </resources>

@@ -86,6 +86,8 @@ public class HttpRequest {
 	public static final int PARAM_MODE_STRING = 0;
 	public static final int PARAM_MODE_HTML = 1;
 	public static final int PARAM_MODE_HTML_ENTITY = 2;
+
+    private static CookieStore sCookieStore;
 	
 	private String mUrl;
 	private String mDataString;
@@ -104,7 +106,6 @@ public class HttpRequest {
 	private Integer mStatusCode;
 	private int mConnectionTimeout = 30000;
 	private int mSoTimeout = 60000;
-	private CookieStore mCookieStore;
 
 	public HttpRequest() {
 	}
@@ -185,8 +186,8 @@ public class HttpRequest {
 	 */
 	public void reset() {
 		clear();
-		if (mCookieStore != null) {
-			mCookieStore.clear();
+		if (sCookieStore != null) {
+			sCookieStore.clear();
 		}
 	}
 	
@@ -393,8 +394,8 @@ public class HttpRequest {
 		mRequest = httppost;
 		
 		DefaultHttpClient httpclient = sslClient(new DefaultHttpClient());
-		if (mCookieStore != null) {
-			httpclient.setCookieStore(mCookieStore);
+		if (sCookieStore != null) {
+			httpclient.setCookieStore(sCookieStore);
 		}
 		HttpParams params = httpclient.getParams();
 		params.setParameter(CoreProtocolPNames.USER_AGENT,
@@ -403,7 +404,7 @@ public class HttpRequest {
 		HttpConnectionParams.setConnectionTimeout(params, mConnectionTimeout);
 		HttpConnectionParams.setSoTimeout(params, mSoTimeout);
 		mHttpResponse = httpclient.execute(httppost);
-		mCookieStore = httpclient.getCookieStore();
+		sCookieStore = httpclient.getCookieStore();
 		mStatusCode = mHttpResponse.getStatusLine().getStatusCode();
 		mRequest = null;
 	}
@@ -415,7 +416,10 @@ public class HttpRequest {
 	 * @throws Exception
 	 */
 	public void get() throws ClientProtocolException, IOException, Exception { 		
-		HttpClient httpclient = sslClient(new DefaultHttpClient());
+		DefaultHttpClient httpclient = sslClient(new DefaultHttpClient());
+		if (sCookieStore != null) {
+			httpclient.setCookieStore(sCookieStore);
+		}
 		
 		HttpParams params = httpclient.getParams();
 		params.setParameter(CoreProtocolPNames.USER_AGENT,
@@ -435,6 +439,7 @@ public class HttpRequest {
 		Debug.logW("HttpRequest", "get from " + mRequest.getURI().toASCIIString());
 		
 		mHttpResponse = httpclient.execute(mRequest);
+        sCookieStore = httpclient.getCookieStore();
 		mStatusCode = mHttpResponse.getStatusLine().getStatusCode();
 		mRequest = null;
 	}
@@ -659,7 +664,7 @@ public class HttpRequest {
 	 * @return
 	 */
 	public CookieStore getCookieStore() {
-		return mCookieStore;
+		return sCookieStore;
 	}
 	
 	/**

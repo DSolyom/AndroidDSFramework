@@ -61,12 +61,6 @@ abstract public class AbsDSRecyclerViewFragment extends AbsDSAsyncDataFragment {
 
         mRecyclerAdapterView = (ViewGroup) mTemplate.findViewById(getRecyclerViewID());
 	}
-	
-	@Override
-	public void loadData() {
-		ensureAdapter();
-		super.loadData();
-	}
 
     @Override
     protected AbsAsyncData[] getAsyncDataObjects() {
@@ -75,18 +69,21 @@ abstract public class AbsDSRecyclerViewFragment extends AbsDSAsyncDataFragment {
 
     @Override
     public void createData() {
+		ensureAdapter();
         super.createData();
 
-        final AbsRecyclerViewData[] recyclerViewData = mAdapter.getRecyclerViewData();
-        final AbsAsyncData[] normalData = mData;
-        mData = new AbsAsyncData[normalData.length + recyclerViewData.length];
+		if (mAdapter != null) {
+            final AbsRecyclerViewData[] recyclerViewData = mAdapter.getRecyclerViewData();
+            final AbsAsyncData[] normalData = mData;
+            mData = new AbsAsyncData[normalData.length + recyclerViewData.length];
 
-        int i = 0;
-        for(;i < recyclerViewData.length; ++i) {
-            mData[i] = recyclerViewData[i];
-        }
-        for(int j = 0; j < normalData.length; ++j) {
-            mData[i + j] = normalData[j];
+            int i = 0;
+            for (; i < normalData.length; ++i) {
+                mData[i] = normalData[i];
+            }
+            for (int j = 0; j < recyclerViewData.length; ++j) {
+                mData[i + j] = recyclerViewData[j];
+            }
         }
     }
 	

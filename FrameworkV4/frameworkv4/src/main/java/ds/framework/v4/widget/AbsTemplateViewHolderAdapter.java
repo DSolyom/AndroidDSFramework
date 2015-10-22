@@ -23,7 +23,7 @@ import android.view.ViewGroup;
 import java.util.HashMap;
 
 import ds.framework.v4.app.ActivityInterface;
-import ds.framework.v4.data.AbsAsyncData;
+import ds.framework.v4.common.Debug;
 import ds.framework.v4.data.AbsRecyclerViewData;
 import ds.framework.v4.template.Template;
 
@@ -31,21 +31,64 @@ abstract public class AbsTemplateViewHolderAdapter<T> extends RecyclerViewHeader
     
 	protected ActivityInterface mIn;
 
-    // TODO: to be able to add multiple layout resource id for different view types
-	private HashMap<Integer, Integer> mRowLayoutRess = new HashMap<Integer, Integer>();
+    /**
+     * layout resourcer ids for view types
+     * !note: use type < 240 to be able to use {@link RecyclerViewMultiAdapter} and {@link AbsLoadingRecyclerViewAdapter}
+     * use {@link #setViewTypeLayoutResID(int viewType, int resID)} to set
+     */
+	private HashMap<Integer, Integer> mRowLayoutRess = new HashMap<>();
+
+    /**
+     * view types for positions when view type is different from VIEWTYPE_DEFAULT
+     * !note: you need to handle (re) settings view types when adapter data is changed
+     * use {@link #clearViewTypes()} and {@link #setRowViewType(int position, int viewType)} for this
+     */
+    private HashMap<Integer, Integer> mViewTypes = new HashMap<>();
+
 	protected Template mTemplate;
 
     protected AbsRecyclerViewData mRecyclerViewData;
 
     public AbsTemplateViewHolderAdapter(ActivityInterface in, int rowLayoutId) {
 		mIn = in;
-		mRowLayoutRess.put(ITEM_VIEW_TYPE_DEFAULT, rowLayoutId);
+		mRowLayoutRess.put(VIEWTYPE_DEFAULT, rowLayoutId);
 		mTemplate = new Template(mIn, null);
+
+        // just use an empty data as default
+        mRecyclerViewData = new AbsRecyclerViewData() {
+            @Override
+            protected LoaderThread createLoader() {
+                return null;
+            }
+        };
 	}
 	
 	public ActivityInterface getIn() {
 		return mIn;
 	}
+
+    /**
+     *
+     * @param viewType
+     * @param resID
+     */
+    public void setViewTypeLayoutResID(int viewType, int resID) {
+        mRowLayoutRess.put(viewType, resID);
+    }
+
+    public void clearViewTypes() {
+        mViewTypes.clear();
+    }
+
+    /**
+     * set view type for position
+     *
+     * @param position
+     * @param viewType
+     */
+    public void setRowViewType(int position, int viewType) {
+        mViewTypes.put(position, viewType);
+    }
 	
 	@Override
 	public long getItemId(int position) {
@@ -55,16 +98,17 @@ abstract public class AbsTemplateViewHolderAdapter<T> extends RecyclerViewHeader
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         RecyclerView.ViewHolder holder = super.onCreateViewHolder(parent, viewType);
+
         if (holder != null) {
             return holder;
         }
-        return new TemplateHolder(inflateTemplateView(mRowLayoutRess.get(viewType), parent));
+        return new TemplateHolder(inflateTemplateView(mRowLayoutRess.get(viewType), parent, viewType));
     }
 
     @Override
     public void onBindViewHolderInner(final RecyclerView.ViewHolder holder, final int position) {
         mTemplate.setRoot(holder.itemView);
-        fillRow((T) getItem(position), position);
+        fillRow((T) getItem(position), position, holder.getItemViewType());
     }
 	
 	/**
@@ -72,7 +116,7 @@ abstract public class AbsTemplateViewHolderAdapter<T> extends RecyclerViewHeader
 	 * 
 	 * @return
 	 */
-	protected View inflateTemplateView(int rowRes, ViewGroup viewParent) {
+	protected View inflateTemplateView(int rowRes, ViewGroup viewParent, int viewType) {
 		final View view = mIn.inflate(rowRes, viewParent, false);
 		return view;
 	}
@@ -102,11 +146,26 @@ abstract public class AbsTemplateViewHolderAdapter<T> extends RecyclerViewHeader
 
         super.reset();
     }
-	
+
+    /**
+     *
+     * @param position
+     * @return
+     */
+    public int getItemViewTypeInner(int position) {
+        Integer viewType = mViewTypes.get(position);
+
+        if (viewType == null) {
+            return super.getItemViewTypeInner(position);
+        }
+        return viewType;
+    }
+
 	/**
-	 * @param data
-	 */
-	abstract protected void fillRow(T data, int position);
+     * @param data
+     * @param viewType
+     */
+	abstract protected void fillRow(T data, int position, int viewType);
 
 
     /**

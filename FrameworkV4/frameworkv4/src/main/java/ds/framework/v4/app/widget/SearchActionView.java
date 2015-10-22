@@ -87,7 +87,7 @@ public class SearchActionView extends LinearLayout {
 
 			@Override
 			public void afterTextChanged(Editable e) {
-				removeCallbacks(mStartSearchRunnable );
+				removeCallbacks(mStartSearchRunnable);
 				postDelayed(mStartSearchRunnable, mNextSearchDueIn);
 			}
 
