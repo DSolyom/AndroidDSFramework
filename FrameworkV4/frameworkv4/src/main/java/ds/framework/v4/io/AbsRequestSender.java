@@ -38,7 +38,7 @@ abstract public class AbsRequestSender extends LoaderThread {
 	abstract static public class Cycle {
 		
 		/**
-		 * send your request here and return the result
+		 * getResponse your request here and return the result
 		 * 
 		 * @return
 		 * @throws Throwable

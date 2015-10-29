@@ -38,13 +38,6 @@ abstract public class AbsTemplateViewHolderAdapter<T> extends RecyclerViewHeader
      */
 	private HashMap<Integer, Integer> mRowLayoutRess = new HashMap<>();
 
-    /**
-     * view types for positions when view type is different from VIEWTYPE_DEFAULT
-     * !note: you need to handle (re) settings view types when adapter data is changed
-     * use {@link #clearViewTypes()} and {@link #setRowViewType(int position, int viewType)} for this
-     */
-    private HashMap<Integer, Integer> mViewTypes = new HashMap<>();
-
 	protected Template mTemplate;
 
     protected AbsRecyclerViewData mRecyclerViewData;
@@ -74,20 +67,6 @@ abstract public class AbsTemplateViewHolderAdapter<T> extends RecyclerViewHeader
      */
     public void setViewTypeLayoutResID(int viewType, int resID) {
         mRowLayoutRess.put(viewType, resID);
-    }
-
-    public void clearViewTypes() {
-        mViewTypes.clear();
-    }
-
-    /**
-     * set view type for position
-     *
-     * @param position
-     * @param viewType
-     */
-    public void setRowViewType(int position, int viewType) {
-        mViewTypes.put(position, viewType);
     }
 	
 	@Override
@@ -145,20 +124,6 @@ abstract public class AbsTemplateViewHolderAdapter<T> extends RecyclerViewHeader
         mRecyclerViewData.invalidate();
 
         super.reset();
-    }
-
-    /**
-     *
-     * @param position
-     * @return
-     */
-    public int getItemViewTypeInner(int position) {
-        Integer viewType = mViewTypes.get(position);
-
-        if (viewType == null) {
-            return super.getItemViewTypeInner(position);
-        }
-        return viewType;
     }
 
 	/**

@@ -55,7 +55,7 @@ public abstract class TemplateRecyclerViewAdapter<T> extends AbsTemplateViewHold
 	}
 	
 	synchronized public void addItems(Collection<T> items) {
-        addItems(items.size(), items);
+        addItems(mItems.size(), items);
     }
 
     synchronized public void addItems(int index, Collection<T> items) {
@@ -75,6 +75,11 @@ public abstract class TemplateRecyclerViewAdapter<T> extends AbsTemplateViewHold
 	synchronized public void addItem(T item) {
 		mItems.add(item);
 		notifyItemInserted(mItems.size() - 1);
+	}
+
+	synchronized public void addItem(int index, T item) {
+		mItems.add(index, item);
+		notifyItemInserted(index);
 	}
 	
 	synchronized public boolean removeItem(T item) {

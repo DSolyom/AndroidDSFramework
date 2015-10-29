@@ -18,6 +18,7 @@ package ds.framework.v4.app;
 import ds.framework.v4.datatypes.Transport;
 import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.ActionBar;
 import android.view.View;
 
 
@@ -41,30 +42,24 @@ abstract public class DSSplashScreenFragment extends AbsDSAsyncDataFragment {
 	}
 	
 	@Override
-	public void loadData() {
-		super.loadData();
-	}
-	
-	@Override
-	public void display() {
-		super.display();
-		
-		getDSActivity().getActionBar().hide();
-	}
-	
-	@Override
 	public void onDataLoaded() {
 		
 		// check for time spent - delay if not enough
 		new Handler().postDelayed(new Runnable() {
 
-			@Override
-			public void run() {
-				final Transport transport = getTransport();
-				try {
-					((ActivityInterface) getDSActivity()).forward(transport.to, transport.data);
-				} catch(Throwable e) {
-					;	// has no activity 
+            @Override
+            public void run() {
+                final Transport transport = getTransport();
+                try {
+                    if (transport != null) {
+                        ((ActivityInterface) getDSActivity()).forward(transport.to, transport.data);
+                    } else {
+
+                        // no transport means we got here from somewhere within the app and not as a start screen
+                        ((ActivityInterface) getDSActivity()).goBack(null);
+                    }
+                } catch (Throwable e) {
+                    ;    // has no activity
 				}
 			}
 			
@@ -74,6 +69,16 @@ abstract public class DSSplashScreenFragment extends AbsDSAsyncDataFragment {
 	public void setMinDelay(long delay) {
 		mMinDelay = 1500;
 	}
+
+    @Override
+    public boolean onBackPressed() {
+        if (getTransport() == null) {
+
+            // no transport means we got here from somewhere within the app and not as a start screen
+            return false;
+        }
+        return super.onBackPressed();
+    }
 	
 	abstract public Transport getTransport();
 }

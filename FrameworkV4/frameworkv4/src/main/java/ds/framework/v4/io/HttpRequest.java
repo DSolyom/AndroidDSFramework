@@ -688,9 +688,19 @@ public class HttpRequest {
 	 * @throws JSONException
 	 */
 	public JSONObject getJSONResponse() throws JSONException {
+		return getJSONResponse(true);
+	}
+
+    /**
+     *
+     * @param nullIfNotOk
+     * @return
+     * @throws JSONException
+     */
+	public JSONObject getJSONResponse(boolean nullIfNotOk) throws JSONException {
 		String response = "";
 		try {
-			response = getResponse(true);
+			response = getResponse(nullIfNotOk);
 			return new JSONObject(response);
 		} catch(JSONException e) {
 			Debug.logE("HttpRequest", "Not json response: " + response);

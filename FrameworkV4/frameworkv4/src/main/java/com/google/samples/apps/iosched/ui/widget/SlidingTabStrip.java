@@ -12,6 +12,8 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * Mod By DS
  */
 
 package com.google.samples.apps.iosched.ui.widget;
@@ -26,7 +28,7 @@ import android.util.TypedValue;
 import android.view.View;
 import android.widget.LinearLayout;
 
-class SlidingTabStrip extends LinearLayout {
+public class SlidingTabStrip extends LinearLayout {
 
     private static final int DEFAULT_BOTTOM_BORDER_THICKNESS_DIPS = 0;
     private static final byte DEFAULT_BOTTOM_BORDER_COLOR_ALPHA = 0x26;
@@ -44,10 +46,10 @@ class SlidingTabStrip extends LinearLayout {
     private int mSelectedPosition;
     private float mSelectionOffset;
 
-    private SlidingTabLayoutModByDS.TabColorizer mCustomTabColorizer;
+    private AbsSlidingTabLayout.TabColorizer mCustomTabColorizer;
     private final SimpleTabColorizer mDefaultTabColorizer;
 
-    SlidingTabStrip(Context context) {
+    public SlidingTabStrip(Context context) {
         this(context, null);
     }
 
@@ -75,19 +77,19 @@ class SlidingTabStrip extends LinearLayout {
         mSelectedIndicatorPaint = new Paint();
     }
 
-    void setCustomTabColorizer(SlidingTabLayoutModByDS.TabColorizer customTabColorizer) {
+    public void setCustomTabColorizer(AbsSlidingTabLayout.TabColorizer customTabColorizer) {
         mCustomTabColorizer = customTabColorizer;
         invalidate();
     }
 
-    void setSelectedIndicatorColors(int... colors) {
+    public void setSelectedIndicatorColors(int... colors) {
         // Make sure that the custom colorizer is removed
         mCustomTabColorizer = null;
         mDefaultTabColorizer.setIndicatorColors(colors);
         invalidate();
     }
 
-    void onViewPagerPageChanged(int position, float positionOffset) {
+    void onSelectedTabChanged(int position, float positionOffset) {
         mSelectedPosition = position;
         mSelectionOffset = positionOffset;
         invalidate();
@@ -97,7 +99,7 @@ class SlidingTabStrip extends LinearLayout {
     protected void onDraw(Canvas canvas) {
         final int height = getHeight();
         final int childCount = getChildCount();
-        final SlidingTabLayoutModByDS.TabColorizer tabColorizer = mCustomTabColorizer != null
+        final AbsSlidingTabLayout.TabColorizer tabColorizer = mCustomTabColorizer != null
                 ? mCustomTabColorizer
                 : mDefaultTabColorizer;
 
@@ -153,7 +155,7 @@ class SlidingTabStrip extends LinearLayout {
         return Color.rgb((int) r, (int) g, (int) b);
     }
 
-    private static class SimpleTabColorizer implements SlidingTabLayoutModByDS.TabColorizer {
+    private static class SimpleTabColorizer implements AbsSlidingTabLayout.TabColorizer {
         private int[] mIndicatorColors;
 
         @Override
