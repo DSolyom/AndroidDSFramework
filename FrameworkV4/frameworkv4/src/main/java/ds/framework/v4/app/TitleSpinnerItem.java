@@ -1,5 +1,6 @@
 package ds.framework.v4.app;
 
+@Deprecated
 public class TitleSpinnerItem {
 	int mId;
 	String mTitle;

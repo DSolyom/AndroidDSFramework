@@ -416,6 +416,11 @@ public class ViewPagerModByDS extends ViewGroup {
      * @param adapter Adapter to use
      */
     public void setAdapter(PagerAdapter adapter) {
+        // Mod by DS
+        if (mAdapter == adapter) {
+            return;
+        }
+        //
         if (mAdapter != null) {
             mAdapter.unregisterDataSetObserver(mObserver);
             mAdapter.startUpdate(this);

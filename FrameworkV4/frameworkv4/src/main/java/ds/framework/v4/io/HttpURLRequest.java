@@ -321,7 +321,7 @@ public class HttpURLRequest {
      * @return
      * @throws IOException
      */
-    protected String getResponse(boolean nullIfNotOK) throws IOException {
+    public String getResponse(boolean nullIfNotOK) throws IOException {
         try {
             if (nullIfNotOK && getStatusCode() != 200) {
                 return null;
@@ -338,7 +338,12 @@ public class HttpURLRequest {
             }
 
             // read response
-            InputStream is = mHttpURLConnection.getInputStream();
+            InputStream is = null;
+            try {
+                is = mHttpURLConnection.getInputStream();
+            } catch(IOException e) {
+				is = mHttpURLConnection.getErrorStream();
+			}
             BufferedReader rd = new BufferedReader(new InputStreamReader(is));
             String line;
             StringBuffer response = new StringBuffer();

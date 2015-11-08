@@ -103,12 +103,17 @@ public class SlidingTabLayoutModByDS extends AbsSlidingTabLayout {
      */
     @Override
     protected SlidingTabAdapterInterface getAdapter() {
+        if (mViewPager == null) {
+            return null;
+        }
         return (SlidingTabAdapterInterface) mViewPager.getAdapter();
     }
 
     @Override
     protected void onCurrentItemSet(int position) {
-        mViewPager.setCurrentItem(position);
+        if (mViewPager != null) {
+            mViewPager.setCurrentItem(position);
+        }
     }
 
     private class InternalViewPagerModByDSListener implements ViewPagerModByDS.OnPageChangeListener {

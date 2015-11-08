@@ -16,6 +16,7 @@
 package ds.framework.v4.widget;
 
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 import android.view.ViewGroup;
 
 import ds.framework.v4.app.ActivityInterface;
@@ -48,6 +49,24 @@ abstract public class AbsLoadingRecyclerViewAdapter<T> extends AbsTemplateViewHo
      */
     public void setLoadThreshold(int threshold) {
         mLoadThreshold = threshold;
+    }
+
+    @Override
+    public void setHeaderView(View headerView) {
+        super.setHeaderView(headerView);
+
+        if (mAdapter != null) {
+            mAdapter.setHeaderView(headerView);
+        }
+    }
+
+    @Override
+    public void setFooterView(View footerView) {
+        super.setFooterView(footerView);
+
+        if (mAdapter != null) {
+            mAdapter.setFooterView(footerView);
+        }
     }
 
     @Override
@@ -131,6 +150,13 @@ abstract public class AbsLoadingRecyclerViewAdapter<T> extends AbsTemplateViewHo
         mAdapterDataCount = mAdapter.getItemCount();
         mAdapter.registerAdapterDataObserver(mObserver);
 
+        if (mHeaderView != null) {
+            mAdapter.setHeaderView(mHeaderView);
+        }
+        if (mFooterView != null) {
+            mAdapter.setFooterView(mFooterView);
+        }
+
         // TODO: multi adapter
         setRecyclerViewData(mAdapter.getRecyclerViewData()[0]);
     }
@@ -154,6 +180,14 @@ abstract public class AbsLoadingRecyclerViewAdapter<T> extends AbsTemplateViewHo
 
         setDataOffset(((LoadingRecyclerViewAdapterData) absAsyncData).getDataOffset());
     }
+
+    @Override
+    public void reset() {
+        if (mAdapter != null) {
+            mAdapter.reset();
+        }
+    }
+
 
     /**
      * @Class LoadingAdapterObserver

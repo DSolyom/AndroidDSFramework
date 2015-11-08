@@ -189,13 +189,13 @@ abstract public class AbsAsyncData implements Serializable {
 		if (mLoaderTag == null) {
 			mLoader = loader;
 		}
-		if (mLoader != null) {
-			mLoader.mOwner = this;
-			mLoader.mListener = listener;
-			mLoader.start(mLoaderTag);
+		if (loader != null) {
+            loader.mOwner = this;
+            loader.mListener = listener;
+            loader.start(mLoaderTag);
 		} else {
 
-			// no loader - just pretend we have finished loading
+            // no loader - just pretend we have finished loading
             listener.onDataLoaded(this, loadId);
 		}
 	}

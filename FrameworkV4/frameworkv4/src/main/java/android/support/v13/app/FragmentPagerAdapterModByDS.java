@@ -37,7 +37,7 @@ public abstract class FragmentPagerAdapterModByDS extends PagerAdapter implement
     private static final String TAG = "FragmentPagerAdapter";
     private static final boolean DEBUG = false;
 
-    private final FragmentManager mFragmentManager;
+    protected final FragmentManager mFragmentManager;
     private FragmentTransaction mCurTransaction = null;
     private Fragment mCurrentPrimaryItem = null;
 
@@ -71,8 +71,7 @@ public abstract class FragmentPagerAdapterModByDS extends PagerAdapter implement
         } else {
             fragment = getItem(position);
             if (DEBUG) Log.v(TAG, "Adding item #" + itemId + ": f=" + fragment);
-            mCurTransaction.add(container.getId(), fragment,
-                    makeFragmentName(container.getId(), itemId));
+            mCurTransaction.add(container.getId(), fragment, name);
         }
         if (fragment != mCurrentPrimaryItem) {
 
@@ -167,5 +166,12 @@ public abstract class FragmentPagerAdapterModByDS extends PagerAdapter implement
      */
     public String makeFragmentName(int viewId, long id) {
         return "android:switcher:" + viewId + ":" + id;
+    }
+
+    /**
+     *
+     */
+    public void reset() {
+        ;
     }
 }

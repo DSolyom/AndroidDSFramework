@@ -82,74 +82,84 @@ public class JSONToDbHelper {
                 if (!row.has(mColumns[i].name)) {
                     continue;
                 }
-				
+
 				if ((mColumns[i].type & Table.INTEGER) > 0) {
-					int val;
-					try {
-						value = val = row.getInt(mColumns[i].name);
-					} catch(JSONException e) {
-						value = row.getString(mColumns[i].name);
-						if (((String) value).length() == 0) {
-							value = val = 0;
-						} else {
-							val = Integer.parseInt((String) value);
-						}
-					}
-					if (mColumns[i].name.equals("id")) {
-						
-						// id for joined tables
-						id = val;
-					}
 					type = Table.INTEGER;
 				} else if ((mColumns[i].type & Table.BOOLEAN) > 0) {
-					int val = 0;
-					try {
-						val = row.getBoolean(mColumns[i].name) ? 1 : 0;
-					} catch(JSONException e) {
-						val = row.getInt(mColumns[i].name);
-					}
-					value = val;
-					
 					type = Table.BOOLEAN;
 				} else if ((mColumns[i].type & Table.REAL) > 0) {
-					try {
-						final double d = row.getDouble(mColumns[i].name);
-						value = d;
-						
-						type = Table.REAL;
-					} catch(JSONException e) {
-						if (row.getString(mColumns[i].name).length() == 0) {
-							value = 0.0;
-							ih.bind(mColumnsPosition[i], 0);
-//Debug.logD("JSONToDb", "binding 0 for " + mColumns[i].name);		
-						} else {
-							throw(e);
-						}
-						
-						type = Table.REAL;
-					}
+					type = Table.REAL;
 				} else {
-
-					// this way it can either be a string, a jsonobject, etc...
-					final Object val = row.get(mColumns[i].name).toString();
-					value = val;
-					
 					type = Table.TEXT;
 				}
-				
+
+                value = row.get(mColumns[i].name);
+
 				if (lJSONToDbValueInterface != null) {
 					try {
 						value = lJSONToDbValueInterface.beforeInsert(table.getName(), mColumns[i].name, value);
 					} catch(Exception  e) {
 						android.util.Log.e("OnValueInsertListener", "Bad value! (" + e.getMessage() + ")");
 						if (type == Table.TEXT) {
-							
+
 							// minor ? problem
 							value = "";
 						} else {
 							throw(e);
 						}
 					}
+				}
+				
+				switch(type) {
+                    case Table.INTEGER:
+                        int val = 0;
+                        try {
+                            val = (Integer) value;
+                            value = val;
+                        } catch(ClassCastException e) {
+                            if (((String) value).length() == 0) {
+                                value = val = 0;
+                            } else {
+                                val = Integer.parseInt((String) value);
+                            }
+                        }
+                        if (mColumns[i].name.equals("id")) {
+
+                            // id for joined tables
+                            id = val;
+                        }
+                        break;
+
+                    case Table.BOOLEAN:
+                        int val2 = 0;
+                        try {
+                            val2 = (Boolean) value ? 1 : 0;
+                        } catch(ClassCastException e) {
+                            val2 = (Integer) value;
+                        }
+                        value = val2;
+                        break;
+
+                    case Table.REAL:
+                        try {
+                            final double d = (Double) value;
+                            value = d;
+                        } catch(ClassCastException e) {
+                            if (value instanceof String && ((String) value).length() == 0) {
+                                value = 0.0;
+                                ih.bind(mColumnsPosition[i], 0);
+    //Debug.logD("JSONToDb", "binding 0 for " + mColumns[i].name);
+                            } else {
+                                throw(e);
+                            }
+                        }
+                        break;
+
+                    default:
+
+                        // this way it can either be a string, a jsonobject, etc...
+                        value = value.toString();
+					    break;
 				}
 				
 				switch(type) {
