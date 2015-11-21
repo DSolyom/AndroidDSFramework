@@ -183,23 +183,26 @@ abstract public class Db {
 	 * @throws SQLException
 	 */
 	public int count(DbQuery query) throws SQLException {
-		return count(query, false);
+		return count(query, false, false);
 	}
-	
-	/**
-	 * count rows
-	 * 
-	 * @param query
-	 * @param withoutLimitAndFilter
-	 * @return
-	 * @throws SQLException
-	 */
-	public int count(DbQuery query, boolean withoutLimitAndFilter) throws SQLException {
+
+    /**
+     * count rows
+     *
+     * @param query
+     * @param withoutLimit
+     * @param withoutFilter
+     * @return
+     * @throws SQLException
+     */
+	public int count(DbQuery query, boolean withoutLimit, boolean withoutFilter) throws SQLException {
 		try {
 			String limit = null;
 			String where = null;
-			if (!withoutLimitAndFilter) {
+			if (!withoutLimit) {
 				limit = query.getLimit();
+			}
+			if (!withoutFilter) {
 				where = query.getWhere();
 			}
 			

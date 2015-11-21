@@ -105,7 +105,7 @@ public class Global {
 		
 		if (a == null) {
 			Global.removeRegisteredDialog();
-		} else {
+		} else if (sInstance.mContext == null) {
 			sInstance.mContext = a.getApplicationContext();
 		}
 	}
@@ -146,7 +146,7 @@ public class Global {
 				sInstance.mDb.open(sInstance.mContext);
 			}
 		}
-		
+
 		return sInstance.mDb;
 	}
 	

@@ -129,6 +129,15 @@ abstract public class DSActivity extends ActionBarActivity
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		// screen may have changed
+		Global.clearScreenInfo();
+
+        if (Global.getContext() == null) {
+
+            // make sure we have context in Global
+            Global.setCurrentActivity(this);
+        }
+
 		selfOnCreate(savedInstanceState);
 
 		Settings.getInstance(this).forceLocale(this);
@@ -139,12 +148,6 @@ abstract public class DSActivity extends ActionBarActivity
 		}
 		
 		if (savedInstanceState != null) {
-			
-			// screen may have changed
-			Global.clearScreenInfo();
-			
-			// this must be the current activity now - may be needed when creating predefined fragments
-			Global.setCurrentActivity(this);
 			
 			// restore state
 			onCreateRestoreInstanceState(savedInstanceState);
@@ -273,6 +276,10 @@ abstract public class DSActivity extends ActionBarActivity
 			
 			removeTransportData(data);
 		}
+
+        if (mFragments.isEmpty()) {
+            attachFragments();
+        }
 		
 		loadDataAndDisplay();
 	}
@@ -493,15 +500,13 @@ abstract public class DSActivity extends ActionBarActivity
 	 * @param inResume
 	 */
 	protected void selfOnEnterActivity(Intent data, boolean inResume) {
-		if (mFragments.isEmpty()) {
-			attachFragments();
-		}
+		;
 	}
 
 	/**
 	 * @param fragment
 	 */
-	void onFragmentAttached(DSFragmentInterface fragment) {
+	public void onFragmentAttached(DSFragmentInterface fragment) {
 		final String fragmentId = fragment.getFragmentId();
 		if (!mFragments.containsKey(fragmentId)) {
 			mFragments.put(fragmentId, fragment);
@@ -515,7 +520,7 @@ abstract public class DSActivity extends ActionBarActivity
 		}
 	}
 
-    void onFragmentDetached(DSFragmentInterface fragment) {
+    public void onFragmentDetached(DSFragmentInterface fragment) {
         final String fragmentId = fragment.getFragmentId();
         mFragments.remove(fragmentId);
     }
@@ -601,22 +606,34 @@ abstract public class DSActivity extends ActionBarActivity
 	 * add an already attached fragment to the know fragment list
 	 * 
 	 * @param fragment
-	 * @param name
+	 * @param fragmentId
 	 */
-	protected void addAttachedFragment(DSFragmentInterface fragment, String name) {
-		fragment.setFragmentId(name);
-		mFragments.put(name, fragment);
+	protected void addAttachedFragment(DSFragmentInterface fragment, String fragmentId) {
+		fragment.setFragmentId(fragmentId);
+		mFragments.put(fragmentId, fragment);
 	}
 	
 	/**
 	 * 
 	 * @param fragment
-	 * @param name
+	 * @param fragmentId
 	 * @param containerResID
 	 */
-	protected void attachFragment(DSFragmentInterface fragment, String name, int containerResID) {
-		getFragmentManager().beginTransaction().add(containerResID, (Fragment) fragment).commit();
-		addAttachedFragment(fragment, name);
+	protected void attachFragment(DSFragmentInterface fragment, String fragmentId, int containerResID) {
+        attachFragment(fragment, fragmentId, containerResID, 0, 0, 0, 0);
+    }
+
+    protected void attachFragment(DSFragmentInterface fragment, String fragmentId, int containerResID,
+                                  int animEnter, int animExit, int popEnter, int popExit) {
+
+        fragment.setFragmentId(fragmentId);
+		FragmentTransaction ft = getFragmentManager().beginTransaction();
+        if (animEnter != 0) {
+            ft.setCustomAnimations(animEnter, animExit, popEnter, popExit);
+        }
+        ft.add(containerResID, (Fragment) fragment);
+        ft.addToBackStack(null);
+        ft.commit();
 	}
 	
 	/**
@@ -633,9 +650,7 @@ abstract public class DSActivity extends ActionBarActivity
 	 * @param containerResID
 	 */
 	protected void replaceFragment(DSFragmentInterface fragment, String name, int containerResID) {
-		fragment.setFragmentId(name);
-		getFragmentManager().beginTransaction().replace(containerResID, (Fragment) fragment).commit();
-		mFragments.put(name, fragment);
+		replaceFragment(fragment, name, containerResID, 0, 0, 0, 0);
 	}
 	
 	/**
@@ -643,14 +658,16 @@ abstract public class DSActivity extends ActionBarActivity
 	 * @param fragment
 	 * @param name
 	 * @param containerResID
-	 * @param animIn
-	 * @param animOut
+	 * @param animEnter
+	 * @param animExit
 	 */
 	protected void replaceFragment(DSFragmentInterface fragment, String name, int containerResID,
-			int animIn, int animOut) {
+			int animEnter, int animExit, int popEnter, int popExit) {
 		fragment.setFragmentId(name);
 		final FragmentTransaction ft = getFragmentManager().beginTransaction();
-		ft.setCustomAnimations(animIn, animOut);
+        if (animEnter != 0) {
+            ft.setCustomAnimations(animEnter, animExit, popEnter, popExit);
+        }
 		ft.replace(containerResID, (Fragment) fragment).commit();
 		mFragments.put(name, fragment);
 	}
@@ -680,13 +697,12 @@ abstract public class DSActivity extends ActionBarActivity
 			detachFragment(fragment);
 		}
 	}
-	
-	/**
-	 * remove a fragment by name
-	 * 
-	 * @param name
-	 */
-	protected void removeFragment(String name) {
+
+    /**
+     * 
+     * @param name
+     */
+    protected void removeFragment(String name) {
 		removeFragment(mFragments.remove(name));
 	}
 	
@@ -694,14 +710,16 @@ abstract public class DSActivity extends ActionBarActivity
 	 * 
 	 * @param fragment
 	 */
-	protected void removeFragment(DSFragmentInterface fragment) {
+    protected void removeFragment(DSFragmentInterface fragment) {
 		if (fragment instanceof DialogFragment) {
 			final DialogFragment dfragment = (DialogFragment) fragment;
 			if (dfragment.getDialog() != null && dfragment.getDialog().isShowing()) {
 				dfragment.dismissAllowingStateLoss();
 			}
 		}
-		getFragmentManager().beginTransaction().remove((Fragment) fragment).commit();
+		FragmentTransaction ft = getFragmentManager().beginTransaction();
+        ft.remove((Fragment) fragment);
+        ft.commit();
 		mFragments.remove(fragment.getFragmentId());
 	}
 	

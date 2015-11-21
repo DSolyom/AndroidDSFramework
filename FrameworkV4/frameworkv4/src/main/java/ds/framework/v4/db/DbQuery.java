@@ -58,7 +58,11 @@ public class DbQuery extends Query {
 	 * @return - number of rows matching the query
 	 */
 	public int count(boolean withoutLimitAndFilter) throws NullPointerException, SQLException {
-		return mDb.count(this, withoutLimitAndFilter);
+		return this.count(withoutLimitAndFilter, withoutLimitAndFilter);
+	}
+
+	public int count(boolean withoutLimit, boolean withoutFilter) throws NullPointerException, SQLException {
+		return mDb.count(this, withoutLimit, withoutFilter);
 	}
 	
 	/**

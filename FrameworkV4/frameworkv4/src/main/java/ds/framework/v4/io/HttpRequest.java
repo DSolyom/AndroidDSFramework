@@ -78,6 +78,7 @@ import ds.framework.v4.common.Debug;
 
 import android.util.Log;
 
+@Deprecated
 public class HttpRequest {
 	
 	public static final int GET = 0;

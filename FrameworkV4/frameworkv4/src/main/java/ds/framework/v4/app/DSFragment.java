@@ -911,6 +911,15 @@ abstract public class DSFragment extends DialogFragment
 	}
 
 	/**
+	 *
+	 * @param id
+	 * @return
+	 */
+	public MenuItem findMenuItem(int id) {
+		return getDSActivity().findMenuItem(id);
+	}
+
+	/**
 	 * create action bar items for the first time<br/>
      * be sure to set item visibility too here if the fragment could be not active when this called
 	 *

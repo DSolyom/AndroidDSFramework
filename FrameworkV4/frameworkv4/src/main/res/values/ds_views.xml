@@ -80,6 +80,8 @@
 			<enum name="centerInside" value="7"/>
 		</attr>
 
+		<attr name="scaleSize" format="boolean"/>
+
 		<attr name="flip_first" format="boolean"/>
 
 		<attr name="gif_src" format="reference" />

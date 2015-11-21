@@ -49,7 +49,10 @@ public abstract class CursorListAdapter extends AbsTemplateViewHolderAdapter<Cur
 
 	@Override
 	public CursorListEntry getItem(int position) {
-        mCLE.getCursor().moveToPosition(position);
+        final Cursor cursor = mCLE.getCursor();
+		if (cursor != null && !cursor.isClosed()) {
+			cursor.moveToPosition(position);
+		}
 		return mCLE;
 	}
 

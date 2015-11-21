@@ -208,7 +208,7 @@ abstract public class AbsAsyncData implements Serializable {
 		LoaderThread loader = recoverLoader();
 
 		// has loader and it's loading
-		return loader != null && (loader.getState() == BackgroundThread.RUNNING || loader.getState() == BackgroundThread.FINISHING);
+		return loader != null && loader.getState() == BackgroundThread.RUNNING;
 	}
 	
 	/**

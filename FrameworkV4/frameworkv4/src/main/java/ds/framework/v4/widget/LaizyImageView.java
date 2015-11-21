@@ -21,9 +21,11 @@ import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.ImageView;
@@ -78,6 +80,8 @@ public class LaizyImageView extends ImageView implements Callback<ImageInfo, Bit
 	private ScaleType mDefaultScaleType;
 	private ScaleType mLoadingScaleType;
 	private ScaleType mErrorScaleType;
+
+	private boolean mScaleSize;
 	
 	public LaizyImageView(Context context) {
 		super(context);
@@ -93,6 +97,8 @@ public class LaizyImageView extends ImageView implements Callback<ImageInfo, Bit
 		TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.DsView, defStyle, 0);
 		
 		mAlwaysLoadInBackground = a.getBoolean(R.styleable.DsView_alwaysInBg, true);
+
+		mScaleSize = a.getBoolean(R.styleable.DsView_scaleSize, false);
 		
 		int index = a.getInt(R.styleable.DsView_defaultScaleType, -1);
 		if (index != -1) {
@@ -234,7 +240,7 @@ public class LaizyImageView extends ImageView implements Callback<ImageInfo, Bit
 	@Override
 	public void onLoadFinished(final ImageInfo info, final Bitmap result) {
 		runOnUiThread(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				synchronized(LaizyImageView.class) { // synchronize all info change and check
@@ -244,7 +250,7 @@ public class LaizyImageView extends ImageView implements Callback<ImageInfo, Bit
 						setImage(result, mInfo.needFading);
 						return;
 					}
-					
+
 					// need to reload
 					mCurrentImageInfo = null;
 				}
@@ -435,7 +441,7 @@ public class LaizyImageView extends ImageView implements Callback<ImageInfo, Bit
 			setScaleType(mOriginalScaleType);
 		}
 	}
-	
+
 	/**
 	 * 
 	 * @return
@@ -477,7 +483,25 @@ Debug.logD("LaizyImageView", "bitmap was recylced at draw");
 		
 		super.onDraw(canvas);
 	}
-	
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+
+        if (mScaleSize) {
+            try {
+                Drawable drawable = getDrawable();
+
+                int measuredWidth = getMeasuredWidth();
+                int newHeight = measuredWidth * drawable.getIntrinsicHeight() / drawable.getIntrinsicWidth();
+
+                setMeasuredDimension(measuredWidth, newHeight);
+            } catch (Exception e) {
+                ;
+            }
+        }
+    }
+
 	private void runOnUiThread(Runnable runnable) {
 		final Handler handler = getHandler();
 		if (handler != null) {

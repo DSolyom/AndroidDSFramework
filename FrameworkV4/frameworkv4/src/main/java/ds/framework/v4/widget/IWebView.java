@@ -93,7 +93,11 @@ public class IWebView extends WebView {
 	    
 	    @Override
 	    public void onPageStarted(WebView view, String url, Bitmap favicon) {
-    		mParentRootView.findViewById(R.id.container_loading).setVisibility(Template.VISIBLE);
+			try {
+				mParentRootView.findViewById(R.id.container_loading).setVisibility(Template.VISIBLE);
+			} catch(Throwable e) {
+				;
+			}
 
 	    	super.onPageStarted(view, url, favicon);
 	    }
