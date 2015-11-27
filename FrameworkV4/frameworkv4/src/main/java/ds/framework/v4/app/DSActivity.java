@@ -743,11 +743,11 @@ abstract public class DSActivity extends ActionBarActivity
 		
 		ConnectionChecker.getInstance().registerReceiver(this, this);
 		
-		if (Settings.getInstance(this).getBoolean("refreshActivity_" + mActivityId, false)) {
+		if (Settings.getBoolean(this, "refreshActivity_" + mActivityId, false)) {
 			invalidateData();
-			Settings.getInstance(this).putBoolean("refreshActivity_" + mActivityId, false, true);
+			Settings.putBoolean(this, "refreshActivity_" + mActivityId, false, true);
 		}
-		
+
 		if (!isContentViewSet() || !isRunning()) {
 			return;
 		}
@@ -1301,10 +1301,13 @@ abstract public class DSActivity extends ActionBarActivity
 	protected void onConnectionChangedInner(boolean connected) {
 		if (connected) {
 			onConnectionEstablished();		
+		} else {
+			onNoConnection();
 		}
 	}
 	
 	public void onConnectionEstablished() {
+
 		for(DSFragmentInterface fragment : mFragments.values()) {
 			if (fragment instanceof OnConnectionChangeListener) {
 				((OnConnectionChangeListener) fragment).onConnectionEstablished();

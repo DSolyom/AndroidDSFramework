@@ -25,8 +25,11 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.util.DisplayMetrics;
+
+import ds.framework.v4.app.DSApplicationInterface;
 import ds.framework.v4.common.Debug;
 import ds.framework.v4.db.Db;
+import ds.framework.v4.io.ConnectionChecker;
 import ds.framework.v4.io.ImageLoader;
 
 public class Global {
@@ -106,7 +109,8 @@ public class Global {
 		if (a == null) {
 			Global.removeRegisteredDialog();
 		} else if (sInstance.mContext == null) {
-			sInstance.mContext = a.getApplicationContext();
+            ((DSApplicationInterface) a.getApplication()).setGlobalInstance(sInstance);
+            sInstance.onApplicationCreate(a.getApplicationContext());
 		}
 	}
 	
@@ -168,6 +172,7 @@ public class Global {
 			if (sInstance.mImageLoader == null) {
 				sInstance.mImageLoader = getImageLoaderInstance(context);
 			}
+
 			return sInstance.mImageLoader;
 		} catch(Throwable e) {
 			Debug.logException(e);

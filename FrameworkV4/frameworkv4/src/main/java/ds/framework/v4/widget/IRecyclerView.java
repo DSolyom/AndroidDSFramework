@@ -29,6 +29,10 @@ public class IRecyclerView extends RecyclerView {
 
     @Override
     public void setAdapter(RecyclerView.Adapter adapter) {
+        if (adapter == getAdapter()) {
+            return;
+        }
+
         if (adapter instanceof RecyclerViewHeaderedAdapter) {
             ((RecyclerViewHeaderedAdapter) adapter).setHeaderView(mHeaderView);
             ((RecyclerViewHeaderedAdapter) adapter).setFooterView(mFooterView);

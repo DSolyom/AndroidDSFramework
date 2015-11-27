@@ -399,7 +399,7 @@ public abstract class BackgroundThread {
 				    						mState = FINISHED;
 				    						return;
 				    					}
-				    					if (mState == FINISHED) {
+				    					if (mState == FINISHED || mState == FINISHING) {
 				    						
 				    						// probably interrupted and already started another thread
 				    						return;
@@ -478,5 +478,6 @@ public abstract class BackgroundThread {
 	}
 	
 	abstract protected boolean runCycle(Thread in);
+
 
 }

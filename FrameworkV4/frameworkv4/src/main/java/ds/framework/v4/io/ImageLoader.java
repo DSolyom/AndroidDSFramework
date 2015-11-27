@@ -146,10 +146,10 @@ Debug.logNativeHeapAllocatedSize();
 		try {
 			
 			// increase retry count only if we had connection
-			return !ConnectionChecker.check(Global.getContext(), false);
+			return ConnectionChecker.check(Global.getContext(), false);
 		} catch(Throwable e) {
 			
-			// be safe - do not add increase retry count
+			// be safe - do not increase retry count
 			return true;
 		}
 	}

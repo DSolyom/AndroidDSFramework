@@ -40,21 +40,21 @@ abstract public class LaizyLoader<S, T> extends Handler {
 	
 	public void load(S key, Callback<S, T> callback) {
 		synchronized(mQueue) {
-			
-			// check if already loading for this key
-			QueueItem existing = mQueue.get(key);
-			if (existing != null) {
-				if (!existing.callbacks.contains(callback)) {
-					existing.callbacks.add(callback);
-				}
 
-				mQueueOrder.remove(key);
-			} else {
-				
-				// new item or retry
-				mQueue.put(key, new QueueItem(key, callback));				
-			}
-			mQueueOrder.add(0, key);
+            // check if already loading for this key
+            QueueItem existing = mQueue.get(key);
+            if (existing != null) {
+                if (!existing.callbacks.contains(callback)) {
+                    existing.callbacks.add(callback);
+                }
+
+                mQueueOrder.remove(key);
+            } else {
+
+                // new item or retry
+                mQueue.put(key, new QueueItem(key, callback));
+            }
+            mQueueOrder.add(0, key);
 
 			// start downloading (or do nothing if downloader is already working)
 			synchronized(DownloaderThread.class) {
@@ -138,7 +138,7 @@ Debug.logE("starting", mDownloaders.get(i).getId() + "");
 			this.id = id;
 			setPriority(Thread.MIN_PRIORITY);
 		}
-		
+
 		@Override
 		public void run() {
 			while(true) {
@@ -214,6 +214,8 @@ Debug.logE("laizy loader", "max number of retries exceeded (" + current.item.toS
 				}
 		
 				// load in background
+                boolean hasConnectionOrLoaded = true;
+
 				if (loadInBackground(current)) {
 					synchronized(mRetries) {
 						mRetries.remove(current.item);
@@ -221,24 +223,41 @@ Debug.logE("laizy loader", "max number of retries exceeded (" + current.item.toS
 				} else {
 					
 					// add to retry count (unless there is a connection problem)
-					boolean hasConnection = true;
 					try {
-						hasConnection = ConnectionChecker.check(Global.getContext(), false);
+						hasConnectionOrLoaded = ConnectionChecker.check(Global.getContext(), false);
 					} catch(Throwable e) {
 						;
 					}
-					if (hasConnection) {
-						synchronized(mRetries) {
-							mRetries.put(current.item, retryCnt + 1);
-						}
-					}
+
+                    synchronized(mRetries) {
+                        mRetries.put(current.item, retryCnt + (hasConnectionOrLoaded ? 1 : 0));
+                    }
 				}
-				
-				// ok downloaded (or failed - you have to handle failure outside)
-				synchronized(mQueue) {
-					mQueue.remove(current.item);
-					mQueueOrder.remove(current.item);
-				}
+
+                if (hasConnectionOrLoaded) {
+
+                    // ok downloaded (or failed - you have to handle failure outside)
+                    synchronized (mQueue) {
+                        mQueue.remove(current.item);
+                        mQueueOrder.remove(current.item);
+                    }
+                } else {
+                    synchronized (mQueue) {
+                        current.downloading = false;
+                    }
+                    try {
+                        Debug.logD("LaizyLoader", "Waiting a bit for connection!");
+                        int maxTry = 50;
+                        while(!ConnectionChecker.check(Global.getContext(), false) && !isInterrupted() && maxTry > 0) {
+
+                            // wait a bit for connection
+                            Thread.sleep(100);
+                            --maxTry;
+                        }
+                    } catch (InterruptedException e) {
+                        ;
+                    }
+                }
 			}
 		}
 	}
@@ -248,7 +267,7 @@ Debug.logE("laizy loader", "max number of retries exceeded (" + current.item.toS
 
 			// go through all callback for this item
 			for(Callback<S, T> iv : current.callbacks) {
-				iv.onLoadFinished(current.item, result);
+                iv.onLoadFinished(current.item, result);
 			}
 		}
 	}

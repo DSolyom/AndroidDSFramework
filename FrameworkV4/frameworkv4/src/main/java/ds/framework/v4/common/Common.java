@@ -277,7 +277,7 @@ public class Common {
 
 		emailIntent.setType("plain/text");
 		emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL, emails);
-		emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, Html.fromHtml(subject));
+		emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, Html.fromHtml(subject).toString());
 		emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, Html.fromHtml(defaultMessage));
 
 		if (attachments != null && attachments.length > 0) {

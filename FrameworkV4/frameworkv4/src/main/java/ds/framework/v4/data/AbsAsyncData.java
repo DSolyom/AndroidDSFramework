@@ -46,8 +46,13 @@ abstract public class AbsAsyncData implements Serializable {
 	 * !note: as a side effect AbsAsyncData is only 'Serializable' if it has a loaderTag 
 	 */
 	private LoaderThread mLoader;
-	
-	/**
+
+    /**
+     * result of the loading
+     */
+    private Object mResult;
+
+    /**
 	 * use this constructor if you don't want the data and its loader to be persistent
 	 * when the activity is recreated
 	 */
@@ -276,6 +281,7 @@ abstract public class AbsAsyncData implements Serializable {
 	 */
 	protected void onDataLoaded(Object result, OnDataLoadListener listener) {
 		mValid = true;
+        mResult = result;
 		listener.onDataLoaded(this, mLoadId);
 		mLoader = null;
 	}
@@ -287,12 +293,14 @@ abstract public class AbsAsyncData implements Serializable {
 	 */
 	protected void onDataLoadFailed(Object result, OnDataLoadListener listener) {
 		mValid = mStartsAsValid;
+        mResult = result;
 		listener.onDataLoadFailed(this, mLoadId);
         mLoader = null;
 	}
 	
 	protected void onInterrupt(OnDataLoadListener listener) {
 		mValid = mStartsAsValid;
+        mResult = null;
 		listener.onDataLoadInterrupted(this, mLoadId);
         mLoader = null;
 	}
@@ -303,6 +311,14 @@ abstract public class AbsAsyncData implements Serializable {
 	public void nullLoader() {
 		mLoader = null;
 	}
+
+    /**
+     *
+     * @return
+     */
+    public Object getResult() {
+        return mResult;
+    }
 	
 	/**
 	 * 

@@ -246,6 +246,10 @@ abstract public class AbsDSAsyncDataFragment extends DSFormFragment
 	 * 
 	 */
 	public void stopLoading() {
+		if (mDataState != DATA_LOADING) {
+			return;
+		}
+
 		if (mData != null) {
 			for(AbsAsyncData data : mData) {
 				data.setOnDataLoadListener(null);
