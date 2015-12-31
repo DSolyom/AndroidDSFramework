@@ -16,6 +16,8 @@
 
 package ds.framework.v4.common;
 
+import android.os.Environment;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -150,5 +152,10 @@ public class Files {
 				stream.close();
 			}
 		}
+	}
+
+	public static boolean isExternalStorageWritable() {
+		String state = Environment.getExternalStorageState();
+		return Environment.MEDIA_MOUNTED.equals(state);
 	}
 }

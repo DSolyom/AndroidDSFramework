@@ -104,7 +104,7 @@ public class ConnectionChecker {
 	 */
 	public static boolean routeToHost(Context context, String url) {
 		final ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Activity.CONNECTIVITY_SERVICE);
-		int ip = HttpRequest.getIP(url);
+		int ip = HttpURLRequest.getIP(url);
 		if (ip == -1) {
 			return false;
 		}
