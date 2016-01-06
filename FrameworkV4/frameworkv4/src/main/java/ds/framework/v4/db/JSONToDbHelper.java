@@ -120,7 +120,7 @@ public class JSONToDbHelper {
                             if (((String) value).length() == 0) {
                                 value = val = 0;
                             } else {
-                                val = Integer.parseInt((String) value);
+                                value = val = Integer.parseInt((String) value);
                             }
                         }
                         if (mColumns[i].name.equals("id")) {

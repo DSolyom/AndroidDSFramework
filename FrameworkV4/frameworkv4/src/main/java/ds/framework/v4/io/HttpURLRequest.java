@@ -603,7 +603,7 @@ public class HttpURLRequest {
 			response = getResponse(nullIfNotOk);
 			return new JSONObject(response);
 		} catch(JSONException e) {
-			Debug.logE("HttpRequest", "Not json response: " + response);
+			Debug.logE("HttpURLRequest", "Not json response: " + response);
 			throw(e);
 		}
 	}

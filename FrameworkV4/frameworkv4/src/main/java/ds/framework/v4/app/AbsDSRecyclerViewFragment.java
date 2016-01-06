@@ -203,12 +203,11 @@ abstract public class AbsDSRecyclerViewFragment extends AbsDSAsyncDataFragment {
 		try {
 			final int sD = mData.length;
 			for(int i = 0; i < sD; ++i) {
-                if (!(mData[i] instanceof AbsRecyclerViewData)) {
-                    break;
+                if ((mData[i] instanceof AbsRecyclerViewData)) {
+                    invalidateData(i);
                 }
-				invalidateData(i);
 			}
-			loadDataAndDisplay();
+            loadDataAndDisplay();
 		} catch(Throwable e) {
 			Debug.logException(e);
 		}
