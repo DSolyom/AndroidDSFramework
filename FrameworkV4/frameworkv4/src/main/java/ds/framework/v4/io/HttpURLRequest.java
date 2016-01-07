@@ -434,7 +434,7 @@ public class HttpURLRequest {
 	protected String createFullUrl() {
 		String url = mUrl;
 		if (mGetParams.size() > 0) {
-			url += (mUrl.contains("?") ? "" : "?");
+			url += (mUrl.contains("?") ? "&" : "?");
 		}
 
 		for(String key : mGetParams.keySet()) {

@@ -92,7 +92,6 @@ abstract public class AbsDSRecyclerViewFragment extends AbsDSAsyncDataFragment {
 		if (data instanceof AbsRecyclerViewData) {
             mAdapter.onDataLoaded(data, loadId);
         }
-
         super.onDataLoaded(data, loadId);
 	}
 		

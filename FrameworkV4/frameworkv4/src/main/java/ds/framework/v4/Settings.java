@@ -469,7 +469,7 @@ public class Settings {
 		ensurePreferencesEditor(context);
 		
 		String encodedValue = new String(Base64.encode(Common.serializeObject(value), Base64.DEFAULT));
-		
+
 		sPreferencesEditor.putString(key, encodedValue);
 		if (commit) {
 			sPreferencesEditor.commit();
