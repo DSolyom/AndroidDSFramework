@@ -147,11 +147,13 @@ public class Settings {
 	public static Locale getLocale() {
 		return Global.getContext().getResources().getConfiguration().locale;
 	}
-		public static Editor getPreferencesEditor(Context context) {
-		if (sPreferencesEditor != null) {
-			return sPreferencesEditor;
+
+    public static Editor getPreferencesEditor(Context context) {
+		if (sPreferencesEditor == null) {
+            sPreferencesEditor = getPreferences(context).edit();
 		}
-		return getPreferences(context).edit();
+        return sPreferencesEditor;
+
 	}
 	
 	public static SharedPreferences getPreferences(Context context) {
@@ -223,12 +225,11 @@ public class Settings {
 	 * @param value
 	 * @param commit
 	 */
-	public static void putInt(Context context, String key, int value, boolean commit) {
+    synchronized public static void putInt(Context context, String key, int value, boolean commit) {
 		ensurePreferencesEditor(context);
 		sPreferencesEditor.putInt(key, value);
 		if (commit) {
 			sPreferencesEditor.commit();
-			sPreferencesEditor = null;
 		}
 		if (sInstance != null) {
 			sInstance.mSettings.put(key, value);
@@ -291,12 +292,11 @@ public class Settings {
 	 * @param value
 	 * @param commit
 	 */
-	public static void putString(Context context, String key, String value, boolean commit) {
+	synchronized public static void putString(Context context, String key, String value, boolean commit) {
 		ensurePreferencesEditor(context);
 		sPreferencesEditor.putString(key, value);
 		if (commit) {
 			sPreferencesEditor.commit();
-			sPreferencesEditor = null;
 		}
 		if (sInstance != null) {
 			sInstance.mSettings.put(key, value);
@@ -348,12 +348,11 @@ public class Settings {
 	 * @param value
 	 * @param commit
 	 */
-	public static void putLong(Context context, String key, long value, boolean commit) {
+    synchronized public static void putLong(Context context, String key, long value, boolean commit) {
 		ensurePreferencesEditor(context);
 		sPreferencesEditor.putLong(key, value);
 		if (commit) {
 			sPreferencesEditor.commit();
-			sPreferencesEditor = null;
 		}
 		if (sInstance != null) {
 			sInstance.mSettings.put(key, value);
@@ -416,12 +415,11 @@ public class Settings {
 	 * @param value
 	 * @param commit
 	 */
-	public static void putBoolean(Context context, String key, boolean value, boolean commit) {
+    synchronized public static void putBoolean(Context context, String key, boolean value, boolean commit) {
 		ensurePreferencesEditor(context);
 		sPreferencesEditor.putBoolean(key, value);
 		if (commit) {
 			sPreferencesEditor.commit();
-			sPreferencesEditor = null;
 		}
 		if (sInstance != null) {
 			sInstance.mSettings.put(key, value);
@@ -465,15 +463,15 @@ public class Settings {
 	 * @param value
 	 * @param commit
 	 */
-	public static void putSerializable(Context context, String key, Serializable value, boolean commit) {
+    synchronized public static void putSerializable(Context context, String key, Serializable value, boolean commit) {
 		ensurePreferencesEditor(context);
 		
 		String encodedValue = new String(Base64.encode(Common.serializeObject(value), Base64.DEFAULT));
 
-		sPreferencesEditor.putString(key, encodedValue);
+        sPreferencesEditor.putString(key, encodedValue);
+
 		if (commit) {
 			sPreferencesEditor.commit();
-			sPreferencesEditor = null;
 		}
 		if (sInstance != null) {
 			sInstance.mSettings.put(key, value);
@@ -508,7 +506,7 @@ public class Settings {
 	
 	private static void ensurePreferencesEditor(Context context) {
 		if (sPreferencesEditor == null) {
-			sPreferencesEditor = getPreferencesEditor(context);
+			getPreferencesEditor(context);
 		}
 	}
 }
