@@ -15,69 +15,35 @@
 */
 package ds.framework.v4.widget;
 
-import android.database.Cursor;
-
 import ds.framework.v4.app.ActivityInterface;
 import ds.framework.v4.data.AbsAsyncData;
-import ds.framework.v4.data.CursorList;
-import ds.framework.v4.data.CursorListEntry;
+import ds.framework.v4.data.CursorData;
 
-public abstract class CursorListAdapter extends AbsTemplateViewHolderAdapter<CursorListEntry> {
-
-    protected CursorList mData;
-    private CursorListEntry mCLE;
+public abstract class CursorListAdapter extends AbsTemplateViewHolderAdapter<CursorData> {
 
 	public CursorListAdapter(ActivityInterface in, int rowLayoutId) {
 		super(in, rowLayoutId);
 	}
 
-	/**
-	 * 
-	 * @param c
-	 */
-	public void setCursor(Cursor c) {
-        if (mCLE == null) {
-            mCLE = new CursorListEntry(c);
-        } else {
-            mCLE.setCursor(c);
-        }
-
-        mData = null;
-
-		notifyDataSetChanged();
-	}
-
 	@Override
-	public CursorListEntry getItem(int position) {
-        final Cursor cursor = mCLE.getCursor();
-		if (cursor != null && !cursor.isClosed()) {
-			cursor.moveToPosition(position);
+	public CursorData getItem(int position) {
+		if (mRecyclerViewData == null) {
+            return null;
 		}
-		return mCLE;
+
+        return ((CursorData) mRecyclerViewData).getItem(position);
 	}
+
+    @Override
+    public void onDataLoaded(AbsAsyncData data, int loadId) {
+        notifyDataSetChanged();
+    }
 
 	/**
 	 *
 	 * @return
 	 */
 	public int getCount() {
-		return mCLE == null ? 0 : mCLE.getCount();
+		return mRecyclerViewData == null ? 0 : ((CursorData) mRecyclerViewData).getCount();
 	}
-
-	@Override
-	public void onDataLoaded(AbsAsyncData data, int loadId) {
-		setCursor(((CursorList) data).getCursor());
-		mData = (CursorList) data;
-	}
-
-    @Override
-    public void reset() {
-        super.reset();
-
-        // maybe we are just loaded new data and the adapter haven't got the chance to get it
-        if (mData != null) {
-            mData.closeCursor();
-        }
-    }
-
 }

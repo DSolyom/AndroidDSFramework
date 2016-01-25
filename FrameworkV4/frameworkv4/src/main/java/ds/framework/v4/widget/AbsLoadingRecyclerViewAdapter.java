@@ -20,7 +20,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import ds.framework.v4.app.ActivityInterface;
-import ds.framework.v4.common.Debug;
 import ds.framework.v4.data.AbsAsyncData;
 
 abstract public class AbsLoadingRecyclerViewAdapter<T> extends AbsTemplateViewHolderAdapter<T> {
@@ -191,9 +190,9 @@ abstract public class AbsLoadingRecyclerViewAdapter<T> extends AbsTemplateViewHo
     }
 
     @Override
-    public void reset() {
+    public void invalidate() {
         if (mAdapter != null) {
-            mAdapter.reset();
+            mAdapter.invalidate();
         }
     }
 

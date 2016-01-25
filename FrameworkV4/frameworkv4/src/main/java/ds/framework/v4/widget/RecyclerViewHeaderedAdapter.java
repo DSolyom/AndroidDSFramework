@@ -21,7 +21,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import ds.framework.v4.data.AbsAsyncData;
-import ds.framework.v4.data.AbsRecyclerViewData;
 
 abstract public class RecyclerViewHeaderedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements AbsAsyncData.OnDataLoadListener {
 
@@ -107,7 +106,7 @@ abstract public class RecyclerViewHeaderedAdapter extends RecyclerView.Adapter<R
     /**
      *
      */
-    public void reset() {
+    public void invalidate() {
         notifyDataSetChanged();
     }
 
@@ -129,7 +128,7 @@ abstract public class RecyclerViewHeaderedAdapter extends RecyclerView.Adapter<R
      *
      * @return
      */
-    abstract public AbsRecyclerViewData[] getRecyclerViewData();
+    abstract public AbsAsyncData[] getRecyclerViewData();
 
 // implements AbsAsyncData.OnDataLoadListener
 
@@ -144,4 +143,6 @@ abstract public class RecyclerViewHeaderedAdapter extends RecyclerView.Adapter<R
     public void onDataLoadInterrupted(AbsAsyncData data, int loadId) {
 
     }
+
+    abstract public boolean hasData(AbsAsyncData data);
 }

@@ -19,28 +19,41 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPagerModByDS;
 import android.view.View;
 import android.view.ViewGroup;
+
+import java.util.HashMap;
+
 import ds.framework.v4.app.ActivityInterface;
+import ds.framework.v4.data.AbsAsyncData;
 import ds.framework.v4.template.Template;
 
-public abstract class AbsTemplatePagerAdapter extends PagerAdapter {
+public abstract class AbsTemplatePagerAdapter extends PagerAdapter implements AbsAsyncData.OnDataLoadListener {
 		
 	protected Template mTemplate;
-	
-	private int mPageLayoutResID;
+
+    /**
+     * layout resource ids for pages
+     */
+    private HashMap<Integer, Integer> mPageLayoutResIDs = new HashMap<>();
 
 	private ActivityInterface mIn;
-	
-	public AbsTemplatePagerAdapter(ActivityInterface in, int pageLayoutResID) {
+
+    protected AbsAsyncData mPagerData;
+
+    public AbsTemplatePagerAdapter(ActivityInterface in, int pageLayoutResID) {
 		super();
 		
 		mIn = in;
-		mPageLayoutResID = pageLayoutResID;
+        mPageLayoutResIDs.put(-1, pageLayoutResID); // -1 = for all page without set layout
 		mTemplate = new Template(in, null);
 	}
+
+    public ActivityInterface getIn() {
+        return mIn;
+    }
 	
 	@Override
     public Object instantiateItem(ViewGroup container, int position) {
-		View item = createItem(container, position);
+		View item = inflatePage(container, position);
 		
 		((ViewGroup) container).addView(item);	
 		setItemLayoutParams(item, container);
@@ -49,6 +62,15 @@ public abstract class AbsTemplatePagerAdapter extends PagerAdapter {
 		
 		return item;
 	}
+
+    /**
+     *
+     * @param position
+     * @param resID
+     */
+    public void setPageLayoutResID(int position, int resID) {
+        mPageLayoutResIDs.put(position, resID);
+    }
 	
 	/**
 	 * 
@@ -56,9 +78,15 @@ public abstract class AbsTemplatePagerAdapter extends PagerAdapter {
 	 * @param position
 	 * @return
 	 */
-	public View createItem(ViewGroup viewParent, int position) {
-		final View convertView = mIn.inflate(mPageLayoutResID, viewParent, false);
-		convertView.setTag(mPageLayoutResID);
+	public View inflatePage(ViewGroup viewParent, int position) {
+        final int pageLayoutResID;
+        if (mPageLayoutResIDs.containsKey(position)) {
+            pageLayoutResID = mPageLayoutResIDs.get(position);
+        } else {
+            pageLayoutResID = mPageLayoutResIDs.get(-1);
+        }
+		final View convertView = mIn.inflate(pageLayoutResID, viewParent, false);
+		convertView.setTag(pageLayoutResID);
 		
 		return convertView;
 	}
@@ -78,6 +106,31 @@ public abstract class AbsTemplatePagerAdapter extends PagerAdapter {
     synchronized public void destroyItem(View container, int position, Object object) {
         ((ViewPagerModByDS) container).removeView((View) object);
     }
+
+    /**
+     *
+     * @param data
+     * @return
+     */
+    public boolean hasData(AbsAsyncData data) {
+        return data == mPagerData;
+    };
+
+    /**
+     *
+     * @return
+     */
+    public AbsAsyncData getPagerData() {
+        return mPagerData;
+    }
+
+    /**
+     *
+     * @param data
+     */
+    public void setPagerData(AbsAsyncData data) {
+        mPagerData = data;
+    }
     
     /**
      * 
@@ -91,7 +144,29 @@ public abstract class AbsTemplatePagerAdapter extends PagerAdapter {
 	public boolean isViewFromObject(View view, Object object) {
 		return view == (View) object;
 	}
+
+    /**
+     *
+     */
+    public void invalidate() {
+        mPagerData.invalidate();
+
+        notifyDataSetChanged();
+    }
+
+// implements AbsAsyncData.OnDataLoadListener
+
+    public void onDataLoadStart(AbsAsyncData data, int loadId) {
+
+    }
+
+    public void onDataLoadFailed(AbsAsyncData data, int loadId) {
+
+    }
+
+    public void onDataLoadInterrupted(AbsAsyncData data, int loadId) {
+
+    }
 	
 	abstract public void fillItem(View item, int position);
-	
 }

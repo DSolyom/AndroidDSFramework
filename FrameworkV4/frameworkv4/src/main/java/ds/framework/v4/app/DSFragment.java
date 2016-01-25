@@ -125,7 +125,7 @@ abstract public class DSFragment extends DialogFragment
 	private boolean mSearchOpened;
 	
 	/**
-	 * should remove search text and reset search when back pressed while searching?
+	 * should remove search text and invalidate search when back pressed while searching?
 	 */
 	protected boolean mRemoveSearchOnBack = true;
 	

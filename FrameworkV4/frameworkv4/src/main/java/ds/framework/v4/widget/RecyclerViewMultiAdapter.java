@@ -21,7 +21,6 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 
 import ds.framework.v4.data.AbsAsyncData;
-import ds.framework.v4.data.AbsRecyclerViewData;
 
 /**
  * Created by solyom on 13/08/15.
@@ -33,7 +32,7 @@ public class RecyclerViewMultiAdapter extends RecyclerViewHeaderedAdapter {
 
     private ArrayList<Integer> mAdapterStartPositions = new ArrayList<>();
     private ArrayList<RecyclerViewHeaderedAdapter> mAdapters = new ArrayList<>();
-    private AbsRecyclerViewData[] mAdapterData;
+    private AbsAsyncData[] mAdapterData;
 
     private int mItemCount;
 
@@ -138,9 +137,9 @@ public class RecyclerViewMultiAdapter extends RecyclerViewHeaderedAdapter {
     }
 
     @Override
-    public AbsRecyclerViewData[] getRecyclerViewData() {
+    public AbsAsyncData[] getRecyclerViewData() {
         if (mAdapterData == null) {
-            mAdapterData = new AbsRecyclerViewData[mAdapters.size()];
+            mAdapterData = new AbsAsyncData[mAdapters.size()];
 
             for(int i = 0; i < mAdapterData.length; ++i) {
                 mAdapterData[i] = mAdapters.get(i).getRecyclerViewData()[0];
@@ -150,11 +149,22 @@ public class RecyclerViewMultiAdapter extends RecyclerViewHeaderedAdapter {
     }
 
     @Override
+    public boolean hasData(AbsAsyncData data) {
+        ArrayList<RecyclerViewHeaderedAdapter> subAdapters = getAdapters();
+        for(int i = subAdapters.size() - 1; i >= 0; --i) {
+            if (mAdapterData[i] == data) {  // TODO: multi adapter in a multi adapter (really??)
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
     public void onDataLoaded(AbsAsyncData data, int loadId) {
         ArrayList<RecyclerViewHeaderedAdapter> subAdapters = getAdapters();
         for(int i = subAdapters.size() - 1; i >= 0; --i) {
             RecyclerViewHeaderedAdapter subAdapter = subAdapters.get(i);
-            if (mAdapterData[i] == data) {  // TODO: multi adapter in a multi adapter
+            if (mAdapterData[i] == data) {  // TODO: multi adapter in a multi adapter (really??)
                 subAdapter.onDataLoaded(data, loadId);
             }
         }
@@ -201,14 +211,14 @@ public class RecyclerViewMultiAdapter extends RecyclerViewHeaderedAdapter {
     /**
      *
      */
-    public void reset() {
+    public void invalidate() {
         for(RecyclerViewHeaderedAdapter adapter : mAdapters) {
-            adapter.reset();
+            adapter.invalidate();
         }
 
         mAdapterData = null;
 
-        super.reset();
+        super.invalidate();
     }
 
     /**

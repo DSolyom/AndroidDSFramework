@@ -150,11 +150,11 @@ abstract public class AbsDSAsyncDataFragment extends DSFormFragment
 	
 	@Override
 	public void invalidateData() {
-		if (mData != null) {
-			for(AbsAsyncData data : mData) {
-				data.invalidate();
-			}
+		if (mData != null)
+		for(AbsAsyncData data : mData) {
+			data.invalidate();
 		}
+
 		mAsyncDataLoadState = 0;
 		
 		super.invalidateData();

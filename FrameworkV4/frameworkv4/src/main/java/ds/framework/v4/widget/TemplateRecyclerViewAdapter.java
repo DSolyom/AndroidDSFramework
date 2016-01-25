@@ -17,7 +17,6 @@
 package ds.framework.v4.widget;
 
 import android.widget.AdapterView;
-import android.widget.ListAdapter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -135,9 +134,9 @@ public abstract class TemplateRecyclerViewAdapter<T> extends AbsTemplateViewHold
 	}
 	
 	@Override
-	public void reset() {
+	public void invalidate() {
 		mItems.clear();
-        super.reset();
+        super.invalidate();
 	}
 
 }

@@ -16,15 +16,16 @@
 package ds.framework.v4.app;
 
 import ds.framework.v4.Global;
-import ds.framework.v4.data.CursorEntry;
+import ds.framework.v4.data.AbsAsyncData;
+import ds.framework.v4.data.CursorData;
 import ds.framework.v4.db.Condition;
 import ds.framework.v4.db.TableQuery;
 import android.os.Bundle;
 
-abstract public class DSCursorEntryFragment extends DSFragment {
+abstract public class DSCursorEntryFragment extends AbsDSAsyncDataFragment {
 
 	private int mEntryId;
-	protected DSCursorEntryFragmentEntry mEntry;
+	protected DSCursorEntryFragmentData mEntry;
 	private String mMainTable;
 	
 	public DSCursorEntryFragment init(String mainTable) {
@@ -52,13 +53,12 @@ abstract public class DSCursorEntryFragment extends DSFragment {
     }
     
     @Override
-    public void loadData() {
+    public AbsAsyncData[] getAsyncDataObjects() {
     	if (mEntry == null) {
     		mEntry = getEntry();
     	}
-    	mEntry.load();
-    	
-    	super.loadData();
+
+		return new AbsAsyncData[] { mEntry };
     }
     
     @Override
@@ -67,32 +67,25 @@ abstract public class DSCursorEntryFragment extends DSFragment {
 		
 		mEntry.invalidate();
     }
-    
-    @Override
-    public void invalidateData() {
-    	if (mEntry != null) {
-    		mEntry.invalidate();
-    	}
-    	super.invalidateData();
-    }
-    
+
     @Override
     public void reset() {
     	super.reset();
+
     	mEntry = null;
     }
 
-	protected DSCursorEntryFragmentEntry getEntry() {
-		return new DSCursorEntryFragmentEntry();
+	protected DSCursorEntryFragmentData getEntry() {
+		return new DSCursorEntryFragmentData();
 	}
 	
 	/**
 	 * DSCursorEntryFragmentEntry
 	 */
-	protected class DSCursorEntryFragmentEntry extends CursorEntry {
+	protected class DSCursorEntryFragmentData extends CursorData {
 
 		@Override
-		public TableQuery newEntryLoaderQuery() {
+		public TableQuery getLoaderQuery() {
 			final TableQuery q = new TableQuery(mMainTable, "entry", Global.getOpenDb());
 			q.filter(new Condition("entry.id", mEntryId));
 			q.select("*");

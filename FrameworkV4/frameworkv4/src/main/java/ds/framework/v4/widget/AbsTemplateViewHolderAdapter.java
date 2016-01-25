@@ -23,8 +23,7 @@ import android.view.ViewGroup;
 import java.util.HashMap;
 
 import ds.framework.v4.app.ActivityInterface;
-import ds.framework.v4.common.Debug;
-import ds.framework.v4.data.AbsRecyclerViewData;
+import ds.framework.v4.data.AbsAsyncData;
 import ds.framework.v4.template.Template;
 
 abstract public class AbsTemplateViewHolderAdapter<T> extends RecyclerViewHeaderedAdapter {
@@ -36,19 +35,20 @@ abstract public class AbsTemplateViewHolderAdapter<T> extends RecyclerViewHeader
      * !note: use type < 240 to be able to use {@link RecyclerViewMultiAdapter} and {@link AbsLoadingRecyclerViewAdapter}
      * use {@link #setViewTypeLayoutResID(int viewType, int resID)} to set
      */
-	private HashMap<Integer, Integer> mRowLayoutRess = new HashMap<>();
+	private HashMap<Integer, Integer> mRowLayoutResIDs = new HashMap<>();
 
 	protected Template mTemplate;
 
-    protected AbsRecyclerViewData mRecyclerViewData;
+    protected AbsAsyncData mRecyclerViewData;
 
     public AbsTemplateViewHolderAdapter(ActivityInterface in, int rowLayoutId) {
 		mIn = in;
-		mRowLayoutRess.put(VIEWTYPE_DEFAULT, rowLayoutId);
+		mRowLayoutResIDs.put(VIEWTYPE_DEFAULT, rowLayoutId);
 		mTemplate = new Template(mIn, null);
 
         // just use an empty data as default
-        mRecyclerViewData = new AbsRecyclerViewData() {
+        mRecyclerViewData = new AbsAsyncData() {
+
             @Override
             protected LoaderThread createLoader() {
                 return null;
@@ -66,7 +66,7 @@ abstract public class AbsTemplateViewHolderAdapter<T> extends RecyclerViewHeader
      * @param resID
      */
     public void setViewTypeLayoutResID(int viewType, int resID) {
-        mRowLayoutRess.put(viewType, resID);
+        mRowLayoutResIDs.put(viewType, resID);
     }
 	
 	@Override
@@ -81,7 +81,7 @@ abstract public class AbsTemplateViewHolderAdapter<T> extends RecyclerViewHeader
         if (holder != null) {
             return holder;
         }
-        return new TemplateHolder(inflateTemplateView(mRowLayoutRess.get(viewType), parent, viewType));
+        return new TemplateHolder(inflateTemplateView(mRowLayoutResIDs.get(viewType), parent, viewType));
     }
 
     @Override
@@ -101,29 +101,34 @@ abstract public class AbsTemplateViewHolderAdapter<T> extends RecyclerViewHeader
 	}
 
     @Override
-    public AbsRecyclerViewData[] getRecyclerViewData() {
-        return new AbsRecyclerViewData[] { mRecyclerViewData };
+    public AbsAsyncData[] getRecyclerViewData() {
+        return new AbsAsyncData[] { mRecyclerViewData };
     }
 
     /**
      *
      * @param data
      */
-    public void setRecyclerViewData(AbsRecyclerViewData data) {
+    public void setRecyclerViewData(AbsAsyncData data) {
         if (mRecyclerViewData == data) {
             return;
         }
 
         mRecyclerViewData = data;
 
-        super.reset();
+        super.invalidate();
     }
 
     @Override
-    public void reset() {
+    public void invalidate() {
         mRecyclerViewData.invalidate();
 
-        super.reset();
+        super.invalidate();
+    }
+
+    @Override
+    public boolean hasData(AbsAsyncData data) {
+        return mRecyclerViewData == data;
     }
 
 	/**

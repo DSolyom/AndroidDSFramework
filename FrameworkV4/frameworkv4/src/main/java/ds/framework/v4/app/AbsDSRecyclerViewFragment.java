@@ -1,5 +1,5 @@
 /*
-	Copyright 2015 Dániel Sólyom
+	Copyright 2016 Dániel Sólyom
 
 	Licensed under the Apache License, Version 2.0 (the "License");
 	you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
 */
 package ds.framework.v4.app;
 
+import android.app.Activity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -23,7 +24,6 @@ import android.view.ViewGroup;
 import ds.framework.v4.R;
 import ds.framework.v4.common.Debug;
 import ds.framework.v4.data.AbsAsyncData;
-import ds.framework.v4.data.AbsRecyclerViewData;
 import ds.framework.v4.template.Template;
 import ds.framework.v4.widget.IRecyclerView;
 import ds.framework.v4.widget.RecyclerViewHeaderedAdapter;
@@ -45,6 +45,12 @@ abstract public class AbsDSRecyclerViewFragment extends AbsDSAsyncDataFragment {
 
 	protected ViewGroup mRecyclerAdapterView;
 
+    // usually activity can hold header or footer views
+    // exception is when there is more than one list in it
+    // like when using a view pager
+    protected boolean mActivityCanHoldHeader = true;
+    protected boolean mActivityCanHoldFooter = true;
+
 	public AbsDSRecyclerViewFragment() {
 		super();
 	}
@@ -58,6 +64,10 @@ abstract public class AbsDSRecyclerViewFragment extends AbsDSAsyncDataFragment {
         mRecyclerAdapterView = null;
 
         super.onViewCreated(rootView);
+
+        if (getActivity().findViewById(R.id.view_pager) != null) {
+            mActivityCanHoldFooter = mActivityCanHoldHeader = false;
+        }
 
         mRecyclerAdapterView = (ViewGroup) mTemplate.findViewById(getRecyclerViewID());
 	}
@@ -73,7 +83,7 @@ abstract public class AbsDSRecyclerViewFragment extends AbsDSAsyncDataFragment {
         super.createData();
 
 		if (mAdapter != null) {
-            final AbsRecyclerViewData[] recyclerViewData = mAdapter.getRecyclerViewData();
+            final AbsAsyncData[] recyclerViewData = mAdapter.getRecyclerViewData();
             final AbsAsyncData[] normalData = mData;
             mData = new AbsAsyncData[normalData.length + recyclerViewData.length];
 
@@ -89,9 +99,10 @@ abstract public class AbsDSRecyclerViewFragment extends AbsDSAsyncDataFragment {
 	
 	@Override
 	public void onDataLoaded(AbsAsyncData data, int loadId) {		
-		if (data instanceof AbsRecyclerViewData) {
+		if (mAdapter != null && mAdapter.hasData(data)) {
             mAdapter.onDataLoaded(data, loadId);
         }
+
         super.onDataLoaded(data, loadId);
 	}
 		
@@ -195,18 +206,21 @@ abstract public class AbsDSRecyclerViewFragment extends AbsDSAsyncDataFragment {
 	
 	@Override
 	protected void reloadForSearch(boolean finalTouch) {
+        reloadListData();
+    }
+
+    /**
+     *
+     */
+    public void reloadListData() {
 		if (mAdapter == null) {
 			return;
 		}
 
 		try {
-			final int sD = mData.length;
-			for(int i = 0; i < sD; ++i) {
-                if ((mData[i] instanceof AbsRecyclerViewData)) {
-                    invalidateData(i);
-                }
-			}
-            loadDataAndDisplay();
+            mAdapter.invalidate();
+
+            reloadDataAndDisplay();
 		} catch(Throwable e) {
 			Debug.logException(e);
 		}
@@ -256,23 +270,69 @@ abstract public class AbsDSRecyclerViewFragment extends AbsDSAsyncDataFragment {
             mTemplate.addOtherRoot(listFooter);
         }
 	}
-	
+
 	/**
 	 * return view or view group to be the main list's header
-	 * 
+	 *
 	 * @return
 	 */
 	protected View createHeaderView() {
-		return mTemplate.findViewById(R.id.container_list_header);
+		View headerView = mRootView.findViewById(R.id.container_list_header);
+
+		if (headerView == null && mActivityCanHoldHeader) {
+
+			// list header is not in the fragments scope in layout
+			headerView = getDSActivity().findViewById(R.id.container_list_header);
+		}
+
+		if (headerView != null) {
+			final View lv = headerView.findViewById(getRecyclerViewID());
+
+			if (lv != null && (lv instanceof IRecyclerView)) {
+
+				// list is inside its header - move it out
+				// !note: list might go out of the root view's and fragment's scope
+				ViewGroup.LayoutParams lp = lv.getLayoutParams();
+				final int lpWidth = lp.width;
+				final int lpHeight = lp.height;
+				((ViewGroup) lv.getParent()).removeViewInLayout(lv);
+
+				((ViewGroup) headerView.getParent()).addView(lv, lpWidth, lpHeight);
+			}
+		}
+		return headerView;
 	}
-	
+
 	/**
-	 * return view or view group to be the main list's footer
-	 * 
+	 * return view or view group to be the main list's header
+	 *
 	 * @return
 	 */
 	protected View createFooterView() {
-		return mTemplate.findViewById(R.id.container_list_footer);
+		View footerView = mRootView.findViewById(R.id.container_list_footer);
+
+		if (footerView == null && mActivityCanHoldFooter) {
+
+			// list footer is not in the fragments scope in layout
+			footerView = getDSActivity().findViewById(R.id.container_list_footer);
+		}
+
+		if (footerView != null) {
+			final View lv = footerView.findViewById(getRecyclerViewID());
+
+			if (lv != null && (lv instanceof IRecyclerView)) {
+
+				// list is inside its footer - move it out
+				// !note: list might go out of the root view's and fragment's scope
+				ViewGroup.LayoutParams lp = lv.getLayoutParams();
+				final int lpWidth = lp.width;
+				final int lpHeight = lp.height;
+				((ViewGroup) lv.getParent()).removeViewInLayout(lv);
+
+				((ViewGroup) footerView.getParent()).addView(lv, lpWidth, lpHeight);
+			}
+		}
+		return footerView;
 	}
 	
 	@Override
@@ -280,7 +340,11 @@ abstract public class AbsDSRecyclerViewFragment extends AbsDSAsyncDataFragment {
 		invalidateAdapter(mAdapter);
 		super.reset();
 	}
-	
+
+    /**
+     *
+     * @return
+     */
 	public RecyclerViewHeaderedAdapter getAdapter() {
 		if (mAdapter == null) {
 			mAdapter = createAdapter();
@@ -296,7 +360,7 @@ abstract public class AbsDSRecyclerViewFragment extends AbsDSAsyncDataFragment {
 	}
 	
     /**
-     * the list's adapter
+     * create and return the list's adapter
      * 
      * @return
      */
@@ -317,7 +381,7 @@ abstract public class AbsDSRecyclerViewFragment extends AbsDSAsyncDataFragment {
 	 */
 	protected void invalidateAdapter(RecyclerViewHeaderedAdapter adapter) {
         if (adapter != null) {
-            adapter.reset();
+            adapter.invalidate();
         }
     }
 

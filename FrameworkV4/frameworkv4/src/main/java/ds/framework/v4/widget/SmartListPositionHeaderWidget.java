@@ -12,6 +12,9 @@ public class SmartListPositionHeaderWidget extends RecyclerView.OnScrollListener
 	
 	@Override
 	public void onScrolled(RecyclerView view, int dx, int dy) {
+		if (view.getChildCount() == 0) {
+			return;
+		}
 
         final RecyclerView.LayoutManager lm = view.getLayoutManager();
 		int firstVisibleItem = 0;

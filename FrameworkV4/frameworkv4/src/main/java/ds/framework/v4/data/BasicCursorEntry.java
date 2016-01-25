@@ -1,5 +1,5 @@
 /*
-	Copyright 2013 Dániel Sólyom
+	Copyright 2016 Dániel Sólyom
 
 	Licensed under the Apache License, Version 2.0 (the "License");
 	you may not use this file except in compliance with the License.
@@ -18,19 +18,27 @@ package ds.framework.v4.data;
 import android.database.Cursor;
 
 /**
- * entry which gets it data from a cursor
+ * data object which gets it's values from a cursor
  */
-public class BasicCursorEntry {
+public class BasicCursorEntry extends AbsAsyncData implements AbsBasicEntry {
 
 	protected Cursor mCursor;
 	
 	
 	public BasicCursorEntry() {
-		;
+		super();
 	}
-	
+
+    public BasicCursorEntry(String loaderTag) {
+        super(loaderTag);
+    }
+
 	public BasicCursorEntry(Cursor c) {
+        super();
+
 		mCursor = c;
+
+        // leave the cursor's position as it was as this is an entry
 	}
 	
 	/**
@@ -172,5 +180,10 @@ public class BasicCursorEntry {
 	 */
 	public Cursor getCursor() {
 		return mCursor;
+	}
+
+	@Override
+	protected LoaderThread createLoader() {
+		return null;
 	}
 }
