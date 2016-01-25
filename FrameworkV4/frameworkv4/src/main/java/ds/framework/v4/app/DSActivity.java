@@ -625,8 +625,9 @@ abstract public class DSActivity extends ActionBarActivity
 
     protected void attachFragment(DSFragmentInterface fragment, String fragmentId, int containerResID,
                                   int animEnter, int animExit, int popEnter, int popExit) {
-
-        fragment.setFragmentId(fragmentId);
+		if (fragmentId != null) {
+        	fragment.setFragmentId(fragmentId);
+        }
 		FragmentTransaction ft = getFragmentManager().beginTransaction();
         if (animEnter != 0) {
             ft.setCustomAnimations(animEnter, animExit, popEnter, popExit);
@@ -646,39 +647,41 @@ abstract public class DSActivity extends ActionBarActivity
 	/**
 	 * 
 	 * @param fragment
-	 * @param name
+	 * @param fragmentId
 	 * @param containerResID
 	 */
-	protected void replaceFragment(DSFragmentInterface fragment, String name, int containerResID) {
-		replaceFragment(fragment, name, containerResID, 0, 0, 0, 0);
+	protected void replaceFragment(DSFragmentInterface fragment, String fragmentId, int containerResID) {
+		replaceFragment(fragment, fragmentId, containerResID, 0, 0, 0, 0);
 	}
 	
 	/**
 	 * 
 	 * @param fragment
-	 * @param name
+	 * @param fragmentId
 	 * @param containerResID
 	 * @param animEnter
 	 * @param animExit
 	 */
-	protected void replaceFragment(DSFragmentInterface fragment, String name, int containerResID,
+	protected void replaceFragment(DSFragmentInterface fragment, String fragmentId, int containerResID,
 			int animEnter, int animExit, int popEnter, int popExit) {
-		fragment.setFragmentId(name);
+		if (fragmentId != null) {
+			fragment.setFragmentId(fragmentId);
+		}
 		final FragmentTransaction ft = getFragmentManager().beginTransaction();
         if (animEnter != 0) {
             ft.setCustomAnimations(animEnter, animExit, popEnter, popExit);
         }
 		ft.replace(containerResID, (Fragment) fragment).commit();
-		mFragments.put(name, fragment);
+		mFragments.put(fragmentId, fragment);
 	}
 	
 	/**
-	 * detach a fragment by name
+	 * detach a fragment by fragmentId
 	 * 
-	 * @param name
+	 * @param fragmentId
 	 */
-	protected void detachFragment(String name) {
-		detachFragment(mFragments.remove(name));
+	protected void detachFragment(String fragmentId) {
+		detachFragment(mFragments.remove(fragmentId));
 	}
 	
 	/**
