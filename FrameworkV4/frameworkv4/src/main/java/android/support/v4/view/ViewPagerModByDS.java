@@ -16,7 +16,6 @@
 
 package android.support.v4.view;
 
-import android.app.Fragment;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
@@ -29,7 +28,6 @@ import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.SystemClock;
-import android.support.v13.app.FragmentPagerAdapterModByDS;
 import android.support.v4.os.ParcelableCompat;
 import android.support.v4.os.ParcelableCompatCreatorCallbacks;
 import android.support.v4.view.accessibility.AccessibilityEventCompat;
@@ -58,6 +56,7 @@ import java.util.Collections;
 import java.util.Comparator;
 
 import ds.framework.v4.app.DSFragment;
+import ds.framework.v4.widget.DSPagerAdapterInterface;
 
 /**
  * Layout manager that allows the user to flip left and right
@@ -462,10 +461,11 @@ public class ViewPagerModByDS extends ViewGroup {
         }
 
         // Mod by DS
-        if (mAdapter instanceof FragmentPagerAdapterModByDS) {
-            final Fragment currentFragment = (Fragment) ((FragmentPagerAdapterModByDS) mAdapter).getItem(mCurItem);
-            if (currentFragment != null && currentFragment instanceof DSFragment) {
-                ((DSFragment) currentFragment).setActive(true);
+        if (mAdapter instanceof DSPagerAdapterInterface) {
+            final Object item = ((DSPagerAdapterInterface) mAdapter).getItem(mCurItem);
+            if (item != null && item instanceof DSFragment) {
+                final DSFragment currentFragment = (DSFragment) item;
+                currentFragment.setActive(true);
             }
         }
         //
@@ -1788,7 +1788,7 @@ public class ViewPagerModByDS extends ViewGroup {
         }
     }
 
-    private boolean isGutterDrag(float x, float dx) {
+    protected boolean isGutterDrag(float x, float dx) {
         return (x < mGutterSize && dx > 0) || (x > getWidth() - mGutterSize && dx < 0);
     }
 

@@ -26,7 +26,7 @@ import ds.framework.v4.app.ActivityInterface;
 import ds.framework.v4.data.AbsAsyncData;
 import ds.framework.v4.template.Template;
 
-public abstract class AbsTemplatePagerAdapter extends PagerAdapter implements AbsAsyncData.OnDataLoadListener {
+public abstract class AbsTemplatePagerAdapter extends PagerAdapter implements AbsAsyncData.OnDataLoadListener, DSPagerAdapterInterface {
 		
 	protected Template mTemplate;
 
@@ -35,7 +35,7 @@ public abstract class AbsTemplatePagerAdapter extends PagerAdapter implements Ab
      */
     private HashMap<Integer, Integer> mPageLayoutResIDs = new HashMap<>();
 
-	private ActivityInterface mIn;
+	protected ActivityInterface mIn;
 
     protected AbsAsyncData mPagerData;
 

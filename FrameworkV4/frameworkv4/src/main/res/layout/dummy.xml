@@ -5,10 +5,7 @@
     android:orientation="vertical"
 >
     <View android:id="@+id/container_map" />
-
     <View android:id="@+id/container_loading" />
-
     <View android:id="@+id/app_bar" />
-
     <View android:id="@+id/view_pager" />
 </LinearLayout>

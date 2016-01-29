@@ -65,7 +65,7 @@ abstract public class AbsDSRecyclerViewFragment extends AbsDSAsyncDataFragment {
 
         super.onViewCreated(rootView);
 
-        if (getActivity().findViewById(R.id.view_pager) != null) {
+        if (getDSActivity().findViewById(R.id.view_pager) != null) {
             mActivityCanHoldFooter = mActivityCanHoldHeader = false;
         }
 

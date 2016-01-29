@@ -25,7 +25,7 @@ import ds.framework.v4.app.DSFragment;
 
 public class DSFragmentViewPager extends DSViewPager {
 
-	FragmentPagerAdapterModByDS mAdapter;
+	DSPagerAdapterInterface mAdapter;
 	
 	/**
 	 * current page
@@ -66,11 +66,11 @@ public class DSFragmentViewPager extends DSViewPager {
 	
 	@Override
 	public void setAdapter(PagerAdapter adapter) {
-		assert(adapter instanceof FragmentPagerAdapterModByDS);
+		assert(adapter instanceof PagerAdapter);
 		
-		mAdapter = (FragmentPagerAdapterModByDS) adapter;
+		mAdapter = (DSPagerAdapterInterface) adapter;
 		
-		super.setAdapter(mAdapter);
+		super.setAdapter((PagerAdapter) mAdapter);
 	}
 	
 	/**
@@ -138,7 +138,7 @@ public class DSFragmentViewPager extends DSViewPager {
 	
 	public void onResume() {	
 		if (mAdapter != null && mAdapter.getCount() > mCurrentPage) {
-			final Fragment fragment = mAdapter.getItem(mCurrentPage);
+			final Fragment fragment = (Fragment) mAdapter.getItem(mCurrentPage);
 			if (fragment instanceof DSFragment) {
 				((DSFragment) fragment).setActive(true);
 			}
@@ -151,7 +151,7 @@ public class DSFragmentViewPager extends DSViewPager {
 	
 	public void onPause() {
 		if (mAdapter != null && mAdapter.getCount() > 0) {
-			final Fragment fragment = mAdapter.getItem(mCurrentPage);
+			final Fragment fragment = (Fragment) mAdapter.getItem(mCurrentPage);
 			if (fragment instanceof DSFragment) {
 				((DSFragment) fragment).setActive(false);
 			}
@@ -165,7 +165,7 @@ public class DSFragmentViewPager extends DSViewPager {
 	 */
 	private void activateFragment(int page, boolean active) {
 		if (page != -1) {
-			final Fragment fragment = mAdapter.getItem(page);
+			final Fragment fragment = (Fragment) mAdapter.getItem(page);
 			if (fragment instanceof DSFragment) {
 				((DSFragment) fragment).setActive(active);
 			}

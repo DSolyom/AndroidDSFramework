@@ -171,6 +171,14 @@ abstract public class DSFragment extends DialogFragment
 		
 		attachSubFragmentsInner();
 	}
+
+    /**
+     *
+     * @param fragment
+     */
+    public void onAttach(DSFragment fragment) {
+        setParent(fragment);
+    }
 	
 	/**
 	 * 
@@ -183,6 +191,14 @@ abstract public class DSFragment extends DialogFragment
 
 		super.onDetach();
 	}
+
+    /**
+     *
+     * @param fragment
+     */
+    public void onDetach(DSFragment fragment) {
+        setParent(null);
+    }
 	
 	/**
 	 * 
@@ -251,14 +267,27 @@ abstract public class DSFragment extends DialogFragment
 	 * @param fragment
 	 * @param name
 	 */
-	protected void attachSubFragment(int containerViewID, DSFragment fragment, String name) {
+	public void attachSubFragment(int containerViewID, DSFragment fragment, String name) {
 		fragment.setContainerViewID(containerViewID);
 
 		fragment.setFragmentId(name);
 		mSubFragments.put(containerViewID, fragment);
-		fragment.setParent(this);
+		fragment.onAttach(this);
 	}
-	
+
+    /**
+     *
+     * @param containerViewID
+     */
+	public void detachSubFragment(int containerViewID) {
+        final DSFragment fragment = mSubFragments.remove(containerViewID);
+        if (fragment == null) {
+            return;
+        }
+
+        fragment.onDetach(this);
+    }
+
 	/**
 	 * 
 	 * @param id
@@ -300,14 +329,20 @@ abstract public class DSFragment extends DialogFragment
 		mRootView = getRootView(inflater, container);
 
 		onViewCreated(mRootView);
-		
+
+        // set subfragments' root view
 		for(Integer containerViewID : mSubFragments.keySet()) {
 			final DSFragment subfragment = mSubFragments.get(containerViewID);
 			if (containerViewID != null) {
 				final ViewGroup subfragmentContainer = (ViewGroup) mRootView.findViewById(containerViewID);
-				final View subfragmentRootView = subfragment.getRootView(inflater, subfragmentContainer);
-				subfragmentContainer.addView(subfragmentRootView);
-				subfragment.setRootView(subfragmentRootView);
+
+                // we need a container to add the fragments to
+                // if we don't it means that the subfragment will handle this itself
+                if (subfragmentContainer != null) {
+                    final View subfragmentRootView = subfragment.getRootView(inflater, subfragmentContainer);
+                    subfragmentContainer.addView(subfragmentRootView);
+                    subfragment.setRootView(subfragmentRootView);
+                }
 			}
 			subfragment.onViewCreated(mRootView);
 		}

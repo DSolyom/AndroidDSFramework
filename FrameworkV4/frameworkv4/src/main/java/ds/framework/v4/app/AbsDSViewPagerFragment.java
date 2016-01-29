@@ -19,17 +19,21 @@ import android.os.Bundle;
 import android.support.v4.view.ViewPagerModByDS;
 import android.support.v4.view.ViewPagerModByDS.OnPageChangeListener;
 import android.view.View;
+
+import com.google.samples.apps.iosched.ui.widget.SlidingTabLayoutModByDS;
+
 import ds.framework.v4.data.AbsAsyncData;
 import ds.framework.v4.template.Template;
 import ds.framework.v4.widget.AbsTemplatePagerAdapter;
 
-abstract public class AbsDSViewPagerFragment extends AbsDSAsyncDataFragment {
+abstract public class AbsDSViewPagerFragment extends AbsDSAsyncDataFragment implements OnPageChangeListener {
 
 	protected AbsTemplatePagerAdapter mAdapter;
 	
-	private int mSavedPosition;
+	private int mCurrentPosition;
 	
-	protected ViewPagerModByDS mPager;
+	protected ViewPagerModByDS mViewPager;
+    protected SlidingTabLayoutModByDS mSlidingTabLayout;
 	
 	public AbsDSViewPagerFragment() {
 		super();
@@ -41,11 +45,12 @@ abstract public class AbsDSViewPagerFragment extends AbsDSAsyncDataFragment {
 
 	@Override
 	protected void onViewCreated(View rootView) {
-		mPager = null;
+		mViewPager = null;
 		
 		super.onViewCreated(rootView);
 		
-		mPager = (ViewPagerModByDS) mTemplate.findViewById(getPagerID());
+		mViewPager = (ViewPagerModByDS) mTemplate.findViewById(getPagerID());
+        mSlidingTabLayout = (SlidingTabLayoutModByDS) mTemplate.findViewById(getPagerTabID());
 	}
 
 	@Override
@@ -100,29 +105,20 @@ abstract public class AbsDSViewPagerFragment extends AbsDSAsyncDataFragment {
 	public void display() {
 		super.display();
 		
-		if (mPager != null) {
-			mTemplate.fill(mPager, mAdapter, Template.ADAPTER, null);
-		}
-		
-		mPager.setCurrentItem(mSavedPosition, false);
-		
-		mPager.setOnPageChangeListener(new OnPageChangeListener() {
+		if (mViewPager == null) {
+            return;
+        }
 
-            @Override
-            public void onPageSelected(int position) {
-            	AbsDSViewPagerFragment.this.onPageSelected(position);
-            }
+        mTemplate.fill(mViewPager, mAdapter, Template.ADAPTER, null);
 
-            @Override
-            public void onPageScrolled(int position, float positionOffset, 
-            		int positionOffsetPixels) {
-            }
+        if (mSlidingTabLayout != null) {
+            mSlidingTabLayout.setDistributeEvenly(false);
 
-            @Override
-            public void onPageScrollStateChanged(int state) {
-            	
-            }
-		});
+            mSlidingTabLayout.setViewPager(mViewPager);
+            mSlidingTabLayout.setOnPageChangeListener(this);
+        }
+
+		mViewPager.setCurrentItem(mCurrentPosition, false);
 	}
 
     /**
@@ -131,26 +127,36 @@ abstract public class AbsDSViewPagerFragment extends AbsDSAsyncDataFragment {
      * @param smoothScrolling
      */
     public void selectPage(int page, boolean smoothScrolling) {
-        if (mPager != null) {
-            mPager.setCurrentItem(page, smoothScrolling);
+        if (mViewPager != null) {
+            mViewPager.setCurrentItem(page, smoothScrolling);
         } else {
-            mSavedPosition = page;
+            mCurrentPosition = page;
         }
+    }
+
+    @Override
+    public void onPageScrolled(int arg0, float arg1, int arg2) {
+        ;
+    }
+
+    @Override
+    public void onPageScrollStateChanged(int state) {
+        ;
     }
 	
 	/**
 	 * 
 	 * @param position
 	 */
-	protected void onPageSelected(int position) {
-		mSavedPosition = position;
+	public void onPageSelected(int position) {
+		mCurrentPosition = position;
 	}
 	
 	@Override
 	public void reset() {
 		invalidateAdapter();
 		
-		mSavedPosition = 0;
+		mCurrentPosition = 0;
 		super.reset();
 	}
 
@@ -171,19 +177,35 @@ abstract public class AbsDSViewPagerFragment extends AbsDSAsyncDataFragment {
         }
     }
 
+    /**
+     * override to return pager's tab view's id if there is one
+     *
+     * @return
+     */
+    protected int getPagerTabID() {
+        return 0;
+    }
+
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-		outState.putInt("ds:viewpagerfragment:saved-position", mSavedPosition);
+		outState.putInt("ds:viewpagerfragment:saved-position", mCurrentPosition);
 	}
 	
 	@Override
 	public void onRestoreInstanceState(Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);
-		mSavedPosition = savedInstanceState.getInt("ds:viewpagerfragment:saved-position");
+		mCurrentPosition = savedInstanceState.getInt("ds:viewpagerfragment:saved-position");
 	}
-	
+
+    /**
+     * get id of the view pager
+     * @see getPagerTabID() too
+     *
+     * @return
+     */
 	abstract protected int getPagerID();
+
 	
 	abstract protected AbsTemplatePagerAdapter createAdapter();
 }

@@ -83,15 +83,7 @@ public class JSONToDbHelper {
                     continue;
                 }
 
-				if ((mColumns[i].type & Table.INTEGER) > 0) {
-					type = Table.INTEGER;
-				} else if ((mColumns[i].type & Table.BOOLEAN) > 0) {
-					type = Table.BOOLEAN;
-				} else if ((mColumns[i].type & Table.REAL) > 0) {
-					type = Table.REAL;
-				} else {
-					type = Table.TEXT;
-				}
+				type = mColumns[i].type & Table.TYPE_MASK;
 
                 value = row.get(mColumns[i].name);
 
@@ -112,45 +104,31 @@ public class JSONToDbHelper {
 				
 				switch(type) {
                     case Table.INTEGER:
-                        int val = 0;
-                        try {
-                            val = (Integer) value;
-                            value = val;
-                        } catch(ClassCastException e) {
-                            if (((String) value).length() == 0) {
-                                value = val = 0;
-                            } else {
-                                value = val = Integer.parseInt((String) value);
-                            }
+                        if (value instanceof String) {
+                            value = Integer.parseInt((String) value);
                         }
                         if (mColumns[i].name.equals("id")) {
 
                             // id for joined tables
-                            id = val;
+                            id = (int) value;
                         }
+                        ih.bind(mColumnsPosition[i], (Integer) value);
                         break;
 
                     case Table.BOOLEAN:
-                        int val2 = 0;
-                        try {
-                            val2 = (Boolean) value ? 1 : 0;
-                        } catch(ClassCastException e) {
-                            val2 = (Integer) value;
-                        }
-                        value = val2;
+                        value = (value instanceof Boolean) ? (Boolean) value : (Integer) value > 0;
+                        ih.bind(mColumnsPosition[i], (Boolean) value);
                         break;
 
                     case Table.REAL:
                         try {
-                            final double d = (Double) value;
-                            value = d;
+                            ih.bind(mColumnsPosition[i], (Double) value);
                         } catch(ClassCastException e) {
                             if (value instanceof String && ((String) value).length() == 0) {
-                                value = 0.0;
-                                ih.bind(mColumnsPosition[i], 0);
-    //Debug.logD("JSONToDb", "binding 0 for " + mColumns[i].name);
+                                value = 0.0d;
+                                ih.bind(mColumnsPosition[i], (Double) value);
                             } else {
-                                throw(e);
+                                ih.bind(mColumnsPosition[i], Double.valueOf((String) value));
                             }
                         }
                         break;
@@ -158,32 +136,12 @@ public class JSONToDbHelper {
                     default:
 
                         // this way it can either be a string, a jsonobject, etc...
-                        value = value.toString();
+                        ih.bind(mColumnsPosition[i], value.toString());
 					    break;
 				}
-				
-				switch(type) {
-					case Table.INTEGER:
-						ih.bind(mColumnsPosition[i], (Integer) value);
-//Debug.logD("JSONToDb", "binding " + value + " for " + mColumns[i].name);		
-						break;
-						
-					case Table.BOOLEAN:
-						ih.bind(mColumnsPosition[i], (Integer) value != 0);
-//Debug.logD("JSONToDb", "binding " + ((Integer) value != 0) + " for " + mColumns[i].name);
-						break;
-						
-					case Table.REAL:
-						ih.bind(mColumnsPosition[i], (Double) value);
-//Debug.logD("JSONToDb", "binding " + value + " for " + mColumns[i].name);
-						break;
-				
-					case Table.TEXT:	// no break intended
-					default:
-						ih.bind(mColumnsPosition[i], (String) value);
-//Debug.logD("JSONToDb", "binding " + value + " for " + mColumns[i].name);
-						break;
-				}
+
+//Debug.logD("JSONToDb", "binded " + value + " for " + mColumns[i].name);
+
 			} catch (Exception e) {
 				if ((mColumns[i].type & Table.NULL) > 0) {
 					ih.bindNull(mColumnsPosition[i]);
