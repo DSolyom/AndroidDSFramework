@@ -6,12 +6,12 @@ import android.support.v13.app.FragmentPagerAdapterModByDS;
 import android.view.ViewGroup;
 
 import ds.framework.v4.app.DSFragment;
-import ds.framework.v4.common.Debug;
+import ds.framework.v4.widget.DSAdapterInterface;
 
 /**
  * Created by solyom on 04/11/15.
  */
-abstract public class FragmentPagerRecyclerAdapter extends FragmentPagerAdapterModByDS {
+abstract public class FragmentPagerRecyclerAdapter extends FragmentPagerAdapterModByDS implements DSAdapterInterface {
 
     int mFragmentUse[] = new int[6];
     DSFragment mSameFragments[] = new DSFragment[6];
@@ -63,6 +63,11 @@ abstract public class FragmentPagerRecyclerAdapter extends FragmentPagerAdapterM
             }
         }
         return null;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return getCount() == 0;
     }
 
     protected abstract DSFragment createSameFragment();

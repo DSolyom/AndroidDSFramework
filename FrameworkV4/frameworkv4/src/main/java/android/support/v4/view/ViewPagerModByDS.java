@@ -56,7 +56,7 @@ import java.util.Collections;
 import java.util.Comparator;
 
 import ds.framework.v4.app.DSFragment;
-import ds.framework.v4.widget.DSPagerAdapterInterface;
+import ds.framework.v4.widget.DSAdapterInterface;
 
 /**
  * Layout manager that allows the user to flip left and right
@@ -461,8 +461,8 @@ public class ViewPagerModByDS extends ViewGroup {
         }
 
         // Mod by DS
-        if (mAdapter instanceof DSPagerAdapterInterface) {
-            final Object item = ((DSPagerAdapterInterface) mAdapter).getItem(mCurItem);
+        if (mAdapter instanceof DSAdapterInterface) {
+            final Object item = ((DSAdapterInterface) mAdapter).getItem(mCurItem);
             if (item != null && item instanceof DSFragment) {
                 final DSFragment currentFragment = (DSFragment) item;
                 currentFragment.setActive(true);

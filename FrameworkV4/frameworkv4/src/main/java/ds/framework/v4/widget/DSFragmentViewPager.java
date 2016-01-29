@@ -25,7 +25,7 @@ import ds.framework.v4.app.DSFragment;
 
 public class DSFragmentViewPager extends DSViewPager {
 
-	DSPagerAdapterInterface mAdapter;
+	DSAdapterInterface mAdapter;
 	
 	/**
 	 * current page
@@ -68,7 +68,7 @@ public class DSFragmentViewPager extends DSViewPager {
 	public void setAdapter(PagerAdapter adapter) {
 		assert(adapter instanceof PagerAdapter);
 		
-		mAdapter = (DSPagerAdapterInterface) adapter;
+		mAdapter = (DSAdapterInterface) adapter;
 		
 		super.setAdapter((PagerAdapter) mAdapter);
 	}

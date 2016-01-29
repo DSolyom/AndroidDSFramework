@@ -87,12 +87,6 @@ public abstract class CursorData extends BasicCursorEntry {
         }
     }
 
-	public void invalidateInner() {
-        super.invalidateInner();
-
-        setCursor(null);
-	}
-
     /**
      *
      * @param in

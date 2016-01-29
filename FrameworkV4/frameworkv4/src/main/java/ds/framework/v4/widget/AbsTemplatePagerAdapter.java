@@ -26,7 +26,7 @@ import ds.framework.v4.app.ActivityInterface;
 import ds.framework.v4.data.AbsAsyncData;
 import ds.framework.v4.template.Template;
 
-public abstract class AbsTemplatePagerAdapter extends PagerAdapter implements AbsAsyncData.OnDataLoadListener, DSPagerAdapterInterface {
+public abstract class AbsTemplatePagerAdapter extends PagerAdapter implements AbsAsyncData.OnDataLoadListener, DSAdapterInterface {
 		
 	protected Template mTemplate;
 
