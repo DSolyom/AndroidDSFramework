@@ -279,6 +279,10 @@ abstract public class AbsDSRecyclerViewFragment extends AbsDSAsyncDataFragment {
 	protected View createHeaderView() {
 		View headerView = mRootView.findViewById(R.id.container_list_header);
 
+		if (headerView == null && getParent() != null) {
+			headerView = getParent().getRootView().findViewById(R.id.container_list_header);
+		}
+
 		if (headerView == null && mActivityCanHoldHeader) {
 
 			// list header is not in the fragments scope in layout
@@ -310,6 +314,10 @@ abstract public class AbsDSRecyclerViewFragment extends AbsDSAsyncDataFragment {
 	 */
 	protected View createFooterView() {
 		View footerView = mRootView.findViewById(R.id.container_list_footer);
+
+        if (footerView == null && getParent() != null) {
+            footerView = getParent().getRootView().findViewById(R.id.container_list_footer);
+        }
 
 		if (footerView == null && mActivityCanHoldFooter) {
 

@@ -27,12 +27,14 @@ import android.view.ViewGroup;
 
 import com.google.samples.apps.iosched.ui.widget.AbsSlidingTabLayout.SlidingTabAdapterInterface;
 
+import ds.framework.v4.widget.DSAdapterInterface;
+
 /**
  * Implementation of {@link PagerAdapter} that
  * represents each page as a {@link Fragment} that is persistently
  * kept in the fragment manager as long as the user can return to the page.
  */
-public abstract class FragmentPagerAdapterModByDS extends PagerAdapter implements SlidingTabAdapterInterface {
+public abstract class FragmentPagerAdapterModByDS extends PagerAdapter implements SlidingTabAdapterInterface, DSAdapterInterface {
 
     private static final String TAG = "FragmentPagerAdapter";
     private static final boolean DEBUG = false;
@@ -173,5 +175,13 @@ public abstract class FragmentPagerAdapterModByDS extends PagerAdapter implement
      */
     public void reset() {
         ;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public boolean isEmpty() {
+        return getCount() == 0;
     }
 }

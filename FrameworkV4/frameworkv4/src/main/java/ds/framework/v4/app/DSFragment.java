@@ -178,6 +178,14 @@ abstract public class DSFragment extends DialogFragment
      */
     public void onAttach(DSFragment fragment) {
         setParent(fragment);
+
+		if (mFragmentId == null) {
+			mFragmentId = getTag();
+		}
+
+		mActive = mActiveWhenAttached;
+
+		attachSubFragmentsInner();
     }
 	
 	/**
