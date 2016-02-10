@@ -50,7 +50,7 @@ abstract public class AbsDSViewPagerFragment extends AbsDSAsyncDataFragment impl
 		super.onViewCreated(rootView);
 		
         final int pagerID = getPagerID();
-        if (pagerID != null) {
+        if (pagerID != 0) {
 		  mViewPager = (ViewPagerModByDS) mTemplate.findViewById(pagerID);
 
             if (mViewPager != null) {
