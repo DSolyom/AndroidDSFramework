@@ -49,8 +49,17 @@ abstract public class AbsDSViewPagerFragment extends AbsDSAsyncDataFragment impl
 		
 		super.onViewCreated(rootView);
 		
-		mViewPager = (ViewPagerModByDS) mTemplate.findViewById(getPagerID());
-        mSlidingTabLayout = (SlidingTabLayoutModByDS) mTemplate.findViewById(getPagerTabID());
+        final int pagerID = getPagerID();
+        if (pagerID != null) {
+		  mViewPager = (ViewPagerModByDS) mTemplate.findViewById(pagerID);
+
+            if (mViewPager != null) {
+                final int pagerTabID = getPagerTabID();
+                if (pagerTabID != 0) {
+                    mSlidingTabLayout = (SlidingTabLayoutModByDS) mTemplate.findViewById(pagerTabID);
+                }
+            }
+        }
 	}
 
 	@Override
