@@ -21,9 +21,10 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:support-v13:22.1.+'
-    compile 'com.android.support:recyclerview-v7:22.1.+'
-    compile 'com.google.android.gms:play-services:+'
-    compile 'com.android.support:cardview-v7:22.1.+'
-    compile 'com.android.support:appcompat-v7:22.1.+'
+    compile 'com.android.support:support-v13:23.1.0'
+    compile 'com.android.support:recyclerview-v7:23.1.0'
+    compile 'com.google.android.gms:play-services-base:8.4.0'
+    compile 'com.google.android.gms:play-services-maps:8.4.0'
+    compile 'com.android.support:cardview-v7:23.1.0'
+    compile 'com.android.support:appcompat-v7:23.1.0'
 }
