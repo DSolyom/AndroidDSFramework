@@ -198,10 +198,10 @@ abstract public class AbsDSRecyclerViewFragment extends AbsDSAsyncDataFragment {
 	protected boolean shouldShowEmpty() {
 		return isListEmpty();
 	}
-	
+
 	@Override
 	protected boolean shouldShowLoading() {
-		return (mRecyclerAdapterView != null && (mAdapter == null || mAdapter.getCount() == 0)) && super.shouldShowLoading();
+		return (mRecyclerAdapterView == null || (mRecyclerAdapterView != null && (mAdapter == null || mAdapter.getCount() == 0))) && super.shouldShowLoading();
 	}
 	
 	@Override

@@ -118,9 +118,9 @@ abstract public class AbsAsyncData implements Serializable {
 		LoaderThread loader = recoverLoader();
 		boolean loaderRecovered = loader != null;
 		
-		// try to retrieve result already created
+		// try to retrieve result already created or use the one already set if any
 		final Result result = BackgroundThread.getResult(mLoaderTag, true);
-		if (result != null) {
+		if (result != null || mResult != null) {
 			mValid = false;
 			
 			if (loader != null) {
@@ -131,13 +131,14 @@ abstract public class AbsAsyncData implements Serializable {
 			}
 			
 			mLoadId = loadId;
-			
+
+            // still notify listener about load states
 			if (listener != null && loaderRecovered) {
 				listener.onDataLoadStart(this, loadId);
 			}
 			
-			if (result.success) {
-				onDataLoaded(result.data, listener);
+			if ((result != null && result.success) || mResult != null) {
+				onDataLoaded(result == null ? mResult : result.data, listener);
 			} else {
 				onDataLoadFailed(result.data, listener);
 			}
@@ -261,6 +262,7 @@ abstract public class AbsAsyncData implements Serializable {
 	synchronized protected void invalidateInner() {
 		stopLoading();
 		mValid = false;
+        mResult = null;
 	}
 	
 	/**
@@ -285,6 +287,10 @@ abstract public class AbsAsyncData implements Serializable {
         mResult = result;
 		listener.onDataLoaded(this, mLoadId);
 		mLoader = null;
+	}
+
+	public void setResult(Object result) {
+		mResult = result;
 	}
 	
 	/**
