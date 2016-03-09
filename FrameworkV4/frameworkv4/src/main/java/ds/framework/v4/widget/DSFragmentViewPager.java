@@ -80,7 +80,7 @@ public class DSFragmentViewPager extends DSViewPager {
 	 */
 	@Override
 	public void setCurrentItem(int page, boolean scrolled) {
-		if (mAdapter != null && mAdapter.getCount() >= page) {
+		if (mAdapter != null && mAdapter.getCount() > page) {
 			super.setCurrentItem(page, scrolled);
 			if (!scrolled) {
 				
