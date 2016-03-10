@@ -8,4 +8,7 @@
     <View android:id="@+id/container_loading" />
     <View android:id="@+id/app_bar" />
     <View android:id="@+id/view_pager" />
+
+    <View android:id="@+id/view_pager_title_bar" />
+    <View android:id="@+id/sliding_tab" />
 </LinearLayout>

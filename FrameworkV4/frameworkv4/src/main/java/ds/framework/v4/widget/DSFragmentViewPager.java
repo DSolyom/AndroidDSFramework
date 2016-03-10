@@ -25,7 +25,7 @@ import ds.framework.v4.app.DSFragment;
 
 public class DSFragmentViewPager extends DSViewPager {
 
-	DSAdapterInterface mAdapter;
+	FragmentPagerAdapterModByDS mAdapter;
 	
 	/**
 	 * current page
@@ -66,11 +66,11 @@ public class DSFragmentViewPager extends DSViewPager {
 	
 	@Override
 	public void setAdapter(PagerAdapter adapter) {
-		assert(adapter instanceof PagerAdapter);
+		assert(adapter instanceof FragmentPagerAdapterModByDS);
 		
-		mAdapter = (DSAdapterInterface) adapter;
+		mAdapter = (FragmentPagerAdapterModByDS) adapter;
 		
-		super.setAdapter((PagerAdapter) mAdapter);
+		super.setAdapter(mAdapter);
 	}
 	
 	/**
@@ -138,8 +138,8 @@ public class DSFragmentViewPager extends DSViewPager {
 	
 	public void onResume() {	
 		if (mAdapter != null && mAdapter.getCount() > mCurrentPage) {
-			final Fragment fragment = (Fragment) mAdapter.getItem(mCurrentPage);
-			if (fragment instanceof DSFragment) {
+			final Fragment fragment = (Fragment) mAdapter.getItemFromManager(this, mCurrentPage);
+			if (fragment != null && fragment instanceof DSFragment) {
 				((DSFragment) fragment).setActive(true);
 			}
 		}
@@ -151,8 +151,8 @@ public class DSFragmentViewPager extends DSViewPager {
 	
 	public void onPause() {
 		if (mAdapter != null && mAdapter.getCount() > 0) {
-			final Fragment fragment = (Fragment) mAdapter.getItem(mCurrentPage);
-			if (fragment instanceof DSFragment) {
+			final Fragment fragment = (Fragment) mAdapter.getItemFromManager(this, mCurrentPage);
+			if (fragment != null && fragment instanceof DSFragment) {
 				((DSFragment) fragment).setActive(false);
 			}
 		}
@@ -165,8 +165,8 @@ public class DSFragmentViewPager extends DSViewPager {
 	 */
 	private void activateFragment(int page, boolean active) {
 		if (page != -1) {
-			final Fragment fragment = (Fragment) mAdapter.getItem(page);
-			if (fragment instanceof DSFragment) {
+			final Fragment fragment = (Fragment) mAdapter.getItemFromManager(this, page);
+			if (fragment != null && fragment instanceof DSFragment) {
 				((DSFragment) fragment).setActive(active);
 			}
 		}

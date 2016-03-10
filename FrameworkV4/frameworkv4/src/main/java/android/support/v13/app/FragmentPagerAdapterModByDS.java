@@ -160,6 +160,17 @@ public abstract class FragmentPagerAdapterModByDS extends PagerAdapter implement
     }
 
     /**
+     * Added By DS
+     *
+     * @param container
+     * @param itemId
+     * @return
+     */
+    public Fragment getItemFromManager(ViewGroup container, int itemId) {
+        return mFragmentManager.findFragmentByTag(makeFragmentName(container.getId(), itemId));
+    }
+
+    /**
      * CHANGED TO public FROM private by DS
      * 
      * @param viewId
@@ -184,4 +195,5 @@ public abstract class FragmentPagerAdapterModByDS extends PagerAdapter implement
     public boolean isEmpty() {
         return getCount() == 0;
     }
+
 }
