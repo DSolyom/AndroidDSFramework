@@ -167,9 +167,9 @@ abstract public class DSFragment extends DialogFragment
 
 		mActive = mActiveWhenAttached;
 		
-		((DSActivity) activity).onFragmentAttached(this);
-		
 		attachSubFragmentsInner();
+
+		((DSActivity) activity).onFragmentAttached(this);
 	}
 
     /**

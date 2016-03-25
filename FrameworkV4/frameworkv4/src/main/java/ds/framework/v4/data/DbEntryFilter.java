@@ -17,11 +17,16 @@ package ds.framework.v4.data;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
+import android.widget.ListAdapter;
+import android.widget.SimpleAdapter;
+
 import ds.framework.v4.Global;
 import ds.framework.v4.common.Debug;
 import ds.framework.v4.db.Condition;
@@ -44,6 +49,7 @@ public class DbEntryFilter implements Serializable {
 	private int[] mIds;
 	private String[] mTitles;
 	private FilterItem[] mExtraItems;
+    private ArrayList<HashMap<String, String>> mDialogItems;
 
 	private boolean mIsLoaded = false;
 	
@@ -59,7 +65,7 @@ public class DbEntryFilter implements Serializable {
 		mTitleColumn = titleColumn;
 		mOrderColumn = orderColumn;
 		mFiltered = filtered;
-		mExtraItems = extraItems;
+		mExtraItems = extraItems == null ? new FilterItem[] {} : extraItems;
 	}
 	
 	/**
@@ -115,7 +121,9 @@ public class DbEntryFilter implements Serializable {
 				} while(c.moveToNext());
 			}
 			c.close();
-			
+
+            mDialogItems = createDialogItems(mTitles);
+
 			mIsLoaded  = true;
 		} catch(Throwable e) {
 			Debug.logException(e);
@@ -145,7 +153,7 @@ public class DbEntryFilter implements Serializable {
 	/**
 	 * select a filter item silently by id
 	 * 
-	 * @param position
+	 * @param id
 	 */
 	public void selectItem(int id) {
 		mSelectedItem = findFilterItemById(id);
@@ -242,8 +250,10 @@ public class DbEntryFilter implements Serializable {
 	 *  
 	 * @param listener
 	 */
-	public void show(final OnFilterItemSelectedListener listener) {	
-		Global.registerDialog(new AlertDialog.Builder(Global.getCurrentActivity()).setSingleChoiceItems(mTitles, -1,
+	public void show(final OnFilterItemSelectedListener listener) {
+        Context context = Global.getCurrentActivity();
+		ListAdapter adapter = createFilterAdapter(context, mDialogItems);
+		Global.registerDialog(new AlertDialog.Builder(context).setSingleChoiceItems(adapter, -1,
 				new Dialog.OnClickListener() {
 
 					@Override
@@ -260,6 +270,33 @@ public class DbEntryFilter implements Serializable {
 				}
 		).show());
 	}
+
+    /**
+     *
+     * @param titles
+     * @return
+     */
+    public ArrayList<HashMap<String, String>> createDialogItems(String[] titles) {
+        final ArrayList<HashMap<String, String>> dialogItems = new ArrayList<>();
+
+        for(int i = 0; i < titles.length; ++i) {
+            final HashMap<String, String> item = new HashMap<>();
+            item.put("title", titles[i]);
+            dialogItems.add(item);
+        }
+
+        return dialogItems;
+    }
+
+    /**
+     *
+     * @param context
+     * @param dialogItems
+     * @return
+     */
+    public ListAdapter createFilterAdapter(Context context, ArrayList<HashMap<String, String>> dialogItems) {
+        return new SimpleAdapter(context, dialogItems, android.R.layout.simple_dropdown_item_1line, new String[] { "title" }, new int[] { android.R.id.text1 } );
+    }
 	
 	/**
 	 * show multi choice dialog

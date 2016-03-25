@@ -86,6 +86,26 @@
 	<style name="LargeText" parent="BaseText">
 		<item name="android:textSize">@dimen/text_large</item>
 	</style>
+
+	<style name="BaseTextInverse" parent="Block">
+		<item name="android:textColor">@color/text_inverse</item>
+	</style>
+
+	<style name="TinyTextInverse" parent="BaseTextInverse">
+		<item name="android:textSize">@dimen/text_tiny</item>
+	</style>
+
+	<style name="SmallTextInverse" parent="BaseTextInverse">
+		<item name="android:textSize">@dimen/text_small</item>
+	</style>
+
+	<style name="TextInverse" parent="BaseTextInverse">
+		<item name="android:textSize">@dimen/text_medium</item>
+	</style>
+
+	<style name="LargeTextInverse" parent="BaseTextInverse">
+		<item name="android:textSize">@dimen/text_large</item>
+	</style>
 	
 	<style name="SmallSubText" parent="TinyText">
 		<item name="android:textColor">@color/subtext</item>
