@@ -38,43 +38,56 @@ public class Query {
 		mLimit = null;
 		mDistinct = false;
 	}
-	
-	public void table(String table) {
+
+    /**
+     *
+     * @param table
+     * @return
+     */
+	public Query table(String table) {
 		mTable = table;
+        return this;
 	}
 	
 	/**
 	 * set columns to select
 	 * 
 	 * @param columns
+     * @return
 	 */
-	public void select(String... columns) {
+	public Query select(String... columns) {
 		mSelect = columns;
+		return this;
 	}
 	
 	/**
 	 * add columns to select to existing ones
 	 * 
 	 * @param columns
+     * @return
 	 */
-	public void addSelect(String... columns) {
+	public Query addSelect(String... columns) {
 		if (mSelect == null) {
 			select(columns);
-			return;
+			return this;
 		}
 		final String[] oldSelect = mSelect;
 		mSelect = new String[oldSelect.length + columns.length];
 		System.arraycopy(oldSelect, 0, mSelect, 0, oldSelect.length);
 		System.arraycopy(columns, 0, mSelect, oldSelect.length, columns.length);
+        
+        return this;
 	}
 	
 	/**
 	 * filter
 	 * 
 	 * @param condition
-	 */
-	public void filter(Condition condition) {
+     * @return
+    */
+	public Query filter(Condition condition) {
 		filter(new ConditionTree(ConditionTree.AND, condition));
+        return this;
 	}
 	
 	/**
@@ -82,48 +95,56 @@ public class Query {
 	 * 
 	 * @param relation
 	 * @param condition
+     * @return
 	 */
-	public void filter(int relation, Condition condition) {
+	public Query filter(int relation, Condition condition) {
 		filter(new ConditionTree(relation, condition));
+        return this;
 	}
 	
 	/**
 	 * filter
 	 * 
 	 * @param filter
+     * @return
 	 */
-	public void filter(ConditionTree filter) {
+	public Query filter(ConditionTree filter) {
 		if (mWhere == null) {
 			mWhere = filter;
 		} else {
 			mWhere = mWhere.merge(filter);
 		}
+        return this;
 	}
 	
 	/**
 	 * having
 	 * 
 	 * @param having
+     * @return
 	 */
-	public void having(ConditionTree having) {
+	public Query having(ConditionTree having) {
 		if (mHaving == null) {
 			mHaving = having;
 		} else {
 			mHaving = mHaving.merge(having);
 		}
+        return this;
 	}
 	
 	/**
 	 * groupBy
 	 * 
 	 * @param by
+     * @return
 	 */
-	public void groupBy(String by) {
+	public Query groupBy(String by) {
 		if (mGroupBy == null) {
 			mGroupBy = by;
-			return;
+			return this;
 		}
 		mGroupBy += ", " + by;
+        return this;
 	}
 	
 	/**
@@ -132,20 +153,23 @@ public class Query {
 	 * @param by
 	 * @param add - false => reset
 	 */
-	public void groupBy(String by, boolean add) {
+	public Query groupBy(String by, boolean add) {
 		if (!add) {
 			mGroupBy = null;
 		}
 		groupBy(by);
+        return this;
 	}
 	
 	/**
 	 * order by 'by' in ascending order
 	 * 
 	 * @param by
+     * @return
 	 */
-	public void orderBy(String by) {
+	public Query orderBy(String by) {
 		orderBy(by, true);
+        return this;
 	}
 	
 	/**
@@ -153,21 +177,24 @@ public class Query {
 	 * 
 	 * @param by
 	 * @param asc - is ascending
+     * @return
 	 */
-	public void orderBy(String by, boolean asc) {
+	public Query orderBy(String by, boolean asc) {
 		if (mOrderBy == null) {
 			mOrderBy = by + " COLLATE UNICODE " + (asc ? "ASC" : "DESC");
-			return;
+			return this;
 		}
 		mOrderBy += ", " + by + " COLLATE UNICODE " + (asc ? "ASC" : "DESC");
+        return this;
 	}
 	
-	public void orderBy(String by, boolean asc, String collate) {
+	public Query orderBy(String by, boolean asc, String collate) {
 		if (mOrderBy == null) {
 			mOrderBy = by + " COLLATE " + collate + " " + (asc ? "ASC" : "DESC");
-			return;
+			return this;
 		}
 		mOrderBy += ", " + by + " COLLATE " + collate + " " + (asc ? "ASC" : "DESC");
+        return this;
 	}
 	
 	/**
@@ -176,21 +203,25 @@ public class Query {
 	 * @param by
 	 * @param asc - is ascending
 	 * @param add - false => reset
+     * @return
 	 */
-	public void orderBy(String by, boolean asc, boolean add) {
+	public Query orderBy(String by, boolean asc, boolean add) {
 		if (!add) {
 			mOrderBy = null;
 		}
 		orderBy(by, asc);
+        return this;
 	}
 	
 	/**
 	 * set limit
 	 * 
 	 * @param limit
+     * @return
 	 */
-	public void setLimit(int limit) {
+	public Query setLimit(int limit) {
 		mLimit = new Interval(0, limit);
+        return this;
 	}
 
 	/**
@@ -198,18 +229,22 @@ public class Query {
 	 * 
 	 * @param offset
 	 * @param limit
+     * @return
 	 */
-	public void setLimit(int offset, int limit) {
+	public Query setLimit(int offset, int limit) {
 		mLimit = new Interval(offset, limit + offset);
+        return this;
 	}
 	
 	/**
 	 * distinct select?
 	 * 
 	 * @param distinct
+     * @return
 	 */
-	public void distinct(boolean distinct) {
+	public Query distinct(boolean distinct) {
 		mDistinct = distinct;
+        return this;
 	}
 
 	/**

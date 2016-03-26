@@ -127,12 +127,29 @@ public class TableQuery extends DbQuery {
 		}
 		return mSelect;
 	}
-	
-	public void join(String tableName, String alias, String type, Condition condition) {
+
+	/**
+	 *
+	 * @param tableName
+	 * @param alias
+	 * @param type
+	 * @param condition
+	 * @return
+	 */
+	public TableQuery join(String tableName, String alias, String type, Condition condition) {
 		join(tableName, alias, type, new ConditionTree(condition));
+		return this;
 	}
-	
-	public void join(String tableName, String alias, String type, ConditionTree on) {
+
+	/**
+	 *
+	 * @param tableName
+	 * @param alias
+	 * @param type
+	 * @param on
+	 * @return
+	 */
+	public TableQuery join(String tableName, String alias, String type, ConditionTree on) {
 		if (alias != null) {
 			tableName += " AS " + alias;
 		}
@@ -146,6 +163,7 @@ public class TableQuery extends DbQuery {
 		} else {
 			mJoin += " " + type + tableName + " ON " + on.toString();
 		}
+		return this;
 	}
 	
 	@Override
@@ -179,13 +197,14 @@ public class TableQuery extends DbQuery {
 	 * @param id
 	 * @return
 	 */
-	public void filterById(int id) {
+	public TableQuery filterById(int id) {
 		reset();
 		if (mAlias != null) {
 			filter(new Condition(mAlias + ".id", id));
 		} else {
 			filter(new Condition("id", id));
 		}
+		return this;
 	}
 	
 	/**
@@ -194,12 +213,13 @@ public class TableQuery extends DbQuery {
 	 * @param ids
 	 * @return
 	 */
-	public void filterByIds(int[] ids) {
+	public TableQuery filterByIds(int[] ids) {
 		reset();
 		if (mAlias != null) {
 			filter(new Condition(mAlias + ".id", ids));
 		} else {
 			filter(new Condition("id", ids));
 		}
+		return this;
 	}
 }

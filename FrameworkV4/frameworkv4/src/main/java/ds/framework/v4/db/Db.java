@@ -28,6 +28,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.SQLiteStatement;
 import android.util.Log;
 import ds.framework.v4.common.Debug;
 
@@ -46,11 +47,11 @@ abstract public class Db {
 	 * call ensureDB(Context context, String dbName, int version, Table... tables) inside
 	 */
 	abstract public void ensureDB(Context context) throws SQLiteException;
-	
+
 	public void ensureDB(Context context, String dbName, int version, Table... tables) throws SQLiteException {
 		ensureDB(context, dbName, version, Arrays.asList(tables));
 	}
-	
+
 	synchronized public void ensureDB(Context context, String dbName, int version, List<Table> tables) throws SQLiteException {
 		if (sTables.isEmpty()) {
 			for(Table table : tables) {
@@ -267,14 +268,13 @@ abstract public class Db {
 	}
 	
 	/**
-	 * insert or update a row<br/>
-	 * checks whether a row exists with the given value of a primary key column
-	 * 
+	 * insert a row or replace on conflict<br/>
+	 *
 	 * @param table
 	 * @param cv
 	 * @return
 	 */
-	public long insertOrUpdate(String table, ContentValues cv) {
+	public long insertOrReplace(String table, ContentValues cv) {
 		long id;
 		try {
 			id = sDb.insertWithOnConflict(table, null, cv, SQLiteDatabase.CONFLICT_REPLACE);
@@ -484,6 +484,23 @@ abstract public class Db {
 	public InsertHelper getInsertHelper(String tableName) {
 		return new InsertHelper(sDb, tableName);
 	}
+
+    /**
+     *
+     * @param sql
+     * @return
+     */
+    public SQLiteStatement getSQLiteStatement(String sql) {
+        return sDb.compileStatement(sql);
+    }
+
+    /**
+     *
+     * @return
+     */
+    public SQLiteDatabase getSQLiteDatabase() {
+        return sDb;
+    }
 	
 	public void onCreateDB(SQLiteDatabase db) {
 		sDb = db;

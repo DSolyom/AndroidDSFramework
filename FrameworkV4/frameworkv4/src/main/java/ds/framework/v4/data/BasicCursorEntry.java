@@ -20,7 +20,7 @@ import android.database.Cursor;
 /**
  * data object which gets it's values from a cursor
  */
-public class BasicCursorEntry extends AbsAsyncData implements AbsBasicEntry {
+public class BasicCursorEntry extends AbsAsyncData implements BasicEntryInterface {
 
 	protected Cursor mCursor;
 	

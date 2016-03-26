@@ -88,8 +88,8 @@ public class DbQuery extends Query {
 	 * 
 	 * @param
 	 */
-	public void insertOrUpdate(ContentValues cv) throws NullPointerException, SQLException {
-		mDb.insertOrUpdate(getTable(), cv);
+	public void insertOrReplace(ContentValues cv) throws NullPointerException, SQLException {
+		mDb.insertOrReplace(getTable(), cv);
 	}
 	
 	/**

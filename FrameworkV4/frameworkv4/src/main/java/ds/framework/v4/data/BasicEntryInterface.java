@@ -15,7 +15,7 @@
 */
 package ds.framework.v4.data;
 
-interface AbsBasicEntry {
+public interface BasicEntryInterface {
 
 	Integer getInt(String field);
 
