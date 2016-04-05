@@ -449,7 +449,7 @@ public abstract class BackgroundThread {
 	    			mAfterWait = false;
 	    		}
 	    		cycleSuccess = mSuccessful = false;
-	    		
+
 	    		// and now the real job
 	    		cycleSuccess = runCycle(this);
 			}

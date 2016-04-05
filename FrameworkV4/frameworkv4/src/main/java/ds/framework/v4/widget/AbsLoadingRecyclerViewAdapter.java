@@ -16,7 +16,6 @@
 package ds.framework.v4.widget;
 
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
 import android.view.ViewGroup;
 
 import ds.framework.v4.app.ActivityInterface;
@@ -28,8 +27,6 @@ abstract public class AbsLoadingRecyclerViewAdapter<T> extends AbsTemplateViewHo
 
     protected int mDataOffset;
     protected int mLoadThreshold;
-
-    private int mCount;
 
     protected RecyclerViewHeaderedAdapter mAdapter;
     private int mAdapterDataCount;
@@ -49,24 +46,6 @@ abstract public class AbsLoadingRecyclerViewAdapter<T> extends AbsTemplateViewHo
      */
     public void setLoadThreshold(int threshold) {
         mLoadThreshold = threshold;
-    }
-
-    @Override
-    public void setHeaderView(View headerView) {
-        super.setHeaderView(headerView);
-
-        if (mAdapter != null) {
-            mAdapter.setHeaderView(headerView);
-        }
-    }
-
-    @Override
-    public void setFooterView(View footerView) {
-        super.setFooterView(footerView);
-
-        if (mAdapter != null) {
-            mAdapter.setFooterView(footerView);
-        }
     }
 
     @Override
@@ -101,10 +80,15 @@ abstract public class AbsLoadingRecyclerViewAdapter<T> extends AbsTemplateViewHo
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        if (viewType != VIEWTYPE_LOADING) {
+        if (viewType != VIEWTYPE_LOADING && viewType != VIEWTYPE_HEADER && viewType != VIEWTYPE_FOOTER) {
             return mAdapter.onCreateViewHolder(parent, viewType);
         } else {
-            return super.onCreateViewHolder(parent, VIEWTYPE_DEFAULT);
+            if (viewType == VIEWTYPE_LOADING) {
+
+                // loading view is the default of the loading adapter
+                viewType = VIEWTYPE_DEFAULT;
+            }
+            return super.onCreateViewHolder(parent, viewType);
         }
     }
 
@@ -212,6 +196,7 @@ abstract public class AbsLoadingRecyclerViewAdapter<T> extends AbsTemplateViewHo
         @Override
         public void onItemRangeChanged(int positionStart, int itemCount) {
             mAdapterDataCount = mAdapter.getItemCount();
+
             notifyItemRangeChanged(positionStart, itemCount);
             loadSomeIfNeeded(mPositionBeforeLoad);
         }
@@ -232,6 +217,7 @@ abstract public class AbsLoadingRecyclerViewAdapter<T> extends AbsTemplateViewHo
         @Override
         public void onItemRangeRemoved(int positionStart, int itemCount) {
             mAdapterDataCount = mAdapter.getItemCount();
+
             notifyItemRangeChanged(positionStart, itemCount);
             loadSomeIfNeeded(mPositionBeforeLoad);
         }
@@ -239,6 +225,7 @@ abstract public class AbsLoadingRecyclerViewAdapter<T> extends AbsTemplateViewHo
         @Override
         public void onItemRangeMoved(int fromPosition, int toPosition, int itemCount) {
             mAdapterDataCount = mAdapter.getItemCount();
+
             notifyItemMoved(fromPosition, toPosition);
             loadSomeIfNeeded(mPositionBeforeLoad);
         }

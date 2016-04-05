@@ -33,7 +33,6 @@ abstract public class RecyclerViewHeaderedAdapter extends RecyclerView.Adapter<R
     protected View mFooterView;
 
     /**
-     *
      * @param headerView
      */
     public void setHeaderView(View headerView) {
@@ -45,7 +44,6 @@ abstract public class RecyclerViewHeaderedAdapter extends RecyclerView.Adapter<R
     }
 
     /**
-     *
      * @param footerView
      */
     public void setFooterView(View footerView) {
@@ -59,9 +57,11 @@ abstract public class RecyclerViewHeaderedAdapter extends RecyclerView.Adapter<R
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (viewType == VIEWTYPE_HEADER) {
-            return new RecyclerView.ViewHolder(mHeaderView) {};
+            return new RecyclerView.ViewHolder(mHeaderView) {
+            };
         } else if (viewType == VIEWTYPE_FOOTER) {
-            return new RecyclerView.ViewHolder(mFooterView) {};
+            return new RecyclerView.ViewHolder(mFooterView) {
+            };
         }
         return null;
     }
@@ -71,7 +71,7 @@ abstract public class RecyclerViewHeaderedAdapter extends RecyclerView.Adapter<R
         if (holder.itemView == mHeaderView || holder.itemView == mFooterView) {
             return;
         }
-        onBindViewHolderInner(holder, position - (mHeaderView != null ? 1: 0));
+        onBindViewHolderInner(holder, position - (mHeaderView != null ? 1 : 0));
     }
 
     abstract public void onBindViewHolderInner(final RecyclerView.ViewHolder holder, final int position);
@@ -91,11 +91,10 @@ abstract public class RecyclerViewHeaderedAdapter extends RecyclerView.Adapter<R
         if (mFooterView != null && position == getItemCount() - 1) {
             return VIEWTYPE_FOOTER;
         }
-        return getItemViewTypeInner(position - (mHeaderView != null ? 1: 0));
+        return getItemViewTypeInner(position - (mHeaderView != null ? 1 : 0));
     }
 
     /**
-     *
      * @param position
      * @return
      */
@@ -111,7 +110,6 @@ abstract public class RecyclerViewHeaderedAdapter extends RecyclerView.Adapter<R
     }
 
     /**
-     *
      * @return
      */
     public boolean isEmpty() {
@@ -119,13 +117,11 @@ abstract public class RecyclerViewHeaderedAdapter extends RecyclerView.Adapter<R
     }
 
     /**
-     *
      * @return
      */
     abstract public int getCount();
 
     /**
-     *
      * @return
      */
     abstract public AbsAsyncData[] getRecyclerViewData();

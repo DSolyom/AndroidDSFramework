@@ -18,7 +18,6 @@ package ds.framework.v4.data;
 import java.io.Serializable;
 
 import ds.framework.v4.app.AbsDSAsyncDataFragment;
-import ds.framework.v4.common.Debug;
 import ds.framework.v4.io.BackgroundThread;
 import ds.framework.v4.io.BackgroundThread.Result;
 
@@ -47,6 +46,11 @@ abstract public class AbsAsyncData implements Serializable {
 	 * !note: as a side effect AbsAsyncData is only 'Serializable' if it has a loaderTag 
 	 */
 	private LoaderThread mLoader;
+
+	/**
+	 *
+	 */
+	private boolean mLoading = false;
 
     /**
      * result of the loading
@@ -199,6 +203,7 @@ abstract public class AbsAsyncData implements Serializable {
 		if (loader != null) {
             loader.mOwner = this;
             loader.mListener = listener;
+			mLoading = true;
             loader.start(mLoaderTag);
 		} else {
 
@@ -212,10 +217,7 @@ abstract public class AbsAsyncData implements Serializable {
 	 * @return
 	 */
 	synchronized public boolean isLoading() {
-		LoaderThread loader = recoverLoader();
-
-		// has loader and it's loading
-		return loader != null && loader.getState() == BackgroundThread.RUNNING;
+		return mLoading;
 	}
 	
 	/**
@@ -283,6 +285,7 @@ abstract public class AbsAsyncData implements Serializable {
 	 * @param result
 	 */
 	protected void onDataLoaded(Object result, OnDataLoadListener listener) {
+		mLoading = false;
 		mValid = true;
         mResult = result;
 		listener.onDataLoaded(this, mLoadId);
@@ -299,6 +302,7 @@ abstract public class AbsAsyncData implements Serializable {
 	 * @param result
 	 */
 	protected void onDataLoadFailed(Object result, OnDataLoadListener listener) {
+		mLoading = false;
 		mValid = mStartsAsValid;
         mResult = result;
 		listener.onDataLoadFailed(this, mLoadId);
@@ -306,6 +310,7 @@ abstract public class AbsAsyncData implements Serializable {
 	}
 	
 	protected void onInterrupt(OnDataLoadListener listener) {
+		mLoading = false;
 		mValid = mStartsAsValid;
         mResult = null;
 		listener.onDataLoadInterrupted(this, mLoadId);
@@ -334,9 +339,14 @@ abstract public class AbsAsyncData implements Serializable {
 		if (mLoader != null) {
 			return mLoader;
 		}
-		LoaderThread loader = (LoaderThread) BackgroundThread.getThreadByTag(mLoaderTag);
 		if (mLoaderTag == null) {
-			mLoader = loader;
+			return null;
+		}
+		LoaderThread loader = (LoaderThread) BackgroundThread.getThreadByTag(mLoaderTag);
+		if (loader != null) {
+
+			// set loading flag
+			mLoading |= loader.getState() == BackgroundThread.RUNNING;
 		}
 		return loader;
 	}

@@ -23,8 +23,6 @@ public abstract class CursorData extends BasicCursorEntry {
 
     private TableQuery mLoaderQuery;
 
-    private Object mLoaderQueryLock = new Object();
-
     public CursorData() {
         super();
     }
@@ -69,10 +67,8 @@ public abstract class CursorData extends BasicCursorEntry {
 	}
 
     @Override
-    synchronized protected void load(final OnDataLoadListener listener, final int loadId) {
-        synchronized(mLoaderQueryLock) {
-            mLoaderQuery = getLoaderQuery();
-        }
+    protected void load(final OnDataLoadListener listener, final int loadId) {
+        mLoaderQuery = getLoaderQuery();
 
         super.load(listener, loadId);
     }
@@ -82,9 +78,8 @@ public abstract class CursorData extends BasicCursorEntry {
      * !note: make sure you're doing the right thing
      */
     protected void refreshQuery() {
-        synchronized(mLoaderQueryLock) {
-            mLoaderQuery = getLoaderQuery();
-        }
+        stopLoading();
+        mLoaderQuery = getLoaderQuery();
     }
 
     /**
@@ -147,10 +142,11 @@ public abstract class CursorData extends BasicCursorEntry {
         @Override
         protected boolean runCycle(Thread in) {
             try {
-                synchronized(mLoaderQueryLock) {
-                    mResult = loadDataInThread(in);
-                    mResult.moveToFirst();
+                mResult = loadDataInThread(in);
+                if (mResult == null) {
+                    return false;
                 }
+                mResult.moveToFirst();
             } catch(Throwable e) {
                 Debug.logException(e);
                 return false;
@@ -171,7 +167,8 @@ public abstract class CursorData extends BasicCursorEntry {
                 mResult.close();
             }
 
-            setCursor(null);
+            // leave the cursor be and let further implementation decide what to do in this case
+            //setCursor(null);
 
             super.onFailure();
         }

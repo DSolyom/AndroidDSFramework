@@ -27,24 +27,22 @@ import ds.framework.v4.data.AbsAsyncData;
 import ds.framework.v4.template.Template;
 
 abstract public class AbsTemplateViewHolderAdapter<T> extends RecyclerViewHeaderedAdapter {
-    
-	protected ActivityInterface mIn;
+
+    protected ActivityInterface mIn;
+    protected Template mTemplate;
+    protected AbsAsyncData mRecyclerViewData;
 
     /**
      * layout resourcer ids for view types
      * !note: use type < 240 to be able to use {@link RecyclerViewMultiAdapter} and {@link AbsLoadingRecyclerViewAdapter}
      * use {@link #setViewTypeLayoutResID(int viewType, int resID)} to set
      */
-	private HashMap<Integer, Integer> mRowLayoutResIDs = new HashMap<>();
-
-	protected Template mTemplate;
-
-    protected AbsAsyncData mRecyclerViewData;
+    private HashMap<Integer, Integer> mRowLayoutResIDs = new HashMap<>();
 
     public AbsTemplateViewHolderAdapter(ActivityInterface in, int rowLayoutId) {
-		mIn = in;
-		mRowLayoutResIDs.put(VIEWTYPE_DEFAULT, rowLayoutId);
-		mTemplate = new Template(mIn, null);
+        mIn = in;
+        mRowLayoutResIDs.put(VIEWTYPE_DEFAULT, rowLayoutId);
+        mTemplate = new Template(mIn, null);
 
         // just use an empty data as default
         mRecyclerViewData = new AbsAsyncData() {
@@ -54,25 +52,24 @@ abstract public class AbsTemplateViewHolderAdapter<T> extends RecyclerViewHeader
                 return null;
             }
         };
-	}
-	
-	public ActivityInterface getIn() {
-		return mIn;
-	}
+    }
+
+    public ActivityInterface getIn() {
+        return mIn;
+    }
 
     /**
-     *
      * @param viewType
      * @param resID
      */
     public void setViewTypeLayoutResID(int viewType, int resID) {
         mRowLayoutResIDs.put(viewType, resID);
     }
-	
-	@Override
-	public long getItemId(int position) {
-		return position;
-	}
+
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -89,24 +86,23 @@ abstract public class AbsTemplateViewHolderAdapter<T> extends RecyclerViewHeader
         mTemplate.setRoot(holder.itemView);
         fillRow((T) getItem(position), position, holder.getItemViewType());
     }
-	
-	/**
-	 * override to do something with the just inflated view
-	 * 
-	 * @return
-	 */
-	protected View inflateTemplateView(int rowRes, ViewGroup viewParent, int viewType) {
-		final View view = mIn.inflate(rowRes, viewParent, false);
-		return view;
-	}
+
+    /**
+     * override to do something with the just inflated view
+     *
+     * @return
+     */
+    protected View inflateTemplateView(int rowRes, ViewGroup viewParent, int viewType) {
+        final View view = mIn.inflate(rowRes, viewParent, false);
+        return view;
+    }
 
     @Override
     public AbsAsyncData[] getRecyclerViewData() {
-        return new AbsAsyncData[] { mRecyclerViewData };
+        return new AbsAsyncData[]{mRecyclerViewData};
     }
 
     /**
-     *
      * @param data
      */
     public void setRecyclerViewData(AbsAsyncData data) {
@@ -131,11 +127,11 @@ abstract public class AbsTemplateViewHolderAdapter<T> extends RecyclerViewHeader
         return mRecyclerViewData == data;
     }
 
-	/**
+    /**
      * @param data
      * @param viewType
      */
-	abstract protected void fillRow(T data, int position, int viewType);
+    abstract protected void fillRow(T data, int position, int viewType);
 
 
     /**

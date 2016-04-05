@@ -33,7 +33,7 @@ public class JSONToDbHelper {
      * @param row
      */
 	public void createStatement(Table table, JSONObject row, Db db) {
-Debug.logD("JSONToDbHelper", "createStatement for table: " + table);
+// Debug.logD("JSONToDbHelper", "createStatement for table: " + table);
 		Column[] columns = table.getColumns();
 
 		mColumnCount = 0;
@@ -141,7 +141,7 @@ Debug.logD("JSONToDbHelper", "createStatement for table: " + table);
                     if (mUpdateStatement != null) {
                         mUpdateStatement.bindNull(i + 1);
                     }
-Debug.logD("JSONToDb", "binding null for " + mColumns[i].name);
+// Debug.logD("JSONToDb", "binding null for " + mColumns[i].name);
 					continue;
 				}
                 if (!row.has(mColumns[i].name)) {
@@ -225,7 +225,7 @@ Debug.logD("JSONToDb", "binding null for " + mColumns[i].name);
                         break;
 				}
 
-Debug.logD("JSONToDb", "binded " + value + " for " + mColumns[i].name);
+// Debug.logD("JSONToDb", "binded " + value + " for " + mColumns[i].name);
 
 			} catch (Exception e) {
 				if ((mColumns[i].type & Table.NULL) > 0) {
@@ -233,7 +233,7 @@ Debug.logD("JSONToDb", "binded " + value + " for " + mColumns[i].name);
                     if (mUpdateStatement != null) {
                         mUpdateStatement.bindNull(i + 1);
                     }
-Debug.logD("JSONToDb", "binding null for " + mColumns[i].name);
+// Debug.logD("JSONToDb", "binding null for " + mColumns[i].name);
 					continue;
 				}
 

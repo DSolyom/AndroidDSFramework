@@ -21,29 +21,27 @@ import ds.framework.v4.data.CursorData;
 
 public abstract class CursorListAdapter extends AbsTemplateViewHolderAdapter<CursorData> {
 
-	public CursorListAdapter(ActivityInterface in, int rowLayoutId) {
-		super(in, rowLayoutId);
-	}
+    public CursorListAdapter(ActivityInterface in, int rowLayoutId) {
+        super(in, rowLayoutId);
+    }
 
-	@Override
-	public CursorData getItem(int position) {
-		if (mRecyclerViewData == null) {
+    @Override
+    public CursorData getItem(int position) {
+        if (mRecyclerViewData == null) {
             return null;
-		}
-
+        }
         return ((CursorData) mRecyclerViewData).getItem(position);
-	}
+    }
 
     @Override
     public void onDataLoaded(AbsAsyncData data, int loadId) {
         notifyDataSetChanged();
     }
 
-	/**
-	 *
-	 * @return
-	 */
-	public int getCount() {
-		return mRecyclerViewData == null ? 0 : ((CursorData) mRecyclerViewData).getCount();
-	}
+    /**
+     * @return
+     */
+    public int getCount() {
+        return mRecyclerViewData == null ? 0 : ((CursorData) mRecyclerViewData).getCount();
+    }
 }
