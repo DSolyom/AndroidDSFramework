@@ -22,13 +22,13 @@ import android.view.ViewGroup;
 
 import java.util.HashMap;
 
-import ds.framework.v4.app.ActivityInterface;
+import ds.framework.v4.app.DSActivity;
 import ds.framework.v4.data.AbsAsyncData;
 import ds.framework.v4.template.Template;
 
 abstract public class AbsTemplateViewHolderAdapter<T> extends RecyclerViewHeaderedAdapter {
 
-    protected ActivityInterface mIn;
+    protected DSActivity mIn;
     protected Template mTemplate;
     protected AbsAsyncData mRecyclerViewData;
 
@@ -39,7 +39,7 @@ abstract public class AbsTemplateViewHolderAdapter<T> extends RecyclerViewHeader
      */
     private HashMap<Integer, Integer> mRowLayoutResIDs = new HashMap<>();
 
-    public AbsTemplateViewHolderAdapter(ActivityInterface in, int rowLayoutId) {
+    public AbsTemplateViewHolderAdapter(DSActivity in, int rowLayoutId) {
         mIn = in;
         mRowLayoutResIDs.put(VIEWTYPE_DEFAULT, rowLayoutId);
         mTemplate = new Template(mIn, null);
@@ -54,7 +54,7 @@ abstract public class AbsTemplateViewHolderAdapter<T> extends RecyclerViewHeader
         };
     }
 
-    public ActivityInterface getIn() {
+    public DSActivity getIn() {
         return mIn;
     }
 

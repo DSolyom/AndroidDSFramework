@@ -26,7 +26,7 @@
     <dimen name="padding_dialog">24dp</dimen>
     <dimen name="dialog_question_height">@dimen/list_row_height</dimen>
     
-    <dimen name="shadow_height">6dp</dimen>
+    <dimen name="shadow_height">4dp</dimen>
 
     <dimen name="fab_medium">72dp</dimen>
 

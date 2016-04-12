@@ -22,7 +22,7 @@ import android.view.ViewGroup;
 
 import java.util.HashMap;
 
-import ds.framework.v4.app.ActivityInterface;
+import ds.framework.v4.app.DSActivity;
 import ds.framework.v4.data.AbsAsyncData;
 import ds.framework.v4.template.Template;
 
@@ -35,11 +35,11 @@ public abstract class AbsTemplatePagerAdapter extends PagerAdapter implements Ab
      */
     private HashMap<Integer, Integer> mPageLayoutResIDs = new HashMap<>();
 
-	protected ActivityInterface mIn;
+	protected DSActivity mIn;
 
     protected AbsAsyncData mPagerData;
 
-    public AbsTemplatePagerAdapter(ActivityInterface in, int pageLayoutResID) {
+    public AbsTemplatePagerAdapter(DSActivity in, int pageLayoutResID) {
 		super();
 		
 		mIn = in;
@@ -47,7 +47,7 @@ public abstract class AbsTemplatePagerAdapter extends PagerAdapter implements Ab
 		mTemplate = new Template(in, null);
 	}
 
-    public ActivityInterface getIn() {
+    public DSActivity getIn() {
         return mIn;
     }
 	

@@ -329,14 +329,7 @@ abstract public class DSFragment extends DialogFragment
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		if (savedInstanceState != null && !mStateRestored) {
-			onRestoreInstanceState(savedInstanceState);
-			mStateRestored = true;
-		}
-
 		mRootView = getRootView(inflater, container);
-
-		onViewCreated(mRootView);
 
         // set subfragments' root view
 		for(Integer containerViewID : mSubFragments.keySet()) {
@@ -352,15 +345,33 @@ abstract public class DSFragment extends DialogFragment
                     subfragment.setRootView(subfragmentRootView);
                 }
 			}
-			subfragment.onViewCreated(mRootView);
 		}
-		
-		loadData(true);	
-
-		display(true);
 		
 		return mRootView;
 	}
+
+    @Override
+    public void onViewCreated(View rootView, Bundle savedInstanceState) {
+        onViewCreated(rootView);
+
+        if (savedInstanceState != null && !mStateRestored) {
+            onRestoreInstanceState(savedInstanceState);
+            mStateRestored = true;
+        }
+
+        for(DSFragment subfragment : mSubFragments.values()) {
+            subfragment.onViewCreated(rootView);
+        }
+
+        loadData(true);
+
+        if (mParent == null) {
+            getDSActivity().startPostponedEnterTransition();
+            super.onViewCreated(rootView, savedInstanceState);
+        }
+
+        display(true);
+    }
 	
 	/**
 	 * called from onCreateView after root view is created and started data loading but before display
@@ -378,7 +389,7 @@ abstract public class DSFragment extends DialogFragment
 	}
 	
 	protected Template createTemplate() {
-		return new Template((ActivityInterface) getDSActivity(), mRootView);
+		return new Template(getDSActivity(), mRootView);
 	}
 
 	@Override

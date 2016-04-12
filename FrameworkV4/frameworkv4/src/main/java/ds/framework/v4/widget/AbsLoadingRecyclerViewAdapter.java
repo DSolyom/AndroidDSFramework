@@ -18,7 +18,7 @@ package ds.framework.v4.widget;
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
 
-import ds.framework.v4.app.ActivityInterface;
+import ds.framework.v4.app.DSActivity;
 import ds.framework.v4.data.AbsAsyncData;
 
 abstract public class AbsLoadingRecyclerViewAdapter<T> extends AbsTemplateViewHolderAdapter<T> {
@@ -36,7 +36,7 @@ abstract public class AbsLoadingRecyclerViewAdapter<T> extends AbsTemplateViewHo
 
     private final LoadingAdapterObserver mObserver = new LoadingAdapterObserver();
 
-    public AbsLoadingRecyclerViewAdapter(ActivityInterface in, int loadingRowLayoutId) {
+    public AbsLoadingRecyclerViewAdapter(DSActivity in, int loadingRowLayoutId) {
         super(in, loadingRowLayoutId);
     }
 

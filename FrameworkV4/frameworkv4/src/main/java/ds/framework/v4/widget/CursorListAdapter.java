@@ -15,13 +15,13 @@
 */
 package ds.framework.v4.widget;
 
-import ds.framework.v4.app.ActivityInterface;
+import ds.framework.v4.app.DSActivity;
 import ds.framework.v4.data.AbsAsyncData;
 import ds.framework.v4.data.CursorData;
 
 public abstract class CursorListAdapter extends AbsTemplateViewHolderAdapter<CursorData> {
 
-    public CursorListAdapter(ActivityInterface in, int rowLayoutId) {
+    public CursorListAdapter(DSActivity in, int rowLayoutId) {
         super(in, rowLayoutId);
     }
 

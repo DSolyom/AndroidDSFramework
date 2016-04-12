@@ -22,14 +22,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
-import ds.framework.v4.app.ActivityInterface;
+import ds.framework.v4.app.DSActivity;
 
 public abstract class TemplateRecyclerViewAdapter<T> extends AbsTemplateViewHolderAdapter<T> {
 
 	final ArrayList<T> mItems = new ArrayList<T>();
 	protected AdapterView<?> mAdapterView;
 
-	public TemplateRecyclerViewAdapter(ActivityInterface in, int rowLayoutId) {
+	public TemplateRecyclerViewAdapter(DSActivity in, int rowLayoutId) {
 		super(in, rowLayoutId);
 	}
 	

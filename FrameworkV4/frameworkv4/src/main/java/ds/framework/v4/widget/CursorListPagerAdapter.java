@@ -2,14 +2,15 @@ package ds.framework.v4.widget;
 
 import android.database.Cursor;
 import android.view.View;
-import ds.framework.v4.app.ActivityInterface;
+
+import ds.framework.v4.app.DSActivity;
 import ds.framework.v4.data.AbsAsyncData;
 import ds.framework.v4.data.CursorData;
 import ds.framework.v4.db.TableQuery;
 
 public abstract class CursorListPagerAdapter extends AbsTemplatePagerAdapter {
 	
-	public CursorListPagerAdapter(ActivityInterface activity, int pageLayoutID) {
+	public CursorListPagerAdapter(DSActivity activity, int pageLayoutID) {
 		super(activity, pageLayoutID);
 
         // just use an empty data as default

@@ -18,7 +18,8 @@ package ds.framework.v4.widget;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
-import ds.framework.v4.app.ActivityInterface;
+
+import ds.framework.v4.app.DSActivity;
 
 public abstract class FixedRatioTemplateAdapter<T> extends TemplateRecyclerViewAdapter<T> {
 	
@@ -29,7 +30,7 @@ public abstract class FixedRatioTemplateAdapter<T> extends TemplateRecyclerViewA
 	 */
 	private float sizeRatio = 1;
 	
-	public FixedRatioTemplateAdapter(ActivityInterface in, int itemWidth, int rowLayoutId) {
+	public FixedRatioTemplateAdapter(DSActivity in, int itemWidth, int rowLayoutId) {
 		super(in, rowLayoutId);
 
 		mItemWidth = itemWidth;

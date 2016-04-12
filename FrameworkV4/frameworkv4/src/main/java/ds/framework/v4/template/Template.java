@@ -16,8 +16,6 @@
 
 package ds.framework.v4.template;
 
-import java.util.ArrayList;
-
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.AnimationDrawable;
@@ -49,9 +47,11 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TextView.BufferType;
-import ds.framework.v4.R;
+
+import java.util.ArrayList;
+
 import ds.framework.v4.Global;
-import ds.framework.v4.app.ActivityInterface;
+import ds.framework.v4.R;
 import ds.framework.v4.app.DSActivity;
 import ds.framework.v4.common.AnimationStarter;
 import ds.framework.v4.common.Common;
@@ -65,10 +65,10 @@ import ds.framework.v4.widget.HtmlTextView;
 import ds.framework.v4.widget.IRecyclerView;
 import ds.framework.v4.widget.LaizyImageFlipAnimationLayout;
 import ds.framework.v4.widget.LaizyImageView;
+import ds.framework.v4.widget.LaizyImageView.LaizyImageViewInfo;
 import ds.framework.v4.widget.MiniListView;
 import ds.framework.v4.widget.RecyclerViewHeaderedAdapter;
 import ds.framework.v4.widget.TemplateRecyclerViewAdapter;
-import ds.framework.v4.widget.LaizyImageView.LaizyImageViewInfo;
 
 public class Template {
 
@@ -164,11 +164,11 @@ public class Template {
 	
 	public static final int FIX_TILE_MODE = 10000;
 
-	private ActivityInterface mOwner;
+	private DSActivity mOwner;
 	private View mRootView;
     private ArrayList<View> mOtherRoots;
 	
-	public Template(ActivityInterface owner, View rootView) {
+	public Template(DSActivity owner, View rootView) {
 		mOwner = owner;
 		mRootView = rootView;
 	}
@@ -188,7 +188,7 @@ public class Template {
 	 * 
 	 * @return
 	 */
-	public ActivityInterface getOwner() {
+	public DSActivity getOwner() {
 		return mOwner;
 	}
 	
@@ -531,7 +531,7 @@ public class Template {
 
 								if (activity.isRunning()) {
 									if (type == ONCLICK_TRANSPORT) {
-										activity.transport(transport.to, transport.data);
+										activity.transport(transport.to, transport.sharedViews, transport.data);
 									} else if (type == ONCLICK_FORWARD) {
 										activity.forward(transport.to, transport.data);
 									} else if (type == ONCLICK_FORWARD_AND_CLEAR) {

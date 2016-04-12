@@ -38,7 +38,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.VisibleRegion;
 
 import ds.framework.v4.Global;
 import ds.framework.v4.R;
@@ -270,7 +269,7 @@ public abstract class DSMapFragment extends MapFragment
 	 * @return
 	 */
 	protected Template createTemplate() {
-		return new Template((ActivityInterface) getDSActivity(), mRootView);
+		return new Template(getDSActivity(), mRootView);
 	}
 	
 	/**

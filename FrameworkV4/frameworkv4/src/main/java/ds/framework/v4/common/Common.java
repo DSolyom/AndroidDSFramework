@@ -68,7 +68,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 import ds.framework.v4.Global;
 import ds.framework.v4.Settings;
-import ds.framework.v4.app.ActivityInterface;
 import ds.framework.v4.widget.MiniListView;
 
 public class Common {
@@ -444,7 +443,7 @@ public class Common {
      * @param a
      * @param editResource
      */
-	public static void showKeyboard(ActivityInterface a, int editResource) {
+	public static void showKeyboard(Activity a, int editResource) {
 		View edit = a.findViewById(editResource);
 		InputMethodManager mgr = (InputMethodManager) ((Context) a).getSystemService(Context.INPUT_METHOD_SERVICE);
 		mgr.showSoftInput(edit, InputMethodManager.SHOW_IMPLICIT);
@@ -455,18 +454,18 @@ public class Common {
      * @param a
      * @param editResource
      */
-	public static void hideKeyboard(ActivityInterface a, int editResource) {
+	public static void hideKeyboard(Activity a, int editResource) {
 		hideKeyboard(a, a.findViewById(editResource));
 	}
 
     /**
      *
-     * @param a
+     * @param context
      * @param v
      */
-	public static void hideKeyboard(ActivityInterface a, View v) {
+	public static void hideKeyboard(Context context, View v) {
 		try {
-			InputMethodManager mgr = (InputMethodManager) ((Context) a).getSystemService(Context.INPUT_METHOD_SERVICE);
+			InputMethodManager mgr = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
 			mgr.hideSoftInputFromWindow(v.getWindowToken(), 0);
 		} catch(Exception e) {
 			;

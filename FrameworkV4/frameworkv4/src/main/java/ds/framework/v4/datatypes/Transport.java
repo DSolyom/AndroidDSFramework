@@ -17,10 +17,12 @@ package ds.framework.v4.datatypes;
 
 // import ds.framework.v4.app.AbsScreenFragment;
 
+import android.util.Pair;
+
 public class Transport {
 	public Object to;
 	public Object data;
-	// public AbsScreenFragment fromFragment;
+	public Pair[] sharedViews;
 
 	public Transport(Object to) {
 		this.to = to;
@@ -36,4 +38,17 @@ public class Transport {
 		this.to = to;
 		this.data = data;
 	}
+
+    public Transport(Object to, Pair[] sharedViews, Object data) {
+        this.to = to;
+        this.sharedViews = sharedViews;
+        this.data = data;
+    }
+
+    public Transport(Object to, Pair[] sharedViews, Object... data) {
+        this.to = to;
+        this.sharedViews = sharedViews;
+        this.data = data;
+    }
+
 }

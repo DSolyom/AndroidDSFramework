@@ -52,11 +52,11 @@ abstract public class DSSplashScreenFragment extends AbsDSAsyncDataFragment {
                 final Transport transport = getTransport();
                 try {
                     if (transport != null) {
-                        ((ActivityInterface) getDSActivity()).forward(transport.to, transport.data);
+						getDSActivity().forward(transport.to, transport.data);
                     } else {
 
                         // no transport means we got here from somewhere within the app and not as a start screen
-                        ((ActivityInterface) getDSActivity()).goBack(null);
+                        getDSActivity().goBack(null);
                     }
                 } catch (Throwable e) {
                     ;    // has no activity
