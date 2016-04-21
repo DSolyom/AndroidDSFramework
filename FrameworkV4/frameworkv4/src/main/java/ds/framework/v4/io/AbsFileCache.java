@@ -332,6 +332,10 @@ abstract public class AbsFileCache<T> implements InterfaceCache<String, T> {
 
         final String[] list = dir.list();
 
+        if (list == null) {
+        	return 0;
+        }
+
         for (String file : list) {
         	final File fFile = new File(dir, file);
         	if (fFile.isDirectory()) { 

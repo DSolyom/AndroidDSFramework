@@ -24,8 +24,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.transition.Transition;
 import android.util.Pair;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
@@ -36,6 +38,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.Window;
+import android.view.animation.PathInterpolator;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
@@ -198,7 +201,14 @@ abstract public class DSActivity extends AppCompatActivity
             selfOnRestoreState(savedInstanceState);
         }
 
-        onEnterActivity(getIntent(), false);
+        Intent intent = getIntent();
+        if (savedInstanceState != null) {
+
+            // no transition after orientation change as it won't work anyway
+            intent.removeExtra("has-scene-transition");
+            mHasSceneTransition = false;
+        }
+        onEnterActivity(intent, false);
     }
 
     protected void selfOnCreate(Bundle savedInstanceState) {
@@ -245,19 +255,63 @@ abstract public class DSActivity extends AppCompatActivity
         Global.onActivityDestroyed(this);
     }
 
+    boolean mInTransition = false;
+
+    @Override
+    public void finishAfterTransition() {
+        if (mInTransition) {
+            return;
+        }
+        if (!mHasSceneTransition) {
+            finish();
+            return;
+        }
+
+        mInTransition = true;
+        // HACK to 'solve' home press bug in activity back transition
+        getWindow().getSharedElementEnterTransition().addListener(new Transition.TransitionListener() {
+            @Override
+            public void onTransitionStart(Transition transition) {
+            }
+
+            @Override
+            public void onTransitionEnd(Transition transition) {
+                mInTransition = false;
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (!isFinishing()) {
+                            finish();
+                        }
+                    }
+                }, 250);
+            }
+
+            @Override
+            public void onTransitionCancel(Transition transition) {
+                mInTransition = false;
+            }
+
+            @Override
+            public void onTransitionPause(Transition transition) {
+            }
+
+            @Override
+            public void onTransitionResume(Transition transition) {
+            }
+        });
+        super.finishAfterTransition();
+
+        // finishAfterTransition will recall finish so make sure no infinite loop
+        mHasSceneTransition = false;
+    }
+
     @Override
     public void finish() {
-        if (mHasSceneTransition) {
-            finishAfterTransition();
+        ConnectionChecker.getInstance().unregisterReceiver(this);
+        Global.onActivityDestroyed(this);
 
-            // finishAfterTransition will recall finish so make sure no infinite loop
-            mHasSceneTransition = false;
-        } else {
-            ConnectionChecker.getInstance().unregisterReceiver(this);
-            Global.onActivityDestroyed(this);
-
-            super.finish();
-        }
+        super.finish();
     }
 
     /**
@@ -286,14 +340,16 @@ abstract public class DSActivity extends AppCompatActivity
             return;
         }
 
-        mHasSceneTransition = data.getBooleanExtra("has-scene-transition", false);
-        if (mHasSceneTransition) {
-            if (!mEnterTransitionPostponed) {
-                postponeEnterTransition();
-                mEnterTransitionPostponed = true;
+        if (!mHasSceneTransition) {
+            mHasSceneTransition = data.getBooleanExtra("has-scene-transition", false);
+            if (mHasSceneTransition) {
+                if (!mEnterTransitionPostponed) {
+                    postponeEnterTransition();
+                    mEnterTransitionPostponed = true;
+                }
+            } else {
+                mStartedEnterTransition = true;
             }
-        } else {
-            mStartedEnterTransition = true;
         }
 
         if (ONACTIVITYRESULT_ACTION.equals(action)) {
@@ -1316,7 +1372,7 @@ abstract public class DSActivity extends AppCompatActivity
         intent.putExtra("transport-data", (Serializable) result);
         intent.setAction(GOBACK_ACTION);
         setResult(RESULT_OK, intent);
-        finish();
+        finishAfterTransition();
     }
 
     /**
@@ -1363,7 +1419,6 @@ abstract public class DSActivity extends AppCompatActivity
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             if (sharedViews != null) {
 
-                final View decorView = getWindow().getDecorView();
                 ArrayList<Pair> sharedViewList = extendsSharedViewsForTransport(new ArrayList<>(Arrays.asList(sharedViews)));
                 sharedViews = new Pair[sharedViewList.size()];
                 sharedViewList.toArray(sharedViews);
