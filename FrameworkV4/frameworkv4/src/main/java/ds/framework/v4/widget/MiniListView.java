@@ -157,7 +157,7 @@ public class MiniListView extends LinearLayout {
 								addView(getView(at, views[at]), at);
 								++at;
 							}
-						} catch(IndexOutOfBoundsException e) {
+						} catch(Throwable e) {
 							
 							// just clearing this view while it's still working on showing
 							invalidate();
